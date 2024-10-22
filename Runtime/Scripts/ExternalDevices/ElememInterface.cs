@@ -60,10 +60,6 @@ namespace PsyForge.ExternalDevices {
             // Start Heartbeats
             DoHeartbeatsForeverTS();
 
-            await SendTS("SESSION", new() {
-                { "session", sessionNum },
-            });
-
             // Start Elemem
             await SendTS("READY");
         }
@@ -215,7 +211,7 @@ namespace PsyForge.ExternalDevices {
             return Task.CompletedTask;
         }
 
-        public override Task SendStateMsgTS(HostPcStatusMsg state, Dictionary<string, object> extraData = null) {
+        public override Task SendStatusMsgTS(HostPcStatusMsg state, Dictionary<string, object> extraData = null) {
             var dict = (extraData ?? new()).Concat(state.dict).ToDictionary(x=>x.Key,x=>x.Value);
             EventReporter.Instance.LogTS(state.name, extraData);
             return Task.CompletedTask;

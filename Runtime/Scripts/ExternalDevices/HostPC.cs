@@ -34,7 +34,7 @@ namespace PsyForge.ExternalDevices {
         // public abstract Task SendSessionMsgTS(int session);
         // public abstract Task SendTrialMsgTS(int trial, bool stim);
         // public abstract Task SendWordMsgTS(string word, int serialPos, bool stim, Dictionary<string, object> extraData = null);
-        public abstract Task SendStateMsgTS(HostPcStatusMsg state, Dictionary<string, object> extraData = null);
+        public abstract Task SendStatusMsgTS(HostPcStatusMsg state, Dictionary<string, object> extraData = null);
         public abstract Task SendExpMsgTS(HostPcExpMsg exp, Dictionary<string, object> extraData = null);
         public abstract Task SendExitMsgTS();
         public abstract Task SendLogMsgTS(string type, DateTime time, Dictionary<string, object> data = null);

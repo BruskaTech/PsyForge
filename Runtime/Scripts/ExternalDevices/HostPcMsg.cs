@@ -46,8 +46,8 @@ namespace PsyForge.ExternalDevices {
 
     // Host PC State Message
     public partial class HostPcStatusMsg : HostPcMsg {
-        protected HostPcStatusMsg(string name, Dictionary<string, object> dict = null) 
-            : base("TASK_STATUS", new() { {"status", name}, {"data", dict} }) {}
+        protected HostPcStatusMsg(string name, Dictionary<string, object> dict = null)
+            : base("TASK_STATUS", new() { {"status", name}, {"data", dict ?? new()} }) {}
 
         public static HostPcStatusMsg PAUSE(bool pauseStart) { return new HostPcStatusMsg("PAUSE", new() { {"pause start", pauseStart} }); }
         public static HostPcStatusMsg WAITING() { return new HostPcStatusMsg("WAITING"); }

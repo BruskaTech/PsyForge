@@ -172,7 +172,7 @@ namespace PsyForge.Experiment {
                 await RepeatUntilYes(async (CancellationToken ct) => {
                     // Resume since they don't want to quit (or haven't tried yet)
                     if (!firstLoop) {
-                        await SetExperimentStatus(HostPcStatusMsg.PAUSE(false));
+                        SetExperimentStatus(HostPcStatusMsg.PAUSE(false));
                         firstLoop = false;
                     }
                     manager.Pause(false);
@@ -181,7 +181,7 @@ namespace PsyForge.Experiment {
                     await inputManager.WaitForKey(new List<KeyCode>() { KeyCode.Q }, unpausable: true, ct: ct);
 
                     // Pause everything and ask if they want to quit
-                    await SetExperimentStatus(HostPcStatusMsg.PAUSE(true));
+                    SetExperimentStatus(HostPcStatusMsg.PAUSE(true));
                     manager.Pause(true);
                 }, "experiment quit", LangStrings.ExperimentQuit(), new(), unpausable: true);
                 
@@ -198,7 +198,7 @@ namespace PsyForge.Experiment {
                     // Resume since they don't want to quit (or haven't tried yet)
                     manager.Pause(false);
                     if (!firstLoop) {
-                        await SetExperimentStatus(HostPcStatusMsg.PAUSE(false));
+                        SetExperimentStatus(HostPcStatusMsg.PAUSE(false));
                         firstLoop = false;
                     }
 
@@ -207,7 +207,7 @@ namespace PsyForge.Experiment {
 
                     // Pause everything and ask if they want to quit
                     manager.Pause(true);
-                    await SetExperimentStatus(HostPcStatusMsg.PAUSE(true));
+                    SetExperimentStatus(HostPcStatusMsg.PAUSE(true));
                 }, "experiment pause", LangStrings.ExperimentPaused(), pauseKeyCodes, new(), unpausable: true);
             }
         }
@@ -305,7 +305,7 @@ namespace PsyForge.Experiment {
         }
         protected virtual async Task QuitPrompt() {
             SendRamulatorStateMsg(HostPcStatusMsg.WAITING(), true);
-            await SetExperimentStatus(HostPcStatusMsg.WAITING());
+            SetExperimentStatus(HostPcStatusMsg.WAITING());
 
             textDisplayer.Display("subject/session confirmation", LangStrings.Blank(),
                 LangStrings.SubjectSessionConfirmation(Config.subject, Config.sessionNum.Value, Config.experimentName));
@@ -337,31 +337,22 @@ namespace PsyForge.Experiment {
                 });
             }
         }
-        protected async Task SetExperimentStatus(HostPcStatusMsg state, Dictionary<string, object> extraData = null) {
-            if (manager.hostPC == null) {
-                var dict = (extraData ?? new()).Concat(state.dict).ToDictionary(x=>x.Key,x=>x.Value);
-                eventReporter.LogTS(state.name, dict);
-            } else {
-                await manager.hostPC.SendStateMsgTS(state, extraData);
-            }
+        protected void SetExperimentStatus(HostPcStatusMsg state, Dictionary<string, object> extraData = null) {
+            var dict = (extraData ?? new()).Concat(state.dict).ToDictionary(x=>x.Key,x=>x.Value);
+            eventReporter.LogTS(state.name, dict);
+            // manager.hostPC?.SendStatusMsgTS(state, extraData);
         }
         protected void ReportSessionNum(Dictionary<string, object> extraData = null) {
             var exp = HostPcExpMsg.SESSION(Config.sessionNum.Value);
-            if (manager.hostPC == null) {
-                var dict = (extraData ?? new()).Concat(exp.dict).ToDictionary(x=>x.Key,x=>x.Value);
-                eventReporter.LogTS(exp.name, dict);
-            } else {
-                manager.hostPC.SendExpMsgTS(exp);
-            }
+            var dict = (extraData ?? new()).Concat(exp.dict).ToDictionary(x=>x.Key,x=>x.Value);
+            eventReporter.LogTS(exp.name, dict);
+            // manager.hostPC.SendExpMsgTS(exp, extraData);
         }
         protected void ReportTrialNum(bool stim, Dictionary<string, object> extraData = null) {
             var exp = HostPcExpMsg.TRIAL((int)session.TrialNum, stim, session.isPractice);
-            if (manager.hostPC == null) {
-                var dict = (extraData ?? new()).Concat(exp.dict).ToDictionary(x=>x.Key,x=>x.Value);
-                eventReporter.LogTS(exp.name, dict);
-            } else {
-                manager.hostPC.SendExpMsgTS(exp);
-            }
+            var dict = (extraData ?? new()).Concat(exp.dict).ToDictionary(x=>x.Key,x=>x.Value);
+            eventReporter.LogTS(exp.name, dict);
+            // manager.hostPC.SendExpMsgTS(exp, extraData);
         }
     
         /// <summary>
@@ -375,7 +366,7 @@ namespace PsyForge.Experiment {
             return await PressAnyKey(description, LangStrings.Blank(), displayText);
         }
         protected async Task<KeyCode> PressAnyKey(string description, LangString displayTitle, LangString displayText) {
-            await SetExperimentStatus(HostPcStatusMsg.WAITING());
+            SetExperimentStatus(HostPcStatusMsg.WAITING());
             // TODO: JPB: (needed) Add Ramulator to match this
             textDisplayer.Display($"{description} (press any key prompt)", displayTitle, displayText);
             var keyCode = await InputManager.Instance.WaitForKey();
