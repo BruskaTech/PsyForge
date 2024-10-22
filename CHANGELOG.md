@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v0.1.0
+
+### General
+
+- Intitial beta release of PsyForge
+
 ## UEPL-v3.0.0-beta2 (2024-03-07)
 
 ### General
