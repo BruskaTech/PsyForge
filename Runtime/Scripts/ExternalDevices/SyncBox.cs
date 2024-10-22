@@ -27,9 +27,7 @@ namespace PsyForge.ExternalDevices {
         }
 
         public async Task Pulse() {
-            EventReporter.Instance.LogTS("syncbox", new() {
-                { "pulse", "on" }
-            });
+            EventReporter.Instance.LogTS("syncbox pulse");
             await PulseInternals();
         }
 

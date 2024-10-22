@@ -14,5 +14,20 @@ namespace PsyForge.Utilities {
         public static bool IsMacOS() {
             return Application.platform == RuntimePlatform.OSXEditor || Application.platform == RuntimePlatform.OSXPlayer;
         }
+
+        /// <summary>
+        /// Returns the attempted frame rate of the current Unity application.
+        /// If the game is set to run as fast as possible, then this will return -1.
+        /// </summary>
+        /// <returns></returns>
+        public static int FrameRate() {
+            if (QualitySettings.vSyncCount > 0) {
+                var screenFpsRatio = Screen.currentResolution.refreshRateRatio;
+                var screenFps = screenFpsRatio.numerator / screenFpsRatio.denominator;
+                return (int)screenFps / QualitySettings.vSyncCount;
+            } else {
+                return Application.targetFrameRate;
+            }
+        }
     }
 }

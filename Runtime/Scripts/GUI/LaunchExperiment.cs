@@ -170,6 +170,13 @@ namespace PsyForge.GUI {
                     throw new Exception($"Config variable targetFrameRate ({Config.targetFrameRate.Value}) must be a factor of the screen refresh rate {screenFps}.");
                 }
             }
+
+            // Check for inaccurate frame display times
+            if (Config.logFrameDisplayTimes && QualitySettings.vSyncCount == 0) {
+                throw new Exception("The config variable 'logFrameDisplayTimes' is enabled but VSync is not enabled. This will cause inaccurate frame display times."
+                    + "\n\nPlease set the config variable 'targetFrameRate' to a multiple of the screen refresh rate or turn off 'logFrameDisplayTimes' in the config."
+                    + "\nYou can also remove 'targetFrameRate' from the config to have the game run at the screen refresh rate.");
+            }
         }
 
         private static void onExperimentSceneLoaded(Scene scene, LoadSceneMode mode) {

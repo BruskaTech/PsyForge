@@ -154,7 +154,7 @@ namespace PsyForge {
 
         /// <summary>
         /// The target frame rate of the application.
-        /// <br/>If it is not set, then the game will try to run as fast as the monitor refresh rate.
+        /// <br/>If it is not set, then the game will try to run as fast as the monitor/screen refresh rate.
         /// <br/>If you want it to run as fast as possible (on desktop), then set the value to -1. This does not work on mobile devices or the web.
         /// <br/>WARNING: Setting this to a smaller value than the screen refresh rate is NOT usually good for psychology experiments because it means the input logging will be less accurate (since it only happens once every frame)
         /// <br/>WARNING: Setting this to -1 (or a non-multiple of the screen refresh rate) is NOT usually good for psychology experiments because it causes a timing issue between when your game thinks it is showing something and when it actually shows up on the screen.

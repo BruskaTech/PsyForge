@@ -72,7 +72,7 @@ namespace PsyForge.Utilities {
             { Language.English, $"Config variable targetFrameRate ({targetFps}) should be a factor of the screen refresh rate ({screenFps})."
                 + "\n\nIf you are using a new device or monitor, consider changing the targetFrameRate. Also consider what this means for your experiment."
                 + "\n\nIf changing the frame rate is not possible for your experiment, then you can continue on with the old frame rate. Please note that this will mean the frames of the game do not necessarily align with the frames of the screen (impacting timing analyses)."
-                + "\n\nPress Y to continue with the old frame rate.\nPress N to quit." },
+                + $"\n\nPress Y to continue with the provided frame rate ({targetFps}).\nPress N to quit." },
         }); }
     }
 }
