@@ -10,6 +10,7 @@ namespace PsyForge.Utilities {
     public static partial class LangStrings {
         public static LangString Blank() { return GenForCurrLang(""); }
         public static LangString NewLine() { return GenForCurrLang("\n"); }
+        public static LangString DoubleNewLine() { return GenForCurrLang("\n\n"); }
 
         public static LangString Error() { return new( new() {
             { Language.English, "Error" },
@@ -31,8 +32,7 @@ namespace PsyForge.Utilities {
         }); }
         public static LangString ConfirmStart() { return new( new() {
             { Language.English, "Please let the experimenter know if you have any questions about the task."
-                + "\n\nIf you think you understand, please explain the task to the experimenter in your own words."
-                + "\n\nPress any key to continue to start." },
+                + "\n\nIf you think you understand, please explain the task to the experimenter in your own words."},
         }); }
         public static LangString ExperimentQuit() { return new( new() {
             { Language.English, "Do you want to quit?\n\nPress [Y] to Quit.\nPress [N] to Resume." },
@@ -46,8 +46,11 @@ namespace PsyForge.Utilities {
         public static LangString RepeatMicTest() { return new( new() {
             { Language.English, "Did you hear the recording? \n([Y] = Continue / [N] = Try Again)." },
         }); }
+        public static LangString AnyKeyToContinue() { return new( new() {
+            { Language.English, "\nPress any key to continue\n\n" },
+        }); }
         public static LangString SlideControlLine() { return new( new() {
-            { Language.English, "\n\n(go backward) '[<-]'   |   '[->]' (go forward) " },
+            { Language.English, "\n(go backward) '[⬅]'   |   '[⮕]' (go forward)\n\n" },
         }); }
         public static LangString MicrophoneTestRecording() { return new( new() {
             { Language.English, "Recording..." },

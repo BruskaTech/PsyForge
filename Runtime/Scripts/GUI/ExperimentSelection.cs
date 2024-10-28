@@ -20,8 +20,9 @@ namespace PsyForge.GUI {
     /// </summary>
     [RequireComponent(typeof(Dropdown))]
     public class ExperimentSelection : EventMonoBehaviour {
+        Dropdown dropdown;
         protected override void AwakeOverride() {
-            Dropdown dropdown = GetComponent<Dropdown>();
+            dropdown = GetComponent<Dropdown>();
 
             List<string> experiments = new(Config.availableExperiments);
 
@@ -30,15 +31,24 @@ namespace PsyForge.GUI {
             SetExperiment();
         }
 
-        public void SetExperiment() {
+        protected void SetExperiment() {
             Do(SetExperimentHelper);
         }
         protected void SetExperimentHelper() {
-            Dropdown dropdown = GetComponent<Dropdown>();
-
             if (dropdown.captionText.text != "Select Task...") {
                 Config.experimentConfigName = dropdown.captionText.text;
                 Config.SetupExperimentConfig();
+            }
+        }
+
+        public string GetExperiment() {
+            return DoGet(GetExperimentHelper);
+        }
+        protected string GetExperimentHelper() {
+            if (dropdown.captionText.text != "Select Task...") {
+                return dropdown.captionText.text;
+            } else {
+                return null;
             }
         }
     }

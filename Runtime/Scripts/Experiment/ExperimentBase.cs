@@ -228,7 +228,7 @@ namespace PsyForge.Experiment {
                 ct.ThrowIfCancellationRequested();
 
                 SendRamulatorStateMsg(HostPcStatusMsg.WAITING(), true);
-                await textDisplayer.DisplayForTask(description, LangStrings.Blank(), displayText, ct, async (CancellationToken ct) => {
+                await textDisplayer.DisplayForTask(description, LangStrings.Blank(), displayText, null, ct, async (CancellationToken ct) => {
                     var keyCode = await inputManager.WaitForKey(new List<KeyCode>() { KeyCode.Y, KeyCode.N }, unpausable: unpausable, ct: ct);
                     repeat = keyCode != KeyCode.Y;
                 });
@@ -245,7 +245,7 @@ namespace PsyForge.Experiment {
                 ct.ThrowIfCancellationRequested();
 
                 SendRamulatorStateMsg(HostPcStatusMsg.WAITING(), true);
-                await textDisplayer.DisplayForTask(description, LangStrings.Blank(), displayText, ct, async (CancellationToken ct) => {
+                await textDisplayer.DisplayForTask(description, LangStrings.Blank(), displayText, null, ct, async (CancellationToken ct) => {
                     var keyCode = await inputManager.WaitForKey(new List<KeyCode>() { KeyCode.Y, KeyCode.N }, unpausable: unpausable, ct: ct);
                     repeat = keyCode != KeyCode.N;
                 });
@@ -261,7 +261,7 @@ namespace PsyForge.Experiment {
                 ct.ThrowIfCancellationRequested();
 
                 SendRamulatorStateMsg(HostPcStatusMsg.WAITING(), true);
-                await textDisplayer.DisplayForTask(description, LangStrings.Blank(), displayText, ct, async (CancellationToken ct) => {
+                await textDisplayer.DisplayForTask(description, LangStrings.Blank(), displayText, null, ct, async (CancellationToken ct) => {
                     var keyCode = await inputManager.WaitForKey(keyCodes, unpausable: unpausable, ct: ct);
                 });
                 SendRamulatorStateMsg(HostPcStatusMsg.WAITING(), false);
@@ -293,12 +293,12 @@ namespace PsyForge.Experiment {
 
                 manager.recorder.StartRecording(wavPath);
                 var coloredTestRec = LangStrings.MicrophoneTestRecording().Color("red");
-                textDisplayer.DisplayText("microphone test recording", coloredTestRec);
+                textDisplayer.Display("microphone test recording", text: coloredTestRec);
                 await manager.Delay(Config.micTestDurationMs);
                 var clip = manager.recorder.StopRecording();
 
                 var coloredTestPlay = LangStrings.MicrophoneTestPlaying().Color("green");
-                textDisplayer.DisplayText("microphone test playing", coloredTestPlay);
+                textDisplayer.Display("microphone test playing", text: coloredTestPlay);
                 manager.playback.Play(clip);
                 await manager.Delay(Config.micTestDurationMs);
             }, "repeat mic test", LangStrings.RepeatMicTest(), new());
@@ -307,8 +307,8 @@ namespace PsyForge.Experiment {
             SendRamulatorStateMsg(HostPcStatusMsg.WAITING(), true);
             SetExperimentStatus(HostPcStatusMsg.WAITING());
 
-            textDisplayer.Display("subject/session confirmation", LangStrings.Blank(),
-                LangStrings.SubjectSessionConfirmation(Config.subject, Config.sessionNum.Value, Config.experimentName));
+            textDisplayer.Display("subject/session confirmation",
+                text: LangStrings.SubjectSessionConfirmation(Config.subject, Config.sessionNum.Value, Config.experimentName));
             var keyCode = await inputManager.WaitForKey(new List<KeyCode>() { KeyCode.Y, KeyCode.N });
 
             SendRamulatorStateMsg(HostPcStatusMsg.WAITING(), false);
@@ -319,23 +319,6 @@ namespace PsyForge.Experiment {
         }
         protected virtual async Task ConfirmStart() {
             await PressAnyKey("confirm start", LangStrings.ConfirmStart());
-        }
-        protected async Task DisplayTextSlides(List<TextSlide> textSlides) {
-            // Resize based on all text item sizes
-            var strList = textSlides.Select(item => item.text + LangStrings.SlideControlLine()).ToList();
-            var fontSize = (int)textDisplayer.FindMaxFittingFontSize(strList);
-            // UnityEngine.Debug.Log("Font size: " + fontSize);
-
-            // Display all instruction texts
-            var keys = new List<KeyCode>() { KeyCode.LeftArrow, KeyCode.RightArrow };
-            for (int i = 0; i < textSlides.Count; ++i) {
-                var slide = textSlides[i];
-                var text = slide.text + LangStrings.SlideControlLine();
-                await textDisplayer.DisplayForTask(slide.description, slide.title, text, new(), async (CancellationToken ct) => {
-                    var keycode = await inputManager.WaitForKey(keys, ct: ct);
-                    if (keycode == KeyCode.LeftArrow && i > 0) { i -= 2; }
-                });
-            }
         }
         protected void SetExperimentStatus(HostPcStatusMsg state, Dictionary<string, object> extraData = null) {
             var dict = (extraData ?? new()).Concat(state.dict).ToDictionary(x=>x.Key,x=>x.Value);
@@ -363,12 +346,12 @@ namespace PsyForge.Experiment {
         /// <param name="displayText"></param>
         /// <returns></returns>
         protected async Task<KeyCode> PressAnyKey(string description, LangString displayText) {
-            return await PressAnyKey(description, LangStrings.Blank(), displayText);
+            return await PressAnyKey(description, null, displayText);
         }
         protected async Task<KeyCode> PressAnyKey(string description, LangString displayTitle, LangString displayText) {
             SetExperimentStatus(HostPcStatusMsg.WAITING());
             // TODO: JPB: (needed) Add Ramulator to match this
-            textDisplayer.Display($"{description} (press any key prompt)", displayTitle, displayText);
+            textDisplayer.Display($"{description} (press any key prompt)", displayTitle, displayText, LangStrings.AnyKeyToContinue());
             var keyCode = await InputManager.Instance.WaitForKey();
             textDisplayer.Clear();
             return keyCode;

@@ -66,7 +66,7 @@ namespace PsyForge.Utilities {
         private readonly Dictionary<Language, string> strings;
 
         // Make a langstring enumerable constructor that uses a dictionary, for convenience
-        public LangString(Dictionary<Language, string> strings) {
+        internal LangString(Dictionary<Language, string> strings) {
             if (strings.Count <= 0) { throw new ArgumentException($"{nameof(LangString)} must have at least one language provided"); }
             this.strings = strings;
         }
@@ -98,15 +98,54 @@ namespace PsyForge.Utilities {
         /// Color the text of the LangString using RichText
         /// </summary>
         /// <param name="color">The color to use in RichText format</param>
-        /// <returns>A new LangString with the color applied</returns>
-        public LangString Color(string color) {
+        /// <param name="opacity">The opacity to use in RichText format</param>
+        /// <returns>A new LangString with the color and opacity applied</returns>
+        public LangString Color(string color, float? opacity = null) {
+            if (opacity.HasValue && (opacity.Value < 0 || opacity.Value > 1)) {
+                throw new ArgumentException($"{nameof(opacity)} ({opacity}) must be between 0 and 1");
+            }
+
             Dictionary<Language, string> strings = new();
-            foreach (Language lang in Enum.GetValues(typeof(Language))) {
-                if (this.strings.ContainsKey(lang)) {
-                    strings.Add(lang, $"<color={color}>{this.strings[lang]}</color>");
-                }
+            foreach (var (key, str) in this.strings) {
+                var opacityStr = opacity.HasValue 
+                    ? $"<alpha={opacity.Value}>{str}</alpha>" 
+                    : str;
+                var coloredStr = $"<color={color}>{opacityStr}</color>";
+                strings.Add(key, coloredStr);
             }
             return new(strings);
+        }
+
+        /// <summary>
+        /// Bold the text of the LangString using RichText
+        /// </summary>
+        /// <returns>A new LangString with the text bolded</returns>
+        public LangString Bold() {
+            Dictionary<Language, string> strings = new();
+            foreach (var (key, str) in this.strings) {
+                strings.Add(key, $"<b>{str}</b>");
+            }
+            return new(strings);
+        }
+
+        /// <summary>
+        /// Italicize the text of the LangString using RichText
+        /// </summary>
+        /// <returns>A new LangString with the text italicized</returns>
+        public LangString Italicize() {
+            Dictionary<Language, string> strings = new();
+            foreach (var (key, str) in this.strings) {
+                strings.Add(key, $"<i>{str}</i>");
+            }
+            return new(strings);
+        }
+
+        /// <summary>
+        /// Clone the LangString
+        /// </summary>
+        /// <returns>A new LangString with the same values</returns>
+        public LangString Clone() {
+            return new(new(strings));
         }
     }
 

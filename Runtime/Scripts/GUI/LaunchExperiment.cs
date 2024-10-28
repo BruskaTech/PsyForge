@@ -19,6 +19,7 @@ using PsyForge.Utilities;
 using PsyForge.ExternalDevices;
 using PsyForge.Extensions;
 using System.Collections.Generic;
+using TMPro;
 
 namespace PsyForge.GUI {
 
@@ -30,24 +31,44 @@ namespace PsyForge.GUI {
     [AddComponentMenu("PsyForge/Internal/LaunchExperiment")]
     public class LaunchExperiment : EventMonoBehaviour {
         protected override void AwakeOverride() { }
+        
+        [SerializeField] protected ExperimentSelection experimentSelection;
+        [SerializeField] protected InputField participantNameInput;
+        [SerializeField] protected GameObject launchButton;
 
-        public GameObject cantGoPrompt;
-        public InputField participantNameInput;
-        public GameObject launchButton;
-
-        public GameObject syncButton;
-        public GameObject greyedLaunchButton;
-        public GameObject loadingButton;
+        [SerializeField] protected GameObject syncButton;
+        [SerializeField] protected GameObject greyedLaunchButton;
+        [SerializeField] protected GameObject loadingButton;
+        
+        [SerializeField] protected TextMeshProUGUI greyedLaunchButtonText;
 
         protected readonly List<KeyCode> ynKeyCodes = new List<KeyCode> {KeyCode.Y, KeyCode.N};
 
         void Update() {
-            launchButton.SetActive(isValidParticipant(participantNameInput.text));
+            string experimentName = experimentSelection.GetExperiment();
+            bool participantValid = isValidParticipant(participantNameInput.text);
+            bool syncboxTestRunning = manager.syncBox?.IsContinuousPulsing() ?? false;
+
+            if (experimentName == null) {
+                    greyedLaunchButtonText.text = "Please select an experiment";
+                    launchButton.SetActive(false);
+            } else if (participantNameInput.text.Equals("")) {
+                greyedLaunchButtonText.text = "Please enter participant code";
+                launchButton.SetActive(false);
+            } else if (!participantValid) {
+                greyedLaunchButtonText.text = "Please enter a <i>valid</i> participant code...";
+                launchButton.SetActive(false);
+            } else if (syncboxTestRunning) {
+                greyedLaunchButtonText.text = "Please wait, syncbox test running...";
+                launchButton.SetActive(false);
+            } else {
+                launchButton.SetActive(true);
+            }
             greyedLaunchButton.SetActive(!launchButton.activeSelf);
 
-            if (isValidParticipant(participantNameInput.text)) {
+            if (participantValid) {
                 int sessionNumber = ParticipantSelection.nextSessionNumber;
-                launchButton.GetComponentInChildren<Text>().text = "Start session " + sessionNumber.ToString();
+                launchButton.GetComponentInChildren<TextMeshProUGUI>().text = "Start session " + sessionNumber.ToString();
             }
         }
 
@@ -72,19 +93,7 @@ namespace PsyForge.GUI {
             DoTS(LaunchExpHelper);
         }
         protected IEnumerator LaunchExpHelper() {
-            if (manager.syncBox?.IsContinuousPulsing() ?? false) {
-                cantGoPrompt.GetComponent<Text>().text = "Can't start while Syncbox Test is running";
-                cantGoPrompt.SetActive(true);
-                yield break;
-            } else if (participantNameInput.text.Equals("")) {
-                cantGoPrompt.GetComponent<Text>().text = "Please enter a participant";
-                cantGoPrompt.SetActive(true);
-                yield break;
-            } else if (!isValidParticipant(participantNameInput.text)) {
-                cantGoPrompt.GetComponent<Text>().text = "Please enter a valid participant name";
-                cantGoPrompt.SetActive(true);
-                yield break;
-            } else if (!Config.IsExperimentConfigSetup()) {
+            if (!Config.IsExperimentConfigSetup()) {
                 throw new Exception("No experiment configuration loaded");
             }
 
@@ -109,10 +118,10 @@ namespace PsyForge.GUI {
 
             // Connect to HostPC
             if (Config.elememOn) {
-                TextDisplayer.Instance.Display("Elemem connection display", LangStrings.Blank(), LangStrings.ElememConnection());
+                TextDisplayer.Instance.Display("Elemem connection display", text: LangStrings.ElememConnection());
                 manager.hostPC = new ElememInterface(sessionNumber);
             } else if (Config.ramulatorOn) {
-                TextDisplayer.Instance.Display("Ramulator connection display", LangStrings.Blank(), LangStrings.ElememConnection());
+                TextDisplayer.Instance.Display("Ramulator connection display", text: LangStrings.ElememConnection());
                 manager.ramulator = new RamulatorWrapper(manager);
                 yield return manager.ramulator.BeginNewSession();
             }
@@ -160,8 +169,8 @@ namespace PsyForge.GUI {
                 QualitySettings.vSyncCount = (int)(screenFps / targetFps);
                 Application.targetFrameRate = targetFps;
             } else {
-                TextDisplayer.Instance.Display("incompatible frame rate", LangStrings.Blank(),
-                    LangStrings.IncompatibleTargetFrameRate(targetFps, screenFps));
+                TextDisplayer.Instance.Display("incompatible frame rate",
+                    text: LangStrings.IncompatibleTargetFrameRate(targetFps, screenFps));
                 var keyCode = await InputManager.Instance.WaitForKey(ynKeyCodes);
                 if (keyCode == KeyCode.Y) {
                     QualitySettings.vSyncCount = 0;

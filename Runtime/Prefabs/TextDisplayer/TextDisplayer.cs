@@ -25,28 +25,34 @@ using PsyForge.Threading;
 using PsyForge.Extensions;
 
 namespace PsyForge.GUI {
-
     [AddComponentMenu("PsyForge/Internal/TextDisplayer")]
     public class TextDisplayer : SingletonEventMonoBehaviour<TextDisplayer> {
-        protected override void AwakeOverride() {
-            gameObject.SetActive(false);
-        }
-
         /// <summary>
         /// Subscribe to this event to be notified of changes in the displayed text.
         /// 
         /// Single string argument is the new text which is being displayed.
         /// </summary>
         public delegate void TextDisplayed(string text);
-        public static TextDisplayed OnText;
 
         /// <summary>
         /// These text elements will all be updated when this monobehaviors public methods are used.
         /// </summary>
         public TextMeshProUGUI textElement;
         public TextMeshProUGUI titleElement;
+        public TextMeshProUGUI footerElement;
+
+        private RectTransform titleRect;
+        private RectTransform textRect;
+        private RectTransform footerRect;
 
         private Color[] originalColors;
+
+        protected override void AwakeOverride() {
+            titleRect = titleElement.GetComponentInParent<RectTransform>();
+            textRect = textElement.GetComponentInParent<RectTransform>();
+            footerRect = footerElement.GetComponentInParent<RectTransform>();
+            gameObject.SetActive(false);
+        }
 
         protected void Start() {
             originalColors = new Color[2];
@@ -97,130 +103,127 @@ namespace PsyForge.GUI {
             eventReporter.LogTS("restore original text color", new());
         }
 
-
-        /// <summary>
-        /// First argument is a description of the text to be displayed.  This is logged if the wordEventReporter field is populated in the editor.
-        /// 
-        /// Second argument is the text to be displayed.  All elements in the textElements field will be updated.  This is logged in the "data" field under "displayed text" if the wordEventReporter field is populated in the editor.
-        /// </summary>
-        /// <param name="description">Description.</param>
-        /// <param name="text">Text.</param>
-        public void DisplayText(string description, LangString text, float textFontSize = 0) {
-            Do(DisplayTextHelper, description.ToNativeText(), text.ToNativeText(), textFontSize);
-        }
-        public void DisplayTextTS(string description, LangString text, float textFontSize = 0) {
-            DoTS(DisplayTextHelper, description.ToNativeText(), text.ToNativeText(), textFontSize);
-        }
-        protected void DisplayTextHelper(NativeText description, NativeText text, float textFontSize) {
-            var displayedText = text.ToString();
-            if (OnText != null)
-                OnText(displayedText);
-
-            if (textElement == null) {
-                return;
-            }
-
-            if (textFontSize > 0) {
-                textElement.enableAutoSizing = false;
-                textElement.fontSize = textFontSize;
-            }
-
-            textElement.text = displayedText;
-            Dictionary<string, object> dataDict = new() {
-                { "displayed text", displayedText },
-            };
-            gameObject.SetActive(true);
-            eventReporter.LogTS(description.ToString(), dataDict);
-
-            description.Dispose();
-            text.Dispose();
-        }
-
-        public void DisplayTitle(string description, LangString title) {
-            Do(DisplayTitleHelper, description.ToNativeText(), title.ToNativeText());
-        }
-        public void DisplayTitleTS(string description, LangString title) {
-            DoTS(DisplayTitleHelper, description.ToNativeText(), title.ToNativeText());
-        }
-        protected void DisplayTitleHelper(NativeText description, NativeText title) {
-            var displayedTitle = title.ToString();
-            if (OnText != null)
-                OnText(displayedTitle);
-
-            if (titleElement == null) {
-                return;
-            }
-
-            titleElement.text = displayedTitle;
-            Dictionary<string, object> dataDict = new() {
-                { "displayed title", displayedTitle },
-            };
-            gameObject.SetActive(true);
-            eventReporter.LogTS(description.ToString(), dataDict);
-
-            description.Dispose();
-            title.Dispose();
-        }
-
-        public void Display(string description, LangString title, LangString text, float textFontSize = 0) {
-            Do(DisplayHelper, description.ToNativeText(), title.ToNativeText(), text.ToNativeText(), textFontSize);
-        }
-        public void DisplayTS(string description, LangString title, LangString text, float textFontSize = 0) {
-            DoTS(DisplayHelper, description.ToNativeText(), title.ToNativeText(), text.ToNativeText(), textFontSize);
-        }
-        protected void DisplayHelper(NativeText description, NativeText title, NativeText text, float textFontSize) {
-            var displayedTitle = title.ToString();
-            var displayedText = text.ToString();
-            if (OnText != null) {
-                OnText(title.ToString());
-                OnText(text.ToString());
-            }
+        // public void Display(string description, LangString title, LangString text, float textFontSize = 0) {
+        //     Do(DisplayHelper, description.ToNativeText(), title.ToNativeText(), text.ToNativeText(), textFontSize);
+        // }
+        // protected void DisplayHelper(NativeText description, NativeText title, NativeText text, float textFontSize) {
+        //     var displayedTitle = title.ToString();
+        //     var displayedText = text.ToString();
                 
-            if (titleElement == null || textElement == null) {
-                return;
-            }
+        //     if (titleElement == null || textElement == null) {
+        //         return;
+        //     }
 
-            if (textFontSize > 0) {
-                textElement.enableAutoSizing = false;
-                textElement.fontSize = textFontSize;
-            }
+        //     if (textFontSize > 0) {
+        //         textElement.enableAutoSizing = false;
+        //         textElement.fontSize = textFontSize;
+        //     }
 
-            titleElement.text = displayedTitle;
-            textElement.text = displayedText;
-            Dictionary<string, object> dataDict = new() {
-                { "displayed title", displayedTitle },
-                { "displayed text", displayedText },
-            };
-            gameObject.SetActive(true);
-            eventReporter.LogTS(description.ToString(), dataDict);
+        //     titleElement.text = displayedTitle;
+        //     textElement.text = displayedText;
+        //     Dictionary<string, object> dataDict = new() {
+        //         { "displayed title", displayedTitle },
+        //         { "displayed text", displayedText },
+        //     };
+        //     gameObject.SetActive(true);
+        //     eventReporter.LogTS(description.ToString(), dataDict);
 
-            description.Dispose();
-            title.Dispose();
-            text.Dispose();
-        }
+        //     description.Dispose();
+        //     title.Dispose();
+        //     text.Dispose();
+        // }
 
-        public async Task DisplayForTask(string description, LangString title, LangString text, float textFontSize, CancellationToken ct, Func<CancellationToken, Task> func) {
+        public async Task DisplayForTask(string description, LangString title, LangString text, LangString footer, float textFontSize, CancellationToken ct, Func<CancellationToken, Task> func) {
             // Remember the current state
             var activeOld = IsActive();
             var titleOld = titleElement.text;
             var textOld = textElement.text;
+            var footerOld = footerElement.text;
             var textAutoSizingOld = textElement.enableAutoSizing;
 
             // Display the new text and wait for the task to complete
-            Display(description, title, text, textFontSize);
+            Display(description, title, text, null, textFontSize);
             await Awaitable.NextFrameAsync();
             await func(ct);
 
             // Put the old state back
             titleElement.text = titleOld;
             textElement.text = textOld;
+            footerElement.text = footerOld;
             textElement.enableAutoSizing = textAutoSizingOld;
             if (!activeOld) { Hide(); }
         }
-        public async Task DisplayForTask(string description, LangString title, LangString text, CancellationToken ct, Func<CancellationToken, Task> func) {
-            await DisplayForTask(description, title, text, 0, ct, func);
+        public async Task DisplayForTask(string description, LangString title, LangString text, LangString footer, CancellationToken ct, Func<CancellationToken, Task> func) {
+            await DisplayForTask(description, title, text, footer, 0, ct, func);
         }
 
+
+        public void Display(string description, LangString title = null, LangString text = null, LangString footer = null, float textFontSize = 0) {
+            DisplayItems textDisplayerItems = new(title, text, footer);
+            Do(DisplayHelper, description.ToNativeText(), textDisplayerItems, textFontSize);
+        }
+        public void DisplayTS(string description, LangString title = null, LangString text = null, LangString footer = null, float textFontSize = 0) {
+            DisplayItems textDisplayerItems = new(title, text, footer);
+            DoTS(DisplayHelper, description.ToNativeText(), textDisplayerItems, textFontSize);
+        }
+       protected void DisplayHelper(NativeText description, DisplayItems items, float textFontSize) {
+            Dictionary<string, object> dataDict = new();
+
+            // Setup text
+            if (items.text.HasValue) {
+                var text = items.text.Value.ToString();
+                dataDict.Add("displayed text", text);
+                textElement.text = text;
+
+                textRect.anchorMax = new Vector2(textRect.anchorMax.x, 0.9f);
+                textRect.anchorMin = new Vector2(textRect.anchorMin.x, 0.1f);
+            } else {
+                textElement.text = "";
+            }
+
+            // Setup title (and adjust text box if needed)
+            if (items.title.HasValue) {
+                var title = items.title.Value.ToString();
+                dataDict.Add("displayed title", title);
+                titleElement.text = title;
+
+                titleRect.anchorMax = new Vector2(titleRect.anchorMax.x, 1f);
+                titleRect.anchorMin = new Vector2(titleRect.anchorMin.x, 0.9f);
+
+                textRect.anchorMax = new Vector2(textRect.anchorMax.x, 0.8f);
+            } else {
+                titleElement.text = "";
+            }
+
+            // Setup footer (and adjust text box if needed)
+            if (items.footer.HasValue) {
+                var footer = items.footer.Value.ToString();
+                dataDict.Add("displayed footer", footer);
+                footerElement.text = footer;
+
+                footerRect.anchorMax = new Vector2(footerRect.anchorMax.x, 0.1f);
+                footerRect.anchorMin = new Vector2(footerRect.anchorMin.x, 0f);
+
+                textRect.anchorMin = new Vector2(textRect.anchorMin.x, 0.2f);
+            } else {
+                footerElement.text = "";
+            }
+
+            // Set the font size
+            if (textFontSize > 0) {
+                textElement.enableAutoSizing = false;
+                textElement.fontSize = textFontSize;
+            } else {
+                textElement.enableAutoSizing = true;
+            }
+
+            // Show the text and log the event
+            gameObject.SetActive(true);
+            eventReporter.LogTS(description.ToString(), dataDict);
+
+            // Cleanup
+            items.Dispose();
+        }
 
         /// <summary>
         /// Clears the text of all textElements.  This is logged if the wordEventReporter field is populated in the editor.
@@ -257,6 +260,7 @@ namespace PsyForge.GUI {
         protected void ClearOnlyHelper() {
             titleElement.text = "";
             textElement.text = "";
+            footerElement.text = "";
             textElement.enableAutoSizing = true;
             eventReporter.LogTS("title display cleared", new());
         }
@@ -273,37 +277,15 @@ namespace PsyForge.GUI {
         }
 
         /// <summary>
-        /// Changes the color of all textElements.  This is logged if the wordEventReporter field is populated in the editor.
-        /// </summary>
-        /// <param name="newColor">New color.</param>
-        public void ChangeColor(Color newColor) {
-            Do(ChangeColorHelper, newColor);
-        }
-        public void ChangeColorTS(Color newColor) {
-            DoTS(ChangeColorHelper, newColor);
-        }
-        protected void ChangeColorHelper(Color newColor) {
-            textElement.color = newColor;
-            Dictionary<string, object> dataDict = new() {
-                { "new color", newColor.ToString() }
-            };
-            eventReporter.LogTS("text color changed", dataDict);
-        }
-
-        /// <summary>
         /// Returns the current text being displayed on the first textElement.  Throws an error if there are no textElements.
         /// </summary>
         public string CurrentText() {
             var text = DoGet(CurrentTextHelper);
-            var ret = text.ToString();
-            text.Dispose();
-            return ret;
+            return text.ToStringAndDispose();
         }
         public async Task<string> CurrentTextTS() {
             var text = await DoGetTS(CurrentTextHelper);
-            var ret = text.ToString();
-            text.Dispose();
-            return ret;
+            return text.ToStringAndDispose();
         }
         protected NativeText CurrentTextHelper() {
             if (textElement == null)
@@ -337,6 +319,27 @@ namespace PsyForge.GUI {
             if (!activeOld) { Hide(); }
             
             return size;
+        }
+    
+        protected struct DisplayItems : IDisposable {
+            public readonly Option<NativeText> title;
+            public readonly Option<NativeText> text;
+            public readonly Option<NativeText> footer;
+
+            public DisplayItems(LangString title = null, LangString text = null, LangString footer = null) {
+                if (title == null && text == null && footer == null) {
+                    throw new ArgumentException("At least one of title, text, or footer must be non-null.");
+                }
+                this.title = new(title?.ToNativeText());
+                this.text = new(text?.ToNativeText());
+                this.footer = new(footer?.ToNativeText());
+            }
+
+            public void Dispose() {
+                title.Dispose();
+                text.Dispose();
+                footer.Dispose();
+            }
         }
     }
 
