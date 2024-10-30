@@ -105,7 +105,7 @@ namespace PsyForge.DataManagement {
             this.type = type.ToNativeText();
             this.time = time;
             this.id = id;
-            this.data = data.ToJSON().ToNativeText();
+            this.data = (data ?? new()).ToJSON().ToNativeText();
         }
         
         /// <summary>
