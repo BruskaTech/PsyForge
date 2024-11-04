@@ -29,7 +29,11 @@ namespace PsyForge.ExternalDevices {
         }
 
         public override async Task ConnectTS() {
-            await ConnectTS(Config.hostServerIP, Config.hostServerPort);
+            try {
+                await ConnectTS(Config.hostServerIP, Config.hostServerPort);
+            } catch (Exception e) {
+                throw new InvalidOperationException($"Could not connect to Elemem. \nDid you load the config and hit \"Start Experiment\"?", e);
+            }
         }
 
         public override async Task ConfigureTS() {

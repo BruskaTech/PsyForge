@@ -21,6 +21,7 @@ using Newtonsoft.Json;
 using TMPro;
 
 using PsyForge.DataManagement;
+using PsyForge.Utilities;
 
 namespace PsyForge.Extensions {
     public static class IEnumerableExtensions {
@@ -126,6 +127,25 @@ namespace PsyForge.Extensions {
                 return sequence.Aggregate(seed, (current, item) =>
                     (current*modifier) + item.GetHashCode());
             }            
+        }
+
+        /// <summary>
+        /// Calculates the percentile of this list.
+        /// </summary>
+        /// <param name="sequence"></param>
+        /// <param name="percentile">Value must be between 0 and 1 (inclusive)</param>
+        /// <returns></returns>
+        public static double Percentile(this IList<double> sequence, double percentile) {
+            return Statistics.Percentile(sequence, percentile);
+        }
+        /// <summary>
+        /// Calculates the percentile of this list.
+        /// </summary>
+        /// <param name="sequence"></param>
+        /// <param name="percentile">Value must be between 0 and 1 (inclusive)</param>
+        /// <returns></returns>
+        public static double Percentile(this IList<int> sequence, double percentile) {
+            return Statistics.Percentile(sequence, percentile);
         }
     }
 

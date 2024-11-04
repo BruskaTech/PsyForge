@@ -35,24 +35,6 @@ namespace PsyForge.Experiment {
         }
     }
 
-    public readonly struct TextSlide {
-        public readonly string description;
-        public readonly LangString title;
-        public readonly LangString text;
-
-        public TextSlide(string description, LangString text) {
-            this.description = description;
-            this.title = LangStrings.Blank();
-            this.text = text;
-        }
-
-        public TextSlide(string description, LangString title, LangString text) {
-            this.description = description;
-            this.title = title;
-            this.text = text;
-        }
-    }
-
     public abstract class ExperimentBase<Self, SessionType, TrialType, Constants> : SingletonEventMonoBehaviour<Self>
         where Self : ExperimentBase<Self, SessionType, TrialType, Constants>
         where SessionType : ExperimentSession<TrialType>

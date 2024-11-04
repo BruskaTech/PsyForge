@@ -16,10 +16,10 @@ using System;
 /// This also means that it needs to be disposed of if the value is a disposable type.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public struct Option<T> : IDisposable where T : struct {
+public struct NativeNullable<T> : IDisposable where T : struct {
         readonly T value;
         readonly Bool isNull;
-        public Option(T? value) {
+        public NativeNullable(T? value) {
             if (value.HasValue) {
                 this.value = value.Value;
                 this.isNull = false;

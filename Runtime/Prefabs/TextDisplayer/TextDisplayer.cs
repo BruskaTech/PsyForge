@@ -322,9 +322,9 @@ namespace PsyForge.GUI {
         }
     
         protected struct DisplayItems : IDisposable {
-            public readonly Option<NativeText> title;
-            public readonly Option<NativeText> text;
-            public readonly Option<NativeText> footer;
+            public readonly NativeNullable<NativeText> title;
+            public readonly NativeNullable<NativeText> text;
+            public readonly NativeNullable<NativeText> footer;
 
             public DisplayItems(LangString title = null, LangString text = null, LangString footer = null) {
                 if (title == null && text == null && footer == null) {
