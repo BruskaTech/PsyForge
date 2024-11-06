@@ -109,13 +109,13 @@ namespace PsyForge.Experiment {
             await PostTrialStates();
             await manager.QuitTS();
         }
-
         protected void ExperimentSetup() {
             DoTS(ExperimentQuit);
             DoTS(ExperimentPause);
             manager.syncBox?.StartContinuousPulsing();
         }
 
+        // Logging Functions
         protected virtual void LogExperimentInfo() {
             // Log versions and experiment info
             eventReporter.LogTS("session start", new() {
@@ -136,7 +136,6 @@ namespace PsyForge.Experiment {
         protected virtual void LogConstants() {
             eventReporter.LogTS("experiment constants", CONSTANTS.ToDict());
         }
-
         protected virtual void LogConstantsAndConfigs() {
             var dict = CONSTANTS.ToDict();
             foreach (var kvp in Config.ToDict()) {
@@ -148,6 +147,7 @@ namespace PsyForge.Experiment {
             eventReporter.LogTS("constants and configs", Config.ToDict());
         }
 
+        // Pause and Quit Functions
         protected virtual async void ExperimentQuit() {
             if (Config.quitAnytime) {
                 bool firstLoop = true;
@@ -171,7 +171,6 @@ namespace PsyForge.Experiment {
                 await manager.QuitTS();
             }
         }
-
         protected virtual async void ExperimentPause() {
             if (Config.pauseAnytime) {
                 var pauseKeyCodes = new List<KeyCode>() { KeyCode.P };
@@ -319,7 +318,8 @@ namespace PsyForge.Experiment {
             eventReporter.LogTS(exp.name, dict);
             // manager.hostPC.SendExpMsgTS(exp, extraData);
         }
-    
+
+        // Keypress functions
         /// <summary>
         /// Display a message and wait for keypress
         /// </summary>

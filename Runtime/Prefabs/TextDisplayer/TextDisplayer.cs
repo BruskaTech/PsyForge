@@ -72,6 +72,7 @@ namespace PsyForge.GUI {
         }
         protected void HideHelper() {
             gameObject.SetActive(false);
+            eventReporter.LogTS("text displayer hide");
         }
 
         /// <summary>
@@ -219,7 +220,7 @@ namespace PsyForge.GUI {
 
             // Show the text and log the event
             gameObject.SetActive(true);
-            eventReporter.LogTS(description.ToString(), dataDict);
+            eventReporter.LogTS("text display show " + description.ToString(), dataDict);
 
             // Cleanup
             items.Dispose();
@@ -237,7 +238,7 @@ namespace PsyForge.GUI {
         protected void ClearTextHelper() {
             textElement.text = "";
             textElement.enableAutoSizing = true;
-            eventReporter.LogTS("text display cleared", new());
+            eventReporter.LogTS("text display cleared text", new());
         }
        
         public void ClearTitle() {
@@ -248,7 +249,7 @@ namespace PsyForge.GUI {
         }
         protected void ClearTitleHelper() {
             titleElement.text = "";
-            eventReporter.LogTS("title display cleared", new());
+            eventReporter.LogTS("title display cleared title", new());
         }
 
         public void ClearOnly() {
