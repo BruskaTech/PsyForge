@@ -190,7 +190,7 @@ namespace PsyForge {
         /// <br/>DO NOT USE THIS VARIABLE DIRECTLY. Use FileManager.DataPath() instead.
         /// <br/>If not set, defaults to the location of the application (or desktop for development).
         /// </summary>
-        public static string? dataPath { get { return GetOptionalClassSetting<string>("dataPath"); } }
+        internal static string? dataPath { get { return GetOptionalClassSetting<string>("dataPath"); } }
         /// <summary>
         /// The path to the wordpool file.
         /// </summary>

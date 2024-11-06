@@ -58,8 +58,11 @@ namespace PsyForge {
             }
         }
 
+        public static bool IsSystemConfigSetup() {
+            return systemConfig != null;
+        }
         public static bool IsExperimentConfigSetup() {
-            return experimentConfigName != null;
+            return experimentConfig != null;
         }
 
         // This has to be called before SetupExperimentConfig

@@ -25,7 +25,6 @@ using PsyForge.Threading;
 using PsyForge.Extensions;
 
 namespace PsyForge.GUI {
-    [AddComponentMenu("PsyForge/Internal/TextDisplayer")]
     public class TextDisplayer : SingletonEventMonoBehaviour<TextDisplayer> {
         /// <summary>
         /// Subscribe to this event to be notified of changes in the displayed text.
@@ -37,8 +36,8 @@ namespace PsyForge.GUI {
         /// <summary>
         /// These text elements will all be updated when this monobehaviors public methods are used.
         /// </summary>
-        public TextMeshProUGUI textElement;
         public TextMeshProUGUI titleElement;
+        public TextMeshProUGUI textElement;
         public TextMeshProUGUI footerElement;
 
         private RectTransform titleRect;

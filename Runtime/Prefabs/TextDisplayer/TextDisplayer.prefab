@@ -29,10 +29,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 224477386948825626}
-  - {fileID: 224376631077867538}
-  - {fileID: 5274664796472636274}
+  m_Children: []
   m_Father: {fileID: 224608295462917530}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -108,7 +105,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 224464771732933280}
+  m_Father: {fileID: 224608295462917530}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.06, y: 0.1}
   m_AnchorMax: {x: 0.94, y: 0.8}
@@ -247,6 +244,9 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 224464771732933280}
+  - {fileID: 224477386948825626}
+  - {fileID: 224376631077867538}
+  - {fileID: 5274664796472636274}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -271,8 +271,8 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 25
+  m_VertexColorAlwaysGammaSpace: 1
+  m_AdditionalShaderChannelsFlag: 1
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 20000
@@ -329,8 +329,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bf90851f61fb42fa874e4499ad85fc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  textElement: {fileID: 1244121413123967545}
   titleElement: {fileID: 6358908246264372440}
+  textElement: {fileID: 1244121413123967545}
   footerElement: {fileID: 1578457263330473641}
 --- !u!1 &1885532220077830
 GameObject:
@@ -362,7 +362,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 224464771732933280}
+  m_Father: {fileID: 224608295462917530}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.06, y: 0.9}
   m_AnchorMax: {x: 0.94, y: 1}
@@ -498,7 +498,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 224464771732933280}
+  m_Father: {fileID: 224608295462917530}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.06, y: 0}
   m_AnchorMax: {x: 0.94, y: 0.1}

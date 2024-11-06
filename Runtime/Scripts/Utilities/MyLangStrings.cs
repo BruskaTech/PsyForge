@@ -12,14 +12,17 @@ namespace PsyForge.Utilities {
         public static LangString NewLine() { return GenForCurrLang("\n"); }
         public static LangString DoubleNewLine() { return GenForCurrLang("\n\n"); }
 
-        public static LangString Error() { return new( new() {
+        public static LangString ErrorTitle() { return new( new() {
             { Language.English, "Error" },
         }); }
-        public static LangString ErrorMsg(string msg) { return new( new() {
-            { Language.English, msg + "\n\nPress [Q] to quit" },
+        public static LangString ErrorFooter() { return new( new() {
+            { Language.English, "Press [Q] to quit" },
         }); }
-        public static LangString Warning() { return new( new() {
+        public static LangString WarningTitle() { return new( new() {
             { Language.English, "Warning" },
+        }); }
+        public static LangString WarningFooter() { return new( new() {
+            { Language.English, "Press [Enter] to continue or press [Q] to quit" },
         }); }
         public static LangString ShowInstructionVideo() { return new( new() {
             { Language.English, "Press any key to show instruction video" },

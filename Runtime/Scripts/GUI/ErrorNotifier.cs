@@ -12,6 +12,7 @@ using System;
 using System.Threading.Tasks;
 using Unity.Collections;
 using UnityEngine;
+using TMPro;
 
 using PsyForge.DataManagement;
 using PsyForge.Extensions;
@@ -19,10 +20,16 @@ using PsyForge.GUI;
 using PsyForge.Threading;
 using PsyForge.Utilities;
 
+
 namespace PsyForge {
 
+    [DefaultExecutionOrder(-997)]
     public class ErrorNotifier : SingletonEventMonoBehaviour<ErrorNotifier> {
-        bool errorSet = false;
+        public TextMeshProUGUI titleElement;
+        public TextMeshProUGUI textElement;
+        public TextMeshProUGUI footerElement;
+
+        private bool errorSet = false;
 
         protected override void AwakeOverride() {
             Application.logMessageReceivedThreaded += (string logString, string stackTrace, LogType type) => {
@@ -31,22 +38,36 @@ namespace PsyForge {
                     if (exceptionIdx != -1) {
                         logString = logString.Substring(exceptionIdx + 11);
                     }
-                    DoTS(ErrorHelper, logString.ToNativeText(), stackTrace.ToNativeText());
+                    if (!Config.IsSystemConfigSetup()) {
+                        ErrorHelper(logString.ToNativeText(), stackTrace.ToNativeText());
+                    } else {
+                        DoTS(ErrorHelper, logString.ToNativeText(), stackTrace.ToNativeText());
+                    }
                 }
             };
+
+            titleElement.text = "";
+            textElement.text = "";
+            footerElement.text = "";
+            gameObject.SetActive(false);
         }
 
         protected async void ErrorHelper(NativeText message, NativeText stackTrace) {
             try {
+                gameObject.SetActive(true);
                 // Only show first error on screen, but report all errors
                 if (!errorSet) {
                     errorSet = true;
-                    TextDisplayer.Instance.Display("Error", LangStrings.Error().Color("red"), LangStrings.ErrorMsg(message.ToString()));
+                    titleElement.text = LangStrings.ErrorTitle().Color("red");
+                    textElement.text = message.ToString();
+                    footerElement.text = LangStrings.ErrorFooter();
                     Debug.LogError($"Error: {message}\n{stackTrace}");
                 }
-                eventReporter.LogTS("Error", new() {
-                    { "message", message.ToStringAndDispose() },
-                    { "stackTrace", stackTrace.ToStringAndDispose() } });
+                if (Config.IsSystemConfigSetup()) { // This stops an unrecoverable error when EventReport.Instance isn't awake yet
+                    eventReporter.LogTS("Error", new() {
+                        { "message", message.ToStringAndDispose() },
+                        { "stackTrace", stackTrace.ToStringAndDispose() } });
+                }
                 await Awaitable.NextFrameAsync(); // Without this lines, you can hit an infinite loop
                 manager.Pause(true);
                 await InputManager.Instance.WaitForKey(KeyCode.Q, true);
@@ -94,8 +115,11 @@ namespace PsyForge {
         }
         // TODO: JPB: (feature) Implement WarningHelper
         protected Task WarningHelper(NativeText message, NativeText stackTrace) {
+            gameObject.SetActive(true);
             manager.Pause(true);
-            TextDisplayer.Instance.Display("Warning", LangStrings.Warning().Color("yellow"), LangStrings.GenForCurrLang(message.ToString()));
+            titleElement.text = LangStrings.WarningTitle().Color("yellow");
+            textElement.text = message.ToString();
+            footerElement.text = LangStrings.WarningFooter();
             Debug.Log($"Warning: {message}\n{stackTrace}");
             eventReporter.LogTS("Warning", new() {
                 { "message", message.ToString() },
