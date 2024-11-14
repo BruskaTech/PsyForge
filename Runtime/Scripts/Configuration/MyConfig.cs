@@ -14,6 +14,10 @@ namespace PsyForge {
         // System Settings
 
         /// <summary>
+        /// This is the language of the experiment.
+        /// </summary>
+        public static string language { get { return GetSetting<string>("language"); } }
+        /// <summary>
         /// This will cause the experiment to log all network messages.
         /// </summary>
         public static bool logNetworkMessages { get { return GetSetting<bool>("logNetworkMessages"); } }

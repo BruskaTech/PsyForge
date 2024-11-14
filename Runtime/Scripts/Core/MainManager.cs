@@ -123,6 +123,7 @@ namespace PsyForge {
             var configs = SetupConfigs();
             GetExperiments(configs);
             FileManager.CreateDataFolder();
+            LangStrings.SetLanguage();
 
             // Setup Syncbox Interface
             if (!Config.isTest && Config.syncBoxOn) {
