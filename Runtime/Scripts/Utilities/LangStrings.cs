@@ -13,11 +13,9 @@ using Unity.Collections;
 
 using PsyForge.Extensions;
 using PsyForge.Threading;
-using System.Threading;
 
 namespace PsyForge.Utilities {
 
-    // TODO: JPB: (needed) Figure out partial enum for Language so it is extensible to the user.
     public enum Language {
         English,
         German,
@@ -35,6 +33,10 @@ namespace PsyForge.Utilities {
             Language = lang;
         }
 
+        /// <summary>
+        /// Set the current language for the LangStrings from the config
+        /// </summary>
+        /// <exception cref="ArgumentException"></exception>
         public static void SetLanguage() {
             try {
                 Language = (Language)Enum.Parse(typeof(Language), Config.language);
