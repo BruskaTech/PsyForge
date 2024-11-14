@@ -82,10 +82,6 @@ public static class TextSlides {
     /// <param name="textSlides"></param>
     /// <returns></returns>
     public static async Task Display(List<TextSlide> textSlides) {
-        // Resize based on all text item sizes
-        var strList = textSlides.Select(item => item.texts.Last()).ToList();
-        var fontSize = (int)TextDisplayer.Instance.FindMaxFittingFontSize(strList);
-
         // Create a list of all the text slides (including the incrementally displayed ones)
         List<TextSlide> slides = new();
         foreach (var slide in textSlides) {
@@ -93,6 +89,10 @@ public static class TextSlides {
                 slides.Add(new TextSlide(slide.description, slide.title, text));
             }
         }
+
+        // Resize based on all text item sizes
+        var strList = slides.Select(item => item.texts.Last()).ToList();
+        var fontSize = (int)TextDisplayer.Instance.FindMaxFittingFontSize(strList, true, true, true);
 
         // Display all instruction texts
         var keys = new List<KeyCode>() { KeyCode.LeftArrow, KeyCode.RightArrow };

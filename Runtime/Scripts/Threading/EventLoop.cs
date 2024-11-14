@@ -90,8 +90,12 @@ namespace PsyForge.Threading {
         //            Intro to Source Generators: https://devblogs.microsoft.com/dotnet/introducing-c-source-generators/
 
         protected async void DoTS(Action func) {
+            // This has to be done because DoTS doesn't propogate the exception stacktrace properly
+            // I think that is because it is an async void function
             if (cts.IsCancellationRequested) {
-                throw new OperationCanceledException("EventLoop has been stopped already.");
+                var e = new OperationCanceledException("EventLoop has been stopped already.");
+                e.SetStackTrace(new(true));
+                throw new Exception("DoTS", e);
             }
             
             await StartTask(func);
@@ -124,8 +128,12 @@ namespace PsyForge.Threading {
         }
 
         protected async void DoTS(Func<Task> func) {
+            // This has to be done because DoTS doesn't propogate the exception stacktrace properly
+            // I think that is because it is an async void function
             if (cts.IsCancellationRequested) {
-                throw new OperationCanceledException("EventLoop has been stopped already.");
+                var e = new OperationCanceledException("EventLoop has been stopped already.");
+                e.SetStackTrace(new(true));
+                throw new Exception("DoTS", e);
             }
             
             await StartTask(func);
@@ -444,9 +452,6 @@ namespace PsyForge.Threading {
         // DoWaitFor
 
         protected async Task DoWaitForTS(Action func) {
-            if (cts.IsCancellationRequested) {
-                throw new OperationCanceledException("EventLoop has been stopped already.");
-            }
             await StartTask(func);
         }
         protected async Task DoWaitForTS<T>(Action<T> func, T t)
@@ -477,9 +482,6 @@ namespace PsyForge.Threading {
         }
 
         protected async Task DoWaitForTS(Func<Task> func) {
-            if (cts.IsCancellationRequested) {
-                throw new OperationCanceledException("EventLoop has been stopped already.");
-            }
             await await StartTask(func);
         }
         protected async Task DoWaitForTS<T>(Func<T, Task> func, T t)
@@ -616,7 +618,7 @@ namespace PsyForge.Threading {
                 } catch (Exception e) {
                     var e2 = new Exception(e.Message, e);
                     if (stackTrace != null) { e2.SetStackTrace(stackTrace); }
-                    throw e2;
+                    throw new Exception("TaskErrorHandler", e2);
                 }
             };
         }
@@ -627,7 +629,7 @@ namespace PsyForge.Threading {
                 } catch (Exception e) {
                     var e2 = new Exception(e.Message, e);
                     if (stackTrace != null) { e2.SetStackTrace(stackTrace); }
-                    throw e2;
+                    throw new Exception("TaskErrorHandler", e2);
                 }
             };
         }
@@ -639,7 +641,7 @@ namespace PsyForge.Threading {
                 } catch (Exception e) {
                     var e2 = new Exception(e.Message, e);
                     if (stackTrace != null) { e2.SetStackTrace(stackTrace); }
-                    throw e2;
+                    throw new Exception("TaskErrorHandler", e2);
                 }
             };
         }
@@ -651,7 +653,7 @@ namespace PsyForge.Threading {
                 } catch (Exception e) {
                     var e2 = new Exception(e.Message, e);
                     if (stackTrace != null) { e2.SetStackTrace(stackTrace); }
-                    throw e2;
+                    throw new Exception("TaskErrorHandler", e2);
                 }
             };
         }

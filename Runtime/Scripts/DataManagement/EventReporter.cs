@@ -93,11 +93,12 @@ namespace PsyForge.DataManagement {
                         break;
                 }
                 defaultFilePath = filePath;
-                File.Create(defaultFilePath);
+                File.Create(defaultFilePath).Close();
             }
 
             public void LogTS(string type, DateTime time, Dictionary<string, object> data = null) {
                 NativeDataPoint dataPoint = new(type, -1, time, data);
+                if (cts.IsCancellationRequested) { return; } // Ignore log attempts after thread is ended
                 DoTS(LogHelper, dataPoint);
             }
 

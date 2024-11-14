@@ -219,7 +219,7 @@ namespace PsyForge.GUI {
 
             // Show the text and log the event
             gameObject.SetActive(true);
-            eventReporter.LogTS("text display show " + description.ToString(), dataDict);
+            eventReporter.LogTS("text display show " + description.ToStringAndDispose(), dataDict);
 
             // Cleanup
             items.Dispose();
@@ -293,29 +293,45 @@ namespace PsyForge.GUI {
             return textElement.text.ToNativeText();
         }
 
-        public float FindMaxFittingFontSize(List<LangString> strings) {
+        public float FindMaxFittingFontSize(List<LangString> strings, bool title, bool text, bool footer) {
             List<string> strs = strings.Select(str => str.ToString()).ToList();
-            return DoGet(FindMaxFittingFontSizeHelper, strs.ToNativeArray());
+            DisplayItems items = new(title ? LangStrings.Blank() : null, text ? LangStrings.Blank() : null, footer ? LangStrings.Blank() : null);
+            return DoGet(FindMaxFittingFontSizeHelper, strs.ToNativeArray(), items);
         }
-        public async Task<float> FindMaxFittingFontSizeTS(List<LangString> strings) {
+        public async Task<float> FindMaxFittingFontSizeTS(List<LangString> strings, bool title, bool text, bool footer) {
             List<string> strs = strings.Select(str => str.ToString()).ToList();
-            return await DoGetTS(FindMaxFittingFontSizeHelper, strs.ToNativeArray());
+            DisplayItems items = new(title ? LangStrings.Blank() : null, text ? LangStrings.Blank() : null, footer ? LangStrings.Blank() : null);
+            return await DoGetTS(FindMaxFittingFontSizeHelper, strs.ToNativeArray(), items);
         }
-        protected float FindMaxFittingFontSizeHelper(NativeArray<NativeText> strings) {
-            // Remember the current state
+        protected float FindMaxFittingFontSizeHelper(NativeArray<NativeText> strings, DisplayItems items) {
+            // Remember the current state (text, anchor min, and anchor max)
             var activeOld = IsActive();
             var titleOld = titleElement.text;
+            var titleAnchorMaxOld = titleRect.anchorMax;
+            var titleAnchorMinOld = titleRect.anchorMin;
             var textOld = textElement.text;
+            var textAnchorMaxOld = textRect.anchorMax;
+            var textAnchorMinOld = textRect.anchorMin;
             var textAutoSizingOld = textElement.enableAutoSizing;
+            var footerOld = footerElement.text;
+            var footerAnchorMaxOld = footerRect.anchorMax;
+            var footerAnchorMinOld = footerRect.anchorMin;
 
             // Find the max fitting font size
-            gameObject.SetActive(true);
+            DisplayHelper("FindMaxFittingFontSize".ToNativeText(), items, 0);
             var size = textElement.FindMaxFittingFontSize(strings.ToListAndDispose());
 
             // Put the old state back
             titleElement.text = titleOld;
+            titleRect.anchorMax = titleAnchorMaxOld;
+            titleRect.anchorMin = titleAnchorMinOld;
             textElement.text = textOld;
+            textRect.anchorMax = textAnchorMaxOld;
+            textRect.anchorMin = textAnchorMinOld;
             textElement.enableAutoSizing = textAutoSizingOld;
+            footerElement.text = footerOld;
+            footerRect.anchorMax = footerAnchorMaxOld;
+            footerRect.anchorMin = footerAnchorMinOld;
             if (!activeOld) { Hide(); }
             
             return size;

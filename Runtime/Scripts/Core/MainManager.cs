@@ -279,6 +279,8 @@ namespace PsyForge {
             await DoWaitForTS(QuitHelper);
         }
         protected async Task QuitHelper() {
+            // TODO: JPB: (needed) (bug) Fix QuitHelper quitting display
+            TextDisplayer.Instance.Display("quitting", text: LangStrings.GenForCurrLang("Quitting..."));
             manager.syncBox?.StopContinuousPulsing();
             manager.syncBox?.TearDown();
 
