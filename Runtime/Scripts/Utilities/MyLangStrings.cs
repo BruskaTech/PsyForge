@@ -106,5 +106,55 @@ namespace PsyForge.Utilities {
                 + "\n\nWenn es für Ihr Experiment nicht möglich ist, die Bildrate zu ändern, können Sie mit der alten Bildrate fortfahren. Bitte beachten Sie, dass dies bedeutet, dass die Frames des Spiels nicht unbedingt mit den Frames des Bildschirms übereinstimmen (was die Timing-Analysen beeinflusst)."
                 + $"\n\nDrücken Sie [Y], um mit der angegebenen Bildrate ({targetFps}) fortzufahren.\nDrücken Sie [N], um aufzuhören." },
         }); }
+
+        public static LangString StartupExperimentLauncher() { return new( new() {
+            { Language.English, "Experiment Launcher" },
+            { Language.German, "" },
+        }); }
+        public static LangString StartupExperiment() { return new( new() {
+            { Language.English, "Experiment:" },
+            { Language.German, "" },
+        }); }
+        public static LangString StartupSubject() { return new( new() {
+            { Language.English, "Subject:" },
+            { Language.German, "" },
+        }); }
+        public static LangString StartupSession() { return new( new() {
+            { Language.English, "Session:" },
+            { Language.German, "" },
+        }); }
+        public static LangString StartupParticipantCodePlaceholder() { return new( new() {
+            { Language.English, "Participant code" },
+            { Language.German, "" },
+        }); }
+        public static LangString StartupTestSyncboxButton() { return new( new() {
+            { Language.English, "Test Syncbox" },
+            { Language.German, "" },
+        }); }
+        public static LangString StartupLaunchButton(int sessionNum) { return new( new() {
+            { Language.English, $"Start Session {sessionNum}" },
+            { Language.German, "" },
+        }); }
+        public static LangString StartupGreyedLaunchButtonSelectExp() { return new( new() {
+            { Language.English, "Please select an experiment" },
+            { Language.German, "" },
+        }); }
+        public static LangString StartupGreyedLaunchButtonEnterParticipant() { return new( new() {
+            { Language.English, "Please enter participant code" },
+            { Language.German, "" },
+        }); }
+        public static LangString StartupGreyedLaunchButtonEnterValidParticipant() { return new( new() {
+            { Language.English, "Please enter a <i>valid</i> participant code..." },
+            { Language.German, "" },
+        }); }
+        public static LangString StartupGreyedLaunchButtonSyncboxTest() { return new( new() {
+            { Language.English, "Please wait, syncbox test running..." },
+            { Language.German, "" },
+        }); }
+        public static LangString StartupLoadingButton() { return new( new() {
+            { Language.English, "Loading..." },
+            { Language.German, "" },
+        }); }
+        
     }
 }

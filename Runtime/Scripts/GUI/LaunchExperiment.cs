@@ -30,8 +30,6 @@ namespace PsyForge.GUI {
     /// </summary>
     [AddComponentMenu("PsyForge/Internal/LaunchExperiment")]
     public class LaunchExperiment : EventMonoBehaviour {
-        protected override void AwakeOverride() { }
-        
         [SerializeField] protected ExperimentSelection experimentSelection;
         [SerializeField] protected InputField participantNameInput;
         [SerializeField] protected GameObject launchButton;
@@ -39,10 +37,24 @@ namespace PsyForge.GUI {
         [SerializeField] protected GameObject syncButton;
         [SerializeField] protected GameObject greyedLaunchButton;
         [SerializeField] protected GameObject loadingButton;
-        
+
+        [SerializeField] protected TextMeshProUGUI experimentLauncherTitleText;
+        [SerializeField] protected TextMeshProUGUI experimentTitleText;
+        [SerializeField] protected TextMeshProUGUI subjectTitleText;
+        [SerializeField] protected TextMeshProUGUI sessionTitleText;
         [SerializeField] protected TextMeshProUGUI greyedLaunchButtonText;
 
         protected readonly List<KeyCode> ynKeyCodes = new List<KeyCode> {KeyCode.Y, KeyCode.N};
+
+        protected override void AwakeOverride() {
+            experimentLauncherTitleText.text = LangStrings.StartupExperimentLauncher();
+            experimentTitleText.text = LangStrings.StartupExperiment();
+            subjectTitleText.text = LangStrings.StartupSubject();
+            sessionTitleText.text = LangStrings.StartupSession();
+            participantNameInput.placeholder.GetComponent<Text>().text = LangStrings.StartupParticipantCodePlaceholder();
+            syncButton.GetComponentInChildren<TextMeshProUGUI>().text = LangStrings.StartupTestSyncboxButton();
+            loadingButton.GetComponentInChildren<TextMeshProUGUI>().text = LangStrings.StartupLoadingButton();
+        }
 
         void Update() {
             string experimentName = experimentSelection.GetExperiment();
@@ -50,16 +62,16 @@ namespace PsyForge.GUI {
             bool syncboxTestRunning = manager.syncBox?.IsContinuousPulsing() ?? false;
 
             if (experimentName == null) {
-                    greyedLaunchButtonText.text = "Please select an experiment";
-                    launchButton.SetActive(false);
+                greyedLaunchButtonText.text = LangStrings.StartupGreyedLaunchButtonSelectExp();
+                launchButton.SetActive(false);
             } else if (participantNameInput.text.Equals("")) {
-                greyedLaunchButtonText.text = "Please enter participant code";
+                greyedLaunchButtonText.text = LangStrings.StartupGreyedLaunchButtonEnterParticipant();
                 launchButton.SetActive(false);
             } else if (!participantValid) {
-                greyedLaunchButtonText.text = "Please enter a <i>valid</i> participant code...";
+                greyedLaunchButtonText.text = LangStrings.StartupGreyedLaunchButtonEnterValidParticipant();
                 launchButton.SetActive(false);
             } else if (syncboxTestRunning) {
-                greyedLaunchButtonText.text = "Please wait, syncbox test running...";
+                greyedLaunchButtonText.text = LangStrings.StartupGreyedLaunchButtonSyncboxTest();
                 launchButton.SetActive(false);
             } else {
                 launchButton.SetActive(true);
@@ -68,7 +80,7 @@ namespace PsyForge.GUI {
 
             if (participantValid) {
                 int sessionNumber = ParticipantSelection.nextSessionNumber;
-                launchButton.GetComponentInChildren<TextMeshProUGUI>().text = "Start session " + sessionNumber.ToString();
+                launchButton.GetComponentInChildren<TextMeshProUGUI>().text = LangStrings.StartupLaunchButton(sessionNumber);
             }
         }
 

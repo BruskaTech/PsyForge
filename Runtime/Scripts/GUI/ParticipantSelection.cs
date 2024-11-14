@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+using PsyForge.Utilities;
+
 namespace PsyForge.GUI {
 
     /// <summary>
@@ -23,16 +25,15 @@ namespace PsyForge.GUI {
     public class ParticipantSelection : EventMonoBehaviour {
         protected override void AwakeOverride() { }
 
-        public UnityEngine.UI.InputField participantNameInput;
-        public UnityEngine.UI.Text sessionNumberText;
-        public UnityEngine.UI.Text listNumberText;
+        public InputField participantNameInput;
+        public Text sessionNumberText;
+        public Text listNumberText;
 
         public static int nextSessionNumber = 0;
         public static int nextListNumber = 0;
 
+        // updated by GUI event when experiment is selected from dropdown menu
         private bool experimentUpdated = false;
-        // ^ updtaed by GUI event when experiment is
-        // selected from dropdown menu
 
         void Update() {
             // update participants when new experiments are loaded
