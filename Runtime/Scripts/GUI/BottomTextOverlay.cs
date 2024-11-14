@@ -10,6 +10,11 @@ using System;
 using UnityEngine;
 
 public class BottomTextOverlay : TextOverlay<BottomTextOverlay> {
+    /// <summary>
+    /// Sets the size of the text box.
+    /// </summary>
+    /// <param name="size"></param>
+    /// <exception cref="Exception"></exception>
     protected override void ResizeBox(TextOverlayBoxSize size) {
         gameObject.GetComponent<RectTransform>().anchorMax =
               size == TextOverlayBoxSize.Small ? new Vector2(1f, 0.06f)

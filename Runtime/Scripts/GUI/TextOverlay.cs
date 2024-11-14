@@ -26,15 +26,26 @@ public abstract class TextOverlay<T> : SingletonEventMonoBehaviour<T> where T : 
         textBox.text = "";
     }
 
+    /// <summary>
+    /// Turn off the text box and clear the text.
+    /// </summary>
     public virtual void TurnOff() {
         ClearText();
         gameObject.SetActive(false);
     }
 
+    /// <summary>
+    /// Set the text size of the text box to fit the largest text in the list.
+    /// </summary>
+    /// <param name="texts"></param>
     public virtual void SetTextSize(List<LangString> texts) {
         SetTextSize(texts.ConvertAll(text => text.ToString()));
     }
 
+    /// <summary>
+    /// Set the text size of the text box to fit the largest text in the list.
+    /// </summary>
+    /// <param name="texts"></param>
     public virtual void SetTextSize(List<string> texts) {
         gameObject.SetActive(true);
         int fontSize = (int)textBox.FindMaxFittingFontSize(texts);
@@ -45,14 +56,28 @@ public abstract class TextOverlay<T> : SingletonEventMonoBehaviour<T> where T : 
         textBox.fontSize = fontSize;
     }
 
+    /// <summary>
+    /// Clear the text from the text box.
+    /// </summary>
     public void ClearText() {
         eventReporter.LogTS($"clear {GetType().Name}", textData);
         textBox.text = "";
         textData = null;
     }
 
+    /// <summary>
+    /// Sets the size of the text box.
+    /// It's abstract because the text box size may be different for different types of text overlays (ex: top vs bottom).
+    /// </summary>
+    /// <param name="size"></param>
     protected abstract void ResizeBox(TextOverlayBoxSize size);
     
+    /// <summary>
+    /// Display the text in the text box.
+    /// </summary>
+    /// <param name="text"></param>
+    /// <param name="data"></param>
+    /// <param name="size"></param>
     public void DisplayText(LangString text, Dictionary<string, object> data = null, TextOverlayBoxSize size = TextOverlayBoxSize.Normal) {
         ResizeBox(size);
 
@@ -65,6 +90,9 @@ public abstract class TextOverlay<T> : SingletonEventMonoBehaviour<T> where T : 
     }
 }
 
+/// <summary>
+/// The size of the text overlay box.
+/// </summary>
 public enum TextOverlayBoxSize {
         Small,
         Normal,
