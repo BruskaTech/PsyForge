@@ -82,7 +82,7 @@ namespace PsyForge.Experiment {
         /// Technically, anything done here can be done in InitialStates, but this is useful for organization.
         /// </summary>
         /// <returns></returns>
-        protected virtual Task SetupPracticeTrials() { return Task.CompletedTask;}
+        protected virtual Task SetupPracticeTrials() { return Task.CompletedTask; }
         /// <summary>
         /// These are the practice trials.
         /// </summary>
@@ -92,7 +92,7 @@ namespace PsyForge.Experiment {
         /// Things to set up and run before the experiment trials.
         /// </summary>
         /// <returns></returns>
-        protected virtual Task SetupTrials() { return Task.CompletedTask;}
+        protected virtual Task SetupTrials() { return Task.CompletedTask; }
         /// <summary>
         /// These are the experiment trials.
         /// </summary>
@@ -114,32 +114,37 @@ namespace PsyForge.Experiment {
             DoTS(RunHelper().ToEnumerator);
         }
         protected async Task RunHelper() {
+            // Checks
             if (normalSession == null) {
                 throw new Exception($"{GetType().Name} did not set a normal session.");
             }
 
+            // Initilize experiment
             await InitialStates();
 
+            // Run practice session
             session = practiceSession;
-            if (session != null) {
-                try {
-                    await SetupPracticeTrials();
-                    while (true) {
-                        await PracticeTrialStates();
-                        session.TrialNum++;
-                    }
-                } catch (EndSessionException) {} // do nothing
-            }
+            try {
+                await SetupPracticeTrials();
+                session = practiceSession; // Done again in case the session was created in SetupPracticeTrials
+                while (true) {
+                    await PracticeTrialStates();
+                    session.TrialNum++;
+                }
+            } catch (EndSessionException) {} // do nothing
 
+            // Run normal session
             session = normalSession;
             try {
                 await SetupTrials();
+                session = normalSession; // Done again in case the session was created in SetupTrials
                 while (true) {
                     await TrialStates();
                     session.TrialNum++;
                 }
             } catch (EndSessionException) {} // do nothing
 
+            // Final Ssates and quit
             await FinalStates();
             await manager.QuitTS();
         }

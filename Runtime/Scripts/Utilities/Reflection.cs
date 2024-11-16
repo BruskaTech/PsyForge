@@ -76,5 +76,16 @@ namespace PsyForge.Utilities {
 
             return dict;
         }
+    
+        /// <summary>
+        /// Returns whether a method has been overridden
+        /// Make sure to get it via someTypeInstance.GetType().GetMethod(someFunctionName) NOT typeof(SomeType).GetMethod(someFunctionName)
+        /// https://stackoverflow.com/a/16530993
+        /// </summary>
+        /// <param name="m"></param>
+        /// <returns></returns>
+        public static bool IsOverride(MethodInfo m) {
+            return m.GetBaseDefinition().DeclaringType != m.DeclaringType;
+        }
     }
 }

@@ -23,9 +23,9 @@ public class TestExperiment : ExperimentBase<TestExperiment, TestSession, TestTr
         Run();
     }
 
-    protected override Task PostTrialStates() { return Task.CompletedTask; }
+    protected override Task InitialStates() { return Task.CompletedTask; }
     protected override Task PracticeTrialStates() { return Task.CompletedTask; }
-    protected override Task PreTrialStates() { return Task.CompletedTask; }
+    protected override Task FinalStates() { return Task.CompletedTask; }
 
     protected async Task RepeatedGetKey() {
         var key = await inputManager.WaitForKey();
