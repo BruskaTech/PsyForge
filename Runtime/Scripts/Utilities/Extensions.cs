@@ -210,6 +210,19 @@ namespace PsyForge.Extensions {
         }
     }
 
+    public static class QueueExtensions {
+    public static IEnumerable<T> Dequeue<T>(this Queue<T> queue, int numItems) {
+        if (numItems <= 0) {
+            throw new ArgumentException($"The number of items to dequeue ({numItems}) must be positive");
+        } else if (numItems > queue.Count) {
+            throw new ArgumentException($"The number of items to dequeue ({numItems}) must be less than or equal to the number of items in the queue ({queue.Count})");
+        }
+        for (int i = 0; i < numItems && queue.Count > 0; i++) {
+            yield return queue.Dequeue();
+        }
+    }
+}
+
     public static class EnumeratorExtensions {
         /// <summary>
         /// Convert an IEnumerator to an IEnumerable

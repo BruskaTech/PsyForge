@@ -57,6 +57,10 @@ namespace PsyForge.Experiment {
             LogConstants();
             LogConstantsAndConfigs();
             ReportSessionNum();
+
+            DoTS(ExperimentQuit);
+            DoTS(ExperimentPause);
+            manager.syncBox?.StartContinuousPulsing();
         }
 
         protected void OnEnable() {
@@ -67,10 +71,40 @@ namespace PsyForge.Experiment {
             ExperimentActive.SetActive(false);
         }
 
-        protected abstract Task PreTrialStates();
+        /// <summary>
+        /// Things run at the very beginning of the experiment.
+        /// This is useful for setting up resources and doing initial things like microphone tests.
+        /// </summary>
+        /// <returns></returns>
+        protected abstract Task InitialStates();
+        /// <summary>
+        /// Things to set up and run before the practice trials.
+        /// Technically, anything done here can be done in InitialStates, but this is useful for organization.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual Task SetupPracticeTrials() { return Task.CompletedTask;}
+        /// <summary>
+        /// These are the practice trials.
+        /// </summary>
+        /// <returns></returns>
         protected abstract Task PracticeTrialStates();
+        /// <summary>
+        /// Things to set up and run before the experiment trials.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual Task SetupTrials() { return Task.CompletedTask;}
+        /// <summary>
+        /// These are the experiment trials.
+        /// </summary>
+        /// <returns></returns>
         protected abstract Task TrialStates();
-        protected abstract Task PostTrialStates();
+        /// <summary>
+        /// Things run at the very end of the experiment.
+        /// This is useful for things like post-experiment questionnaires.
+        /// </summary>
+        /// <returns></returns>
+        protected abstract Task FinalStates();
+
 
         protected void EndCurrentSession() {
             throw new EndSessionException();
@@ -80,39 +114,34 @@ namespace PsyForge.Experiment {
             DoTS(RunHelper().ToEnumerator);
         }
         protected async Task RunHelper() {
-            ExperimentSetup();
-            
-            await PreTrialStates();
-
-            if (practiceSession == null) {
-                throw new Exception("The Experiment did not set any practice sessions.");
-            } else if (normalSession == null) {
-                throw new Exception("The Experiment did not set any normal session.");
+            if (normalSession == null) {
+                throw new Exception($"{GetType().Name} did not set a normal session.");
             }
 
+            await InitialStates();
+
             session = practiceSession;
-            try {
-                while (true) {
-                    await PracticeTrialStates();
-                    session.TrialNum++;
-                }
-            } catch (EndSessionException) {} // do nothing
+            if (session != null) {
+                try {
+                    await SetupPracticeTrials();
+                    while (true) {
+                        await PracticeTrialStates();
+                        session.TrialNum++;
+                    }
+                } catch (EndSessionException) {} // do nothing
+            }
 
             session = normalSession;
             try {
+                await SetupTrials();
                 while (true) {
                     await TrialStates();
                     session.TrialNum++;
                 }
             } catch (EndSessionException) {} // do nothing
 
-            await PostTrialStates();
+            await FinalStates();
             await manager.QuitTS();
-        }
-        protected void ExperimentSetup() {
-            DoTS(ExperimentQuit);
-            DoTS(ExperimentPause);
-            manager.syncBox?.StartContinuousPulsing();
         }
 
         // Logging Functions
