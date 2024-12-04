@@ -132,10 +132,6 @@ namespace PsyForge.GUI {
             if (Config.elememOn) {
                 TextDisplayer.Instance.Display("Elemem connection display", text: LangStrings.ElememConnection());
                 manager.hostPC = new ElememInterface(sessionNumber);
-            } else if (Config.ramulatorOn) {
-                TextDisplayer.Instance.Display("Ramulator connection display", text: LangStrings.ElememConnection());
-                manager.ramulator = new RamulatorWrapper(manager);
-                yield return manager.ramulator.BeginNewSession();
             }
             yield return manager.hostPC?.ConnectTS().ToEnumerator();
             yield return manager.hostPC?.ConfigureTS().ToEnumerator();

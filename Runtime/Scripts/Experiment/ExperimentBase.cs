@@ -20,6 +20,7 @@ using PsyForge.Utilities;
 using PsyForge.ExternalDevices;
 using PsyForge.GUI;
 using PsyForge.Extensions;
+using PsyForge.DataManagement;
 
 namespace PsyForge.Experiment {
 
@@ -185,10 +186,10 @@ namespace PsyForge.Experiment {
         protected virtual async void ExperimentQuit() {
             if (Config.quitAnytime) {
                 bool firstLoop = true;
-                await RepeatUntilYes(async (CancellationToken ct) => {
+                await ExpHelpers.RepeatUntilYes(async (CancellationToken ct) => {
                     // Resume since they don't want to quit (or haven't tried yet)
                     if (!firstLoop) {
-                        SetExperimentStatus(HostPcStatusMsg.PAUSE(false));
+                        ExpHelpers.SetExperimentStatus(HostPcStatusMsg.PAUSE(false));
                         firstLoop = false;
                     }
                     manager.Pause(false);
@@ -197,7 +198,7 @@ namespace PsyForge.Experiment {
                     await inputManager.WaitForKey(new List<KeyCode>() { KeyCode.Q }, unpausable: true, ct: ct);
 
                     // Pause everything and ask if they want to quit
-                    SetExperimentStatus(HostPcStatusMsg.PAUSE(true));
+                    ExpHelpers.SetExperimentStatus(HostPcStatusMsg.PAUSE(true));
                     manager.Pause(true);
                 }, "experiment quit", LangStrings.ExperimentQuit(), new(), unpausable: true);
                 
@@ -209,11 +210,11 @@ namespace PsyForge.Experiment {
             if (Config.pauseAnytime) {
                 var pauseKeyCodes = new List<KeyCode>() { KeyCode.P };
                 bool firstLoop = true;
-                await RepeatForever(async (CancellationToken ct) => {
+                await ExpHelpers.RepeatForever(async (CancellationToken ct) => {
                     // Resume since they don't want to quit (or haven't tried yet)
                     manager.Pause(false);
                     if (!firstLoop) {
-                        SetExperimentStatus(HostPcStatusMsg.PAUSE(false));
+                        ExpHelpers.SetExperimentStatus(HostPcStatusMsg.PAUSE(false));
                         firstLoop = false;
                     }
 
@@ -222,82 +223,23 @@ namespace PsyForge.Experiment {
 
                     // Pause everything and ask if they want to quit
                     manager.Pause(true);
-                    SetExperimentStatus(HostPcStatusMsg.PAUSE(true));
+                    ExpHelpers.SetExperimentStatus(HostPcStatusMsg.PAUSE(true));
                 }, "experiment pause", LangStrings.ExperimentPaused(), pauseKeyCodes, new(), unpausable: true);
-            }
-        }
-
-        // Wrapper/Replacement Functions
-        protected bool IsNumericKeyCode(KeyCode keyCode) {
-            bool isAlphaNum = keyCode >= KeyCode.Alpha0 && keyCode <= KeyCode.Alpha9;
-            bool isKeypadNum = keyCode >= KeyCode.Keypad0 && keyCode <= KeyCode.Keypad9;
-            return isAlphaNum || isKeypadNum;
-        }
-        protected virtual void SendRamulatorStateMsg(HostPcStatusMsg state, bool stateToggle, Dictionary<string, object> extraData = null) {
-            // Do nothing by default
-        }
-        protected async Task RepeatUntilYes(Func<CancellationToken, Task> preFunc, string description, LangString displayText, CancellationToken ct, Func<bool, CancellationToken, Task> postFunc = null, bool unpausable = false) {
-            var repeat = true;
-            while (repeat && !ct.IsCancellationRequested) {
-                await preFunc(ct);
-                ct.ThrowIfCancellationRequested();
-
-                SendRamulatorStateMsg(HostPcStatusMsg.WAITING(), true);
-                await textDisplayer.DisplayForTask(description, LangStrings.Blank(), displayText, null, ct, async (CancellationToken ct) => {
-                    var keyCode = await inputManager.WaitForKey(new List<KeyCode>() { KeyCode.Y, KeyCode.N }, unpausable: unpausable, ct: ct);
-                    repeat = keyCode != KeyCode.Y;
-                });
-                SendRamulatorStateMsg(HostPcStatusMsg.WAITING(), false);
-                ct.ThrowIfCancellationRequested();
-
-                if (postFunc != null) { await postFunc(repeat, ct); }
-            }
-        }
-        protected async Task RepeatUntilNo(Func<CancellationToken, Task> preFunc, string description, LangString displayText, CancellationToken ct, Func<bool, CancellationToken, Task> postFunc = null, bool unpausable = false) {
-            var repeat = true;
-            while (repeat && !ct.IsCancellationRequested) {
-                await preFunc(ct);
-                ct.ThrowIfCancellationRequested();
-
-                SendRamulatorStateMsg(HostPcStatusMsg.WAITING(), true);
-                await textDisplayer.DisplayForTask(description, LangStrings.Blank(), displayText, null, ct, async (CancellationToken ct) => {
-                    var keyCode = await inputManager.WaitForKey(new List<KeyCode>() { KeyCode.Y, KeyCode.N }, unpausable: unpausable, ct: ct);
-                    repeat = keyCode != KeyCode.N;
-                });
-                SendRamulatorStateMsg(HostPcStatusMsg.WAITING(), false);
-                ct.ThrowIfCancellationRequested();
-
-                if (postFunc != null) { await postFunc(repeat, ct); }
-            }
-        }
-        protected async Task RepeatForever(Func<CancellationToken, Task> preFunc, string description, LangString displayText, List<KeyCode> keyCodes, CancellationToken ct, Func<CancellationToken, Task> postFunc = null, bool unpausable = false) {
-            while (!ct.IsCancellationRequested) {
-                await preFunc(ct);
-                ct.ThrowIfCancellationRequested();
-
-                SendRamulatorStateMsg(HostPcStatusMsg.WAITING(), true);
-                await textDisplayer.DisplayForTask(description, LangStrings.Blank(), displayText, null, ct, async (CancellationToken ct) => {
-                    var keyCode = await inputManager.WaitForKey(keyCodes, unpausable: unpausable, ct: ct);
-                });
-                SendRamulatorStateMsg(HostPcStatusMsg.WAITING(), false);
-                ct.ThrowIfCancellationRequested();
-
-                if (postFunc != null) { await postFunc(ct); }
             }
         }
 
         // Pre-Trial States
         protected virtual async Task Introduction() {
-            await RepeatUntilYes(async (CancellationToken ct) => {
-                await PressAnyKey("show instruction video", LangStrings.ShowInstructionVideo());
+            await ExpHelpers.RepeatUntilYes(async (CancellationToken ct) => {
+                await ExpHelpers.PressAnyKey("show instruction video", LangStrings.ShowInstructionVideo());
 
                 manager.videoControl.SetVideo(Config.introductionVideo, true);
                 await manager.videoControl.PlayVideo();
             }, "repeat introduction video", LangStrings.RepeatIntroductionVideo(), new());
         }
         protected virtual async Task MicrophoneTest() {
-            await RepeatUntilYes(async (CancellationToken ct) => {
-                await PressAnyKey("microphone test prompt", LangStrings.MicrophoneTestTitle(), LangStrings.MicrophoneTest());
+            await ExpHelpers.RepeatUntilYes(async (CancellationToken ct) => {
+                await ExpHelpers.PressAnyKey("microphone test prompt", LangStrings.MicrophoneTestTitle(), LangStrings.MicrophoneTest());
 
                 string wavPath = System.IO.Path.Combine(FileManager.SessionPath(), "microphone_test_"
                         + Clock.UtcNow.ToString("yyyy-MM-dd_HH_mm_ss") + ".wav");
@@ -319,26 +261,18 @@ namespace PsyForge.Experiment {
             }, "repeat mic test", LangStrings.RepeatMicTest(), new());
         }
         protected virtual async Task QuitPrompt() {
-            SendRamulatorStateMsg(HostPcStatusMsg.WAITING(), true);
-            SetExperimentStatus(HostPcStatusMsg.WAITING());
+            ExpHelpers.SetExperimentStatus(HostPcStatusMsg.WAITING());
 
             textDisplayer.Display("subject/session confirmation",
                 text: LangStrings.SubjectSessionConfirmation(Config.subject, Config.sessionNum.Value, Config.experimentName));
             var keyCode = await inputManager.WaitForKey(new List<KeyCode>() { KeyCode.Y, KeyCode.N });
-
-            SendRamulatorStateMsg(HostPcStatusMsg.WAITING(), false);
 
             if (keyCode == KeyCode.N) {
                 await manager.QuitTS();
             }
         }
         protected virtual async Task ConfirmStart() {
-            await PressAnyKey("confirm start", LangStrings.ConfirmStart());
-        }
-        protected void SetExperimentStatus(HostPcStatusMsg state, Dictionary<string, object> extraData = null) {
-            var dict = (extraData ?? new()).Concat(state.dict).ToDictionary(x=>x.Key,x=>x.Value);
-            eventReporter.LogTS(state.name, dict);
-            // manager.hostPC?.SendStatusMsgTS(state, extraData);
+            await ExpHelpers.PressAnyKey("confirm start", LangStrings.ConfirmStart());
         }
         protected void ReportSessionNum(Dictionary<string, object> extraData = null) {
             var exp = HostPcExpMsg.SESSION(Config.sessionNum.Value);
@@ -352,7 +286,9 @@ namespace PsyForge.Experiment {
             eventReporter.LogTS(exp.name, dict);
             // manager.hostPC.SendExpMsgTS(exp, extraData);
         }
+    }
 
+    public static class ExpHelpers {
         // Keypress functions
         /// <summary>
         /// Display a message and wait for keypress
@@ -361,16 +297,71 @@ namespace PsyForge.Experiment {
         /// <param name="displayText"></param>
         /// <param name="displayText"></param>
         /// <returns></returns>
-        protected async Task<KeyCode> PressAnyKey(string description, LangString displayText) {
+        public static async Task<KeyCode> PressAnyKey(string description, LangString displayText) {
             return await PressAnyKey(description, null, displayText);
         }
-        protected async Task<KeyCode> PressAnyKey(string description, LangString displayTitle, LangString displayText) {
+        public static async Task<KeyCode> PressAnyKey(string description, LangString displayTitle, LangString displayText) {
             SetExperimentStatus(HostPcStatusMsg.WAITING());
-            // TODO: JPB: (needed) Add Ramulator to match this
-            textDisplayer.Display($"{description} (press any key prompt)", displayTitle, displayText, LangStrings.AnyKeyToContinue());
+            TextDisplayer.Instance.Display($"{description} (press any key prompt)", displayTitle, displayText, LangStrings.AnyKeyToContinue());
             var keyCode = await InputManager.Instance.WaitForKey();
-            textDisplayer.Clear();
+            TextDisplayer.Instance.Clear();
             return keyCode;
+        }
+
+        public static void SetExperimentStatus(HostPcStatusMsg state, Dictionary<string, object> extraData = null) {
+            var dict = (extraData ?? new()).Concat(state.dict).ToDictionary(x=>x.Key,x=>x.Value);
+            EventReporter.Instance.LogTS(state.name, dict);
+            // manager.hostPC?.SendStatusMsgTS(state, extraData);
+        }
+
+        // Wrapper/Replacement Functions
+        public static bool IsNumericKeyCode(KeyCode keyCode) {
+            bool isAlphaNum = keyCode >= KeyCode.Alpha0 && keyCode <= KeyCode.Alpha9;
+            bool isKeypadNum = keyCode >= KeyCode.Keypad0 && keyCode <= KeyCode.Keypad9;
+            return isAlphaNum || isKeypadNum;
+        }
+        public static async Task RepeatUntilYes(Func<CancellationToken, Task> preFunc, string description, LangString displayText, CancellationToken ct, Func<bool, CancellationToken, Task> postFunc = null, bool unpausable = false) {
+            var repeat = true;
+            while (repeat && !ct.IsCancellationRequested) {
+                await preFunc(ct);
+                ct.ThrowIfCancellationRequested();
+
+                await TextDisplayer.Instance.DisplayForTask(description, LangStrings.Blank(), displayText, null, ct, async (CancellationToken ct) => {
+                    var keyCode = await InputManager.Instance.WaitForKey(new List<KeyCode>() { KeyCode.Y, KeyCode.N }, unpausable: unpausable, ct: ct);
+                    repeat = keyCode != KeyCode.Y;
+                });
+                ct.ThrowIfCancellationRequested();
+
+                if (postFunc != null) { await postFunc(repeat, ct); }
+            }
+        }
+        public static async Task RepeatUntilNo(Func<CancellationToken, Task> preFunc, string description, LangString displayText, CancellationToken ct, Func<bool, CancellationToken, Task> postFunc = null, bool unpausable = false) {
+            var repeat = true;
+            while (repeat && !ct.IsCancellationRequested) {
+                await preFunc(ct);
+                ct.ThrowIfCancellationRequested();
+
+                await TextDisplayer.Instance.DisplayForTask(description, LangStrings.Blank(), displayText, null, ct, async (CancellationToken ct) => {
+                    var keyCode = await InputManager.Instance.WaitForKey(new List<KeyCode>() { KeyCode.Y, KeyCode.N }, unpausable: unpausable, ct: ct);
+                    repeat = keyCode != KeyCode.N;
+                });
+                ct.ThrowIfCancellationRequested();
+
+                if (postFunc != null) { await postFunc(repeat, ct); }
+            }
+        }
+        public static async Task RepeatForever(Func<CancellationToken, Task> preFunc, string description, LangString displayText, List<KeyCode> keyCodes, CancellationToken ct, Func<CancellationToken, Task> postFunc = null, bool unpausable = false) {
+            while (!ct.IsCancellationRequested) {
+                await preFunc(ct);
+                ct.ThrowIfCancellationRequested();
+
+                await TextDisplayer.Instance.DisplayForTask(description, LangStrings.Blank(), displayText, null, ct, async (CancellationToken ct) => {
+                    var keyCode = await InputManager.Instance.WaitForKey(keyCodes, unpausable: unpausable, ct: ct);
+                });
+                ct.ThrowIfCancellationRequested();
+
+                if (postFunc != null) { await postFunc(ct); }
+            }
         }
     }
 }

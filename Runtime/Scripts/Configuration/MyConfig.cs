@@ -35,10 +35,6 @@ namespace PsyForge {
         /// </summary>
         public static int hostServerPort { get { return GetSetting<int>("hostServerPort"); } }
         /// <summary>
-        /// This will cause the experiment to use Ramulator.
-        /// </summary>
-        public static bool ramulatorOn { get { return GetSetting<bool>("ramulatorOn"); } }
-        /// <summary>
         /// This will cause the experiment to use the Elemem.
         /// </summary>
         public static bool elememOn { get { return GetSetting<bool>("elememOn"); } }

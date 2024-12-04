@@ -92,10 +92,6 @@ namespace PsyForge.Utilities {
             { Language.English, "Waiting for Elemem connection..." },
             { Language.German, "Warte auf Elemem-Verbindung..." },
         }); }
-        public static LangString RamulatorConnection() { return new( new() {
-            { Language.English, "Waiting for Ramulator connection..." },
-            { Language.German, "Warte auf Ramulator-Verbindung..." },
-        }); }
         public static LangString IncompatibleTargetFrameRate(int targetFps, uint screenFps) { return new( new() {
             { Language.English, $"Config variable targetFrameRate ({targetFps}) should be a factor of the screen refresh rate ({screenFps})."
                 + "\n\nIf you are using a new device or monitor, consider changing the targetFrameRate. Also consider what this means for your experiment."

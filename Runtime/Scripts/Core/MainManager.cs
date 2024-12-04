@@ -52,10 +52,8 @@ namespace PsyForge {
         // scripts
         //////////
         public HostPC hostPC;
-        public RamulatorWrapper ramulator;
         public VideoControl videoControl;
         public SoundRecorder recorder;
-        //public RamulatorInterface ramulator;
 
         private GameObject syncBoxObj;
         public SyncBox syncBox;
@@ -210,25 +208,10 @@ namespace PsyForge {
                 recorder = soundRecorder.GetComponent<SoundRecorder>();
                 Debug.Log("Initialized Sound Recorder");
             }
-
-            // // Syncbox
-            // GameObject syncBoxObj = GameObject.Find("Syncbox");
-            // if (soundRecorder != null) {
-            //     syncBox = syncBoxObj.GetComponent<ISyncBox>();
-            //     Debug.Log("Initialized Syncbox");
-            // }
-
-            // Ramulator Interface
-            //GameObject ramulatorObject = GameObject.Find("RamulatorInterface");
-            //if (ramulatorObject != null) {
-            //    ramulator = ramulatorObject.GetComponent<RamulatorInterface>();
-            //    Debug.Log("Found Ramulator");
-            //}
         }
 
         protected void LaunchLauncher() {
             // Reset external hardware state if exiting task
-            //syncBox.StopPulse();
             hostPC?.SendExitMsgTS();
 
             //mainEvents.Pause(true);
@@ -275,7 +258,6 @@ namespace PsyForge {
         }
 
         public async Task QuitTS() {
-            ramulator?.SendExitMsg();
             hostPC?.QuitTS();
             await DoWaitForTS(QuitHelper);
         }

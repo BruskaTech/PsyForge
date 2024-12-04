@@ -7,7 +7,6 @@
     "logNetworkMessages": true,
     "syncboxOn": false,
     "networkedSyncboxOn": false,
-    "ramulatorOn": false,
     "elememOn": false,
     "syncBoxTestLength": 5000,
     "networkedSyncboxPort":  8903,
