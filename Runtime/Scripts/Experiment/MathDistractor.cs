@@ -1,4 +1,5 @@
 //Copyright (c) 2024 Columbia University (James Bruska)
+//Copyright (c) 2024 Bruska Technologies LLC (James Bruska)
 
 //This file is part of CityBlock.
 //CityBlock is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -18,10 +19,16 @@ using PsyForge.GUI;
 using PsyForge.Utilities;
 
 namespace PsyForge.Experiment {
+
+    /// <summary>
+    /// A simple Math Distractor task that asks participants to solve addition problems.
+    /// Certain LangStrings will need to be defined in your LangStrings partial class.
+    /// </summary>
     public class MathDistractor {
         protected readonly MainManager manager = MainManager.Instance;
         protected readonly InputManager inputManager = InputManager.Instance;
         protected readonly TextDisplayer textDisplayer = TextDisplayer.Instance;
+        protected readonly EventReporter eventReporter = EventReporter.Instance;
 
         protected readonly int practiceDistractorDurationMs = 0;
         protected readonly int distractorDurationMs = 0;
@@ -112,7 +119,7 @@ namespace PsyForge.Experiment {
                     mathDistractorResponseTimesMs.Add(responseTimeMs);
                     if (setProblemTimings) {
                         mathDistractorProblemTimeMs = (int)mathDistractorResponseTimesMs.Percentile(0.9);
-                        EventReporter.Instance.LogTS("math distractor set problem time", new() {
+                        eventReporter.LogTS("math distractor set problem time", new() {
                             { "problemTime", mathDistractorProblemTimeMs },
                             { "method", "90th percentile" },
                             { "responseTimes", mathDistractorResponseTimesMs }
@@ -128,7 +135,7 @@ namespace PsyForge.Experiment {
                         { "answer", answer },
                         { "responseTime", responseTimeMs }
                     };
-                    EventReporter.Instance.LogTS(message, dict);
+                    eventReporter.LogTS(message, dict);
                     ExpHelpers.SetExperimentStatus(HostPcStatusMsg.MATH(correct, problem, answer, responseTimeMs));
 
                     // Show the answer for a bit
