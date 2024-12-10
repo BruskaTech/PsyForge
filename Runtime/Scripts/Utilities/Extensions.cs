@@ -147,6 +147,68 @@ namespace PsyForge.Extensions {
         public static double Percentile(this IList<int> sequence, double percentile) {
             return Statistics.Percentile(sequence, percentile);
         }
+    
+        /// <summary>
+        /// Transpose List of Lists
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="nestedList"></param>
+        /// <returns></returns>
+        public static List<List<T>> Transpose<T>(this List<List<T>> nestedList) {
+            // Check for issues
+            TransposeChecks(nestedList);
+
+            var resultStack = new List<List<T>>();
+            for (int col = 0; col < nestedList[0].Count; col++) {
+                var columnList = nestedList.Select(row => row[col]).ToList();
+                resultStack.Add(columnList);
+            }
+
+            return resultStack;
+        }
+        /// <summary>
+        /// Transpose List of Lists, but convert the top level to a Stack
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="nestedList"></param>
+        /// <returns></returns>
+        public static Stack<List<T>> TransposeToStack<T>(this List<List<T>> nestedList) {
+            // Check for issues
+            TransposeChecks(nestedList);
+
+            var resultStack = new Stack<List<T>>();
+            for (int col = 0; col < nestedList[0].Count; col++) {
+                var columnList = nestedList.Select(row => row[col]).ToList();
+                resultStack.Push(columnList);
+            }
+
+            return resultStack;
+        }
+        /// <summary>
+        /// Transpose List of Lists, but convert the top level to a Queue
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="nestedList"></param>
+        /// <returns></returns>
+        public static Queue<List<T>> TransposeToQueue<T>(this List<List<T>> nestedList) {
+            // Check for issues
+            TransposeChecks(nestedList);
+
+            var resultStack = new Queue<List<T>>();
+            for (int col = 0; col < nestedList[0].Count; col++) {
+                var columnList = nestedList.Select(row => row[col]).ToList();
+                resultStack.Enqueue(columnList);
+            }
+
+            return resultStack;
+        }
+        private static void TransposeChecks<T>(List<List<T>> nestedList) {
+            if (nestedList == null || nestedList.Count == 0) {
+                throw new ArgumentException("Input list cannot be null or empty");
+            } else if (!nestedList.All(row => row.Count == nestedList[0].Count)) {
+                throw new ArgumentException("All rows must have the same length");
+            }
+        }
     }
 
     public static class ArrayExtensions {

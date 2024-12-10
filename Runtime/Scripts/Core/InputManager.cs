@@ -99,6 +99,7 @@ namespace PsyForge {
                 await Awaitable.NextFrameAsync();
             }
         }
+        // TODO: JPB: (refactor) Make WaitForKey a static method
         public async Task<KeyCode> WaitForKey(List<KeyCode> keys, bool unpausable = false, CancellationToken ct = default) {
             return await WaitForKey(keys.ToArray(), unpausable, ct);
         }
