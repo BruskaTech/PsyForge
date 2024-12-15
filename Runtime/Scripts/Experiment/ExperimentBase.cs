@@ -115,11 +115,6 @@ namespace PsyForge.Experiment {
             DoTS(RunHelper().ToEnumerator);
         }
         protected async Task RunHelper() {
-            // Checks
-            if (normalSession == null) {
-                throw new Exception($"{GetType().Name} did not set a normal session.");
-            }
-
             // Initilize experiment
             await InitialStates();
 
@@ -128,6 +123,9 @@ namespace PsyForge.Experiment {
             try {
                 await SetupPracticeTrials();
                 session = practiceSession; // Done again in case the session was created in SetupPracticeTrials
+                if (session == null) {
+                    throw new Exception($"{GetType().Name} did not set a practice session.");
+                }
                 while (true) {
                     await PracticeTrialStates();
                     session.TrialNum++;
@@ -139,6 +137,9 @@ namespace PsyForge.Experiment {
             try {
                 await SetupTrials();
                 session = normalSession; // Done again in case the session was created in SetupTrials
+                if (session == null) {
+                    throw new Exception($"{GetType().Name} did not set a normal session.");
+                }
                 while (true) {
                     await TrialStates();
                     session.TrialNum++;
@@ -256,7 +257,7 @@ namespace PsyForge.Experiment {
 
                 var coloredTestPlay = LangStrings.MicrophoneTestPlaying().Color("green");
                 textDisplayer.Display("microphone test playing", text: coloredTestPlay);
-                manager.playback.Play(clip);
+                manager.playback.PlayOneShot(clip);
                 await manager.Delay(Config.micTestDurationMs);
             }, "repeat mic test", LangStrings.RepeatMicTest(), new());
         }

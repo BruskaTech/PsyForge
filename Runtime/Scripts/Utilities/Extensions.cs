@@ -440,17 +440,20 @@ namespace PsyForge.Extensions {
         }
     }
 
-    public static class AudioSourceExtentions {
+    public static class AudioClipExtensions {
         /// <summary>
-        /// Plays a provided audio clip.
+        /// Clone an AudioClip
+        /// Allows you to optionally provide a new name for the AudioClip
         /// </summary>
-        /// <param name="audioSource">The audio source</param>
-        /// <param name="audioClip">The audio clip to play</param>
-        /// <returns>The audio clip length</returns>
-        public static float Play(this AudioSource audioSource, AudioClip audioClip) {
-            audioSource.clip = audioClip;
-            audioSource.Play();
-            return audioClip.length;
+        /// <param name="audioClip"></param>
+        /// <param name="newName"></param>
+        /// <returns></returns>
+        public static AudioClip Clone(this AudioClip audioClip, string newName = null) {
+            AudioClip newAudioClip = AudioClip.Create(newName ?? audioClip.name, audioClip.samples, audioClip.channels, audioClip.frequency, false);
+            float[] copyData = new float[audioClip.samples * audioClip.channels];
+            audioClip.GetData(copyData, 0);
+            newAudioClip.SetData(copyData, 0);
+            return newAudioClip;
         }
     }
 

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using PsyForge.Extensions;
 
@@ -32,18 +33,21 @@ namespace PsyForge.Utilities {
         /// <param name="eventDurations"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        public static List<EventTime> ScheduleEventsRandomly(int totalDuration, List<int> eventDurations) {
+        public static List<EventTime> ScheduleEventsRandomly(int totalDuration, List<int> eventDurations, System.Random random = null) {
             if (eventDurations.Count == 0) {
                 throw new ArgumentException($"eventDurations must have at least one element");
+            } else if (totalDuration <= 0) {
+                throw new ArgumentException($"totalDuration ({totalDuration}) must be greater than 0");
             } else if (totalDuration < eventDurations.Sum()) {
                 throw new ArgumentException($"totalDuration ({totalDuration}) cannot fit all of the events in eventDurations ({eventDurations.Sum()})");
             }
+            var rnd = random ?? Random.Rnd;
 
-            var randomEventDurations = eventDurations.Shuffle();
+            var randomEventDurations = eventDurations.Shuffle(rnd);
             var numGaps = totalDuration - randomEventDurations.Sum();
             var fakeTimes = Enumerable.Repeat(0, numGaps).ToList();
             fakeTimes.AddRange(Enumerable.Repeat(1, randomEventDurations.Count));
-            fakeTimes.ShuffleInPlace();
+            fakeTimes.ShuffleInPlace(rnd);
 
             var realTimes = new List<(int, int)>();
             for (int i = 0; i < fakeTimes.Count; ++i) {
@@ -70,12 +74,17 @@ namespace PsyForge.Utilities {
         /// <param name="blockedTimes"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        public static List<EventTime> ScheduleEventsRandomly(int totalDuration, int eventDuration, int numEvents, List<EventTime> blockedTimes = null) {
+        public static List<EventTime> ScheduleEventsRandomly(int totalDuration, int eventDuration, int numEvents, List<EventTime> blockedTimes = null, System.Random random = null) {
+            var rnd = random ?? Random.Rnd;
             blockedTimes ??= new();
             var blockedTimesDurations = blockedTimes.Select(x => x.endTime - x.startTime).ToList();
 
             if (numEvents == 0) {
                 throw new ArgumentException($"numEvents ({numEvents}) must be greater than 0");
+            } else if (eventDuration <= 0) {
+                throw new ArgumentException($"eventDuration ({eventDuration}) must be greater than 0");
+            } else if (totalDuration <= 0) {
+                throw new ArgumentException($"totalDuration ({totalDuration}) must be greater than 0");
             } else if (totalDuration < eventDuration * numEvents) {
                 throw new ArgumentException($"totalDuration ({totalDuration}) cannot fit the numEvents ({numEvents}) "
                     + $"at their eventDuration ({eventDuration})");
@@ -144,7 +153,7 @@ namespace PsyForge.Utilities {
                 //   3) Expand that back out to where that should be in the original available positions.
                 var compressedAvailablePositions = availablePositions.Select(g => g.Item2 - g.Item1 + 1).ToList();
                 int totalCompressedAvailablePositions = compressedAvailablePositions.Sum();
-                int compressedPosition = Random.Rnd.Next(0, totalCompressedAvailablePositions);
+                int compressedPosition = rnd.Next(0, totalCompressedAvailablePositions);
 
                 int decompressedPosition = compressedPosition;
                 for (int i = 0; i < compressedAvailablePositions.Count; ++i) {

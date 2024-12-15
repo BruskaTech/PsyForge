@@ -38,7 +38,7 @@ namespace PsyForge.Utilities {
         /// </summary>
         public static int StableRndSeed { 
             get { 
-                return stableRndSeed.Value;
+                return stableRndSeed?.Value ?? throw new InvalidOperationException("StableRnd seed not set for this thread. Please assign a value to StableRndSeed first.");
             } 
             set { 
                 if (stableRndSeed != null) {
@@ -56,6 +56,20 @@ namespace PsyForge.Utilities {
         /// </summary>
         public static System.Random StableRnd { get {
             return stableRnd?.Value ?? throw new InvalidOperationException("StableRnd seed not set for this thread. Please assign a value to StableRndSeed first.");
+        } }
+
+        /// <summary>
+        /// Get a constant version of stable random number generator.
+        /// This returns a new random number generator seeded with the StableRndSeed.
+        /// It is useful for generating reproducible random numbers that may be impacted by event ordering
+        /// For example, all Awake functions (unless set in the Script Execution Order) will be called in a random order.
+        ///     If you use StableRnd, you may get different results depending on the order of Awake calls.
+        /// </summary>
+        public static System.Random ConstantRnd { get {
+            if (stableRndSeed == null) {
+                throw new InvalidOperationException("StableRnd seed not set for this thread. Please assign a value to StableRndSeed first.");
+            }
+            return new(StableRndSeed);
         } }
     }
 
