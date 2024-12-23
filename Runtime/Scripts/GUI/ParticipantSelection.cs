@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-using PsyForge.Utilities;
+using TMPro;
 
 namespace PsyForge.GUI {
 
@@ -21,33 +21,22 @@ namespace PsyForge.GUI {
     /// 
     /// It also allows users to edit the loaded information with Increase/Decrease Session/List number buttons.
     /// </summary>
-    [RequireComponent(typeof(Dropdown))]
+    [RequireComponent(typeof(TMP_Dropdown))]
     public class ParticipantSelection : EventMonoBehaviour {
         protected override void AwakeOverride() { }
 
-        public InputField participantNameInput;
-        public Text sessionNumberText;
-        public Text listNumberText;
+        public TMP_InputField participantNameInput;
+        public TextMeshProUGUI sessionNumberText;
+
 
         public static int nextSessionNumber = 0;
         public static int nextListNumber = 0;
-
-        // updated by GUI event when experiment is selected from dropdown menu
-        private bool experimentUpdated = false;
-
-        void Update() {
-            // update participants when new experiments are loaded
-            if (experimentUpdated && Config.experimentName != null) {
-                experimentUpdated = false;
-                FindParticipants();
-            }
-        }
 
         public void ExperimentUpdated() {
             Do(ExperimentUpdatedHelper);
         }
         protected void ExperimentUpdatedHelper() {
-            experimentUpdated = true;
+            FindParticipants();
         }
 
         
@@ -55,7 +44,7 @@ namespace PsyForge.GUI {
             Do(ParticipantSelectedHelper);
         }
         protected void ParticipantSelectedHelper() {
-            Dropdown dropdown = GetComponent<Dropdown>();
+            var dropdown = GetComponent<TMP_Dropdown>();
             if (dropdown.value <= 1) {
                 participantNameInput.text = "New Participant";
             } else {
@@ -70,7 +59,7 @@ namespace PsyForge.GUI {
         protected void DecreaseSessionNumberHelper() {
             if (nextSessionNumber > 0)
                 nextSessionNumber--;
-            LoadSession();
+            UpdateTexts();
         }
 
         public void IncreaseSessionNumber() {
@@ -78,11 +67,11 @@ namespace PsyForge.GUI {
         }
         protected void IncreaseSessionNumberHelper() {
             nextSessionNumber++;
-            LoadSession();
+            UpdateTexts();
         }
 
         protected void FindParticipants() {
-            Dropdown dropdown = GetComponent<Dropdown>();
+            var dropdown = GetComponent<TMP_Dropdown>();
 
             dropdown.ClearOptions();
             dropdown.AddOptions(new List<string>() { "Select participant", "New Participant" });
@@ -106,7 +95,7 @@ namespace PsyForge.GUI {
             UpdateTexts();
         }
         protected void LoadParticipant() {
-            Dropdown dropdown = GetComponent<Dropdown>();
+            var dropdown = GetComponent<TMP_Dropdown>();
             string selectedParticipant = dropdown.captionText.text;
 
             if (!Directory.Exists(FileManager.ParticipantPath(selectedParticipant)))
@@ -116,12 +105,6 @@ namespace PsyForge.GUI {
 
             nextSessionNumber = FileManager.CurrentSession(selectedParticipant);
 
-            UpdateTexts();
-        }
-        protected void LoadSession() {
-            Dropdown dropdown = GetComponent<Dropdown>();
-            string selectedParticipant = dropdown.captionText.text;
-            string sessionFilePath = FileManager.SessionPath(selectedParticipant, nextSessionNumber);
             UpdateTexts();
         }
         protected void UpdateTexts() {

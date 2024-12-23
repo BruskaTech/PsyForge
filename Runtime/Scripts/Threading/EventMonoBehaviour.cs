@@ -36,7 +36,7 @@ namespace PsyForge {
     public abstract class EventMonoBehaviour : MonoBehaviour {
         protected MainManager manager;
         protected EventReporter eventReporter;
-        protected int threadID;
+        protected int threadID = -1;
         protected bool awakeCompleted = false;
 
         protected abstract void AwakeOverride();
@@ -63,7 +63,7 @@ namespace PsyForge {
         /// Guarentees that a function is being called from the main unity thread
         /// </summary>
         protected void MonoBehaviourSafetyCheck() {
-            //Debug.Log($"{threadID} {Thread.CurrentThread.ManagedThreadId}");
+            // UnityEngine.Debug.Log($"Check {GetType().Name} {transform.name} {threadID} {Thread.CurrentThread.ManagedThreadId}");
             if (threadID != Thread.CurrentThread.ManagedThreadId) {
                 throw new InvalidOperationException(
                     "Cannot call this function from a non-unity thread.\n" +

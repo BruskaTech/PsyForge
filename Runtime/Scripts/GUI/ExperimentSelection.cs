@@ -8,6 +8,7 @@
 //You should have received a copy of the GNU General Public License along with PsyForge. If not, see <https://www.gnu.org/licenses/>. 
 
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,11 +19,12 @@ namespace PsyForge.GUI {
     /// 
     /// It only needs to call PsyForge.SetExperimentName().
     /// </summary>
-    [RequireComponent(typeof(Dropdown))]
+    [RequireComponent(typeof(TMP_Dropdown))]
     public class ExperimentSelection : EventMonoBehaviour {
-        Dropdown dropdown;
+        TMP_Dropdown dropdown;
+
         protected override void AwakeOverride() {
-            dropdown = GetComponent<Dropdown>();
+            dropdown = GetComponent<TMP_Dropdown>();
 
             List<string> experiments = new(Config.availableExperiments);
 
@@ -31,7 +33,7 @@ namespace PsyForge.GUI {
             SetExperiment();
         }
 
-        protected void SetExperiment() {
+        public void SetExperiment() {
             Do(SetExperimentHelper);
         }
         protected void SetExperimentHelper() {

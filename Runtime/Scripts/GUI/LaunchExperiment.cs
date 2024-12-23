@@ -31,7 +31,7 @@ namespace PsyForge.GUI {
     [AddComponentMenu("PsyForge/Internal/LaunchExperiment")]
     public class LaunchExperiment : EventMonoBehaviour {
         [SerializeField] protected ExperimentSelection experimentSelection;
-        [SerializeField] protected InputField participantNameInput;
+        [SerializeField] protected TMP_InputField participantNameInput;
         [SerializeField] protected GameObject launchButton;
 
         [SerializeField] protected GameObject syncButton;
@@ -51,7 +51,7 @@ namespace PsyForge.GUI {
             experimentTitleText.text = LangStrings.StartupExperiment();
             subjectTitleText.text = LangStrings.StartupSubject();
             sessionTitleText.text = LangStrings.StartupSession();
-            participantNameInput.placeholder.GetComponent<Text>().text = LangStrings.StartupParticipantCodePlaceholder();
+            participantNameInput.placeholder.GetComponent<TextMeshProUGUI>().text = LangStrings.StartupParticipantCodePlaceholder();
             syncButton.GetComponentInChildren<TextMeshProUGUI>().text = LangStrings.StartupTestSyncboxButton();
             loadingButton.GetComponentInChildren<TextMeshProUGUI>().text = LangStrings.StartupLoadingButton();
         }
