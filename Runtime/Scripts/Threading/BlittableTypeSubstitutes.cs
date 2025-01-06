@@ -67,6 +67,7 @@ namespace PsyForge.Threading {
 
     public static class NativeExtensions {
         public static NativeText ToNativeText(this string s) {
+            if (s == null) { throw new ArgumentException("The string to convert cannot be null."); }
             return new NativeText(s, Allocator.Persistent);
         }
         public static string ToStringAndDispose(this NativeText nativeText) {

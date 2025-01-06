@@ -128,12 +128,11 @@ namespace PsyForge.GUI {
         }
         protected void PauseVideoHelper(Bool pause) {
             if (videoPlayer.isActiveAndEnabled) {
+                eventReporter.LogTS("pause video", new() { {"paused", pause}, { "video", videoPath } });
                 if (pause) {
                     videoPlayer.Pause();
-                    eventReporter.LogTS("pause video", new() { {"paused", true}, { "video", videoPath } });
                 } else {
                     videoPlayer.Play();
-                    eventReporter.LogTS("pause video", new() { {"paused", false}, { "video", videoPath } });
                 }
             }
         }

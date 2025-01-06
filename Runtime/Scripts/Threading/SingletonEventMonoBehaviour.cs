@@ -34,7 +34,7 @@ namespace PsyForge {
                 throw new InvalidOperationException($"Cannot create multiple {typeof(Self).Name} Objects");
             }
             IsInstatiated = true;
-            DontDestroyOnLoad(this.gameObject);
+            DontDestroyOnLoad(this.gameObject.transform.root.gameObject);
 
             base.Awake();
         }
