@@ -104,7 +104,7 @@ namespace PsyForge.GUI {
         public void LaunchExp() {
             DoTS(LaunchExpHelper);
         }
-        protected IEnumerator LaunchExpHelper() {
+        protected async void LaunchExpHelper() {
             if (!Config.IsExperimentConfigSetup()) {
                 throw new Exception("No experiment configuration loaded");
             }
@@ -133,11 +133,13 @@ namespace PsyForge.GUI {
                 TextDisplayer.Instance.Display("Elemem connection display", text: LangStrings.ElememConnection());
                 manager.hostPC = new ElememInterface(sessionNumber);
             }
-            yield return manager.hostPC?.ConnectTS().ToEnumerator();
-            yield return manager.hostPC?.ConfigureTS().ToEnumerator();
+            if (manager.hostPC != null) {
+                await manager.hostPC.ConnectTS();
+                await manager.hostPC.ConfigureTS();
+            }
 
             // Set the game frame rate
-            yield return SetFrameRate().ToEnumerator();
+            await SetFrameRate();
 
             // Save Configs
             Config.SaveConfigs(FileManager.SessionPath());
