@@ -8,6 +8,7 @@
 //PsyForge is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 //You should have received a copy of the GNU General Public License along with PsyForge. If not, see <https://www.gnu.org/licenses/>. 
 
+using PsyForge.Extensions;
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -33,6 +34,27 @@ namespace PsyForge {
 
         public static string DataPath() {
             return Config.dataPath ?? Path.Combine(BasePath(), "data");
+        }
+
+        public static string ResourcePath() {
+            return Config.dataPath ?? Path.Combine(BasePath(), "resources");
+        }
+        /// <summary>
+        /// Returns the full path to a resource file
+        /// If the resource path starts with "resource/", it uses the remaining path
+        /// </summary>
+        /// <param name="resourcePath"></param>
+        /// <returns></returns>
+        /// <exception cref="MissingFieldException"></exception>
+        public static string ResourcePath(string resourcePath) {
+            if (resourcePath == null) {
+                throw new MissingFieldException("resource path is null");
+            } else if (resourcePath == "") {
+                throw new MissingFieldException("resource path is empty");
+            }
+
+            string cleanedResourcePath = resourcePath.TrimStartOnce("resource/");
+            return Path.Combine(ResourcePath(), cleanedResourcePath);
         }
 
         public static string ExperimentPath() {

@@ -273,17 +273,17 @@ namespace PsyForge.Extensions {
     }
 
     public static class QueueExtensions {
-    public static IEnumerable<T> Dequeue<T>(this Queue<T> queue, int numItems) {
-        if (numItems <= 0) {
-            throw new ArgumentException($"The number of items to dequeue ({numItems}) must be positive");
-        } else if (numItems > queue.Count) {
-            throw new ArgumentException($"The number of items to dequeue ({numItems}) must be less than or equal to the number of items in the queue ({queue.Count})");
-        }
-        for (int i = 0; i < numItems && queue.Count > 0; i++) {
-            yield return queue.Dequeue();
+        public static IEnumerable<T> Dequeue<T>(this Queue<T> queue, int numItems) {
+            if (numItems <= 0) {
+                throw new ArgumentException($"The number of items to dequeue ({numItems}) must be positive");
+            } else if (numItems > queue.Count) {
+                throw new ArgumentException($"The number of items to dequeue ({numItems}) must be less than or equal to the number of items in the queue ({queue.Count})");
+            }
+            for (int i = 0; i < numItems && queue.Count > 0; i++) {
+                yield return queue.Dequeue();
+            }
         }
     }
-}
 
     public static class EnumeratorExtensions {
         /// <summary>
@@ -555,5 +555,76 @@ namespace PsyForge.Extensions {
 
             return gameObject.AddComponent(type);
         } 
+    }
+
+    public static class StringExtensions {
+        /// <summary>
+        /// Trim the start of a string with a specific string for all occurrences
+        /// Based on: https://stackoverflow.com/a/4335913
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="trimString"></param>
+        /// <returns></returns>
+        public static string TrimStart(this string target, string trimString) {
+            if (string.IsNullOrEmpty(trimString)) return target;
+
+            string result = target;
+            while (result.StartsWith(trimString)) {
+                result = result.Substring(trimString.Length);
+            }
+
+            return result;
+        }
+        /// <summary>
+        /// Trim the end of a string with a specific string for all occurrences
+        /// Based on: https://stackoverflow.com/a/4335913
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="trimString"></param>
+        /// <returns></returns>
+        public static string TrimEnd(this string target, string trimString) {
+            if (string.IsNullOrEmpty(trimString)) return target;
+
+            string result = target;
+            while (result.EndsWith(trimString)) {
+                result = result.Substring(0, result.Length - trimString.Length);
+            }
+
+            return result;
+        }
+        /// <summary>
+        /// Trim the start of a string with a specific string for the first occurrence
+        /// Based on: https://stackoverflow.com/a/4335913
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="trimString"></param>
+        /// <returns></returns>
+        public static string TrimStartOnce(this string target, string trimString) {
+            if (string.IsNullOrEmpty(trimString)) return target;
+
+            string result = target;
+            if (result.StartsWith(trimString)) {
+                result = result.Substring(trimString.Length);
+            }
+
+            return result;
+        }
+        /// <summary>
+        /// Trim the end of a string with a specific string for the first occurrence
+        /// Based on: https://stackoverflow.com/a/4335913
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="trimString"></param>
+        /// <returns></returns>
+        public static string TrimEndOnce(this string target, string trimString) {
+            if (string.IsNullOrEmpty(trimString)) return target;
+
+            string result = target;
+            if (result.EndsWith(trimString)) {
+                result = result.Substring(0, result.Length - trimString.Length);
+            }
+
+            return result;
+        }
     }
 }
