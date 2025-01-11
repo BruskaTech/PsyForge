@@ -53,7 +53,7 @@ namespace PsyForge {
                 throw new MissingFieldException("resource path is empty");
             }
 
-            string cleanedResourcePath = resourcePath.TrimStartOnce("resource/");
+            string cleanedResourcePath = resourcePath.TrimStartOnce("resources/");
             return Path.Combine(ResourcePath(), cleanedResourcePath);
         }
 

@@ -79,8 +79,8 @@ namespace PsyForge.GUI {
                     videoPaths = paths;
                 }
             }
-            var videoPath = videoPaths[0].Replace("%20", " ");
-            SetVideo(videoPath, skippable);
+            var videoPath = Path.GetFullPath(videoPaths[0].Replace("%20", " "));
+            SetVideo(videoPath, skippable, true);
             return Task.CompletedTask;
         }
 
@@ -95,7 +95,7 @@ namespace PsyForge.GUI {
             if (absolutePath) {
                 this.videoPlayer.url = "file://" + this.videoPath;
             } else {
-                this.videoPlayer.url = "file://" + Path.Combine(FileManager.BasePath(), this.videoPath);
+                this.videoPlayer.url = "file://" + FileManager.ResourcePath(this.videoPath);
             }
             this.skippable = skippable;
             videoPath.Dispose();
