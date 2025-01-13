@@ -36,8 +36,12 @@ namespace PsyForge {
             return Config.dataPath ?? Path.Combine(BasePath(), "data");
         }
 
+        public static string ConfigPath() {
+            return Path.Combine(BasePath(), "configs");
+        }
+
         public static string ResourcePath() {
-            return Config.dataPath ?? Path.Combine(BasePath(), "resources");
+            return Path.Combine(BasePath(), "resources");
         }
         /// <summary>
         /// Returns the full path to a resource file
@@ -158,11 +162,6 @@ namespace PsyForge {
         }
         internal static void CreateDataFolder() {
             Directory.CreateDirectory(DataPath());
-        }
-
-        public static string ConfigPath() {
-            string root = BasePath();
-            return Path.Combine(root, "configs");
         }
 
         public static int CurrentSession(string participant) {
