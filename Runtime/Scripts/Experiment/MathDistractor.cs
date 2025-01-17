@@ -145,7 +145,7 @@ namespace PsyForge.Experiment {
 
                     // End distractor or setup next math problem
                     if ((Clock.UtcNow - startTime).TotalMilliseconds > trueDistractorDurationMs) {
-                        textDisplayer.ClearText();
+                        textDisplayer.Clear();
                         break;
                     } else {
                         nums = new int[] { PsyForge.Utilities.Random.Rnd.Next(1, 10),
