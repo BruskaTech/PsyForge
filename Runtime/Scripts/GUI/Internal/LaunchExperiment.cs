@@ -28,7 +28,6 @@ namespace PsyForge.GUI {
     /// 
     /// DoLaunchExperiment is responsible for calling EditableExperiment.ConfigureExperiment with the proper parameters.
     /// </summary>
-    [AddComponentMenu("PsyForge/Internal/LaunchExperiment")]
     public class LaunchExperiment : EventMonoBehaviour {
         [SerializeField] protected ExperimentSelection experimentSelection;
         [SerializeField] protected TMP_InputField participantNameInput;

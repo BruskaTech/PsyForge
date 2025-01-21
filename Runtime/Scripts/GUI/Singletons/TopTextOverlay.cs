@@ -9,18 +9,21 @@
 using System;
 using UnityEngine;
 
-public class BottomTextOverlay : TextOverlay<BottomTextOverlay> {
-    /// <summary>
-    /// Sets the size of the text box.
-    /// </summary>
-    /// <param name="size"></param>
-    /// <exception cref="Exception"></exception>
-    protected override void ResizeBox(TextOverlayBoxSize size) {
-        gameObject.GetComponent<RectTransform>().anchorMax =
-              size == TextOverlayBoxSize.Small ? new Vector2(1f, 0.06f)
-            : size == TextOverlayBoxSize.Normal ? new Vector2(1f, 0.11f)
-            : size == TextOverlayBoxSize.Large ? new Vector2(1f, 0.21f)
-            : throw new Exception($"Invalid TextOverlayBoxSize {Enum.GetName(typeof(TextOverlayBoxSize), size)}");
+namespace PsyForge.GUI {
+
+    public class TopTextOverlay : TextOverlay<TopTextOverlay> {
+        /// <summary>
+        /// Sets the size of the text box.
+        /// </summary>
+        /// <param name="size"></param>
+        /// <exception cref="Exception"></exception>
+        protected override void ResizeBox(TextOverlayBoxSize size) {
+            gameObject.GetComponent<RectTransform>().anchorMin =
+                size == TextOverlayBoxSize.Small ? new Vector2(0f, 0.94f)
+                : size == TextOverlayBoxSize.Normal ? new Vector2(0f, 0.89f)
+                : size == TextOverlayBoxSize.Large ? new Vector2(0f, 0.79f)
+                : throw new Exception($"Invalid TextOverlayBoxSize {Enum.GetName(typeof(TextOverlayBoxSize), size)}");
+        }
     }
 
 }
