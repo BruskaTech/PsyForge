@@ -39,7 +39,7 @@ namespace PsyForge.Utilities {
         /// <param name="textureFormat"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public static Texture2D LoadTextureDXT(byte[] ddsBytes, TextureFormat textureFormat) {
+        public static Texture2D LoadTextureDXT(byte[] ddsBytes, TextureFormat textureFormat, string name) {
             if (textureFormat != TextureFormat.DXT1 && textureFormat != TextureFormat.DXT5) {
                 throw new Exception("Invalid TextureFormat. Only DXT1 and DXT5 formats are supported by this method.");
             }
@@ -58,6 +58,7 @@ namespace PsyForge.Utilities {
 
             Texture2D texture = new Texture2D(width, height, textureFormat, false);
             texture.LoadRawTextureData(dxtBytes);
+            texture.name = name;
             texture.Apply();
 
             return texture;
