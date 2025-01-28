@@ -23,7 +23,7 @@ using System;
 namespace PsyForge.GUI {
 
     [RequireComponent(typeof(RectTransform))]
-    public class Questioneer : SingletonEventMonoBehaviour<Questioneer> {
+    public class Questionnaire : SingletonEventMonoBehaviour<Questionnaire> {
         [SerializeField] protected TextMeshProUGUI questionText;
         [SerializeField] protected TextMeshProUGUI leftLabelText;
         [SerializeField] protected TextMeshProUGUI rightLabelText;
@@ -50,7 +50,7 @@ namespace PsyForge.GUI {
             return optionText;
         }
 
-        public async Task RatingQuestioneer(List<RatingQuestion> questions) {
+        public async Task RatingQuestionnaire(List<RatingQuestion> questions) {
             gameObject.SetActive(true);
 
             var questionStrs = questions.Select(x => x.question.ToString()).ToList();
@@ -88,7 +88,7 @@ namespace PsyForge.GUI {
                     keyCode = await InputManager.Instance.WaitForKey(inputKeys);
 
                     // Update footer
-                    footerText.text = LangStrings.RatingQuestioneerFooter();
+                    footerText.text = LangStrings.RatingQuestionnaireFooter();
 
                     // Update option highlighting
                     if (keyCode >= KeyCode.Alpha1 && keyCode <= KeyCode.Alpha9) {

@@ -150,6 +150,7 @@ namespace PsyForge.Extensions {
     
         /// <summary>
         /// Transpose List of Lists
+        /// Ex: [[1,2,3],[4,5,6]] -> [[1,4],[2,5],[3,6]]
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="nestedList"></param>
@@ -158,16 +159,18 @@ namespace PsyForge.Extensions {
             // Check for issues
             TransposeChecks(nestedList);
 
-            var resultStack = new List<List<T>>();
+            var result = new List<List<T>>();
             for (int col = 0; col < nestedList[0].Count; col++) {
                 var columnList = nestedList.Select(row => row[col]).ToList();
-                resultStack.Add(columnList);
+                result.Add(columnList);
             }
 
-            return resultStack;
+            return result;
         }
+
         /// <summary>
         /// Transpose List of Lists, but convert the top level to a Stack
+        /// Ex: [[1,2,3],[4,5,6]] -> [[1,4],[2,5],[3,6]]
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="nestedList"></param>
@@ -176,16 +179,17 @@ namespace PsyForge.Extensions {
             // Check for issues
             TransposeChecks(nestedList);
 
-            var resultStack = new Stack<List<T>>();
+            var result = new Stack<List<T>>();
             for (int col = 0; col < nestedList[0].Count; col++) {
                 var columnList = nestedList.Select(row => row[col]).ToList();
-                resultStack.Push(columnList);
+                result.Push(columnList);
             }
 
-            return resultStack;
+            return result;
         }
         /// <summary>
         /// Transpose List of Lists, but convert the top level to a Queue
+        /// Ex: [[1,2,3],[4,5,6]] -> [[1,4],[2,5],[3,6]]
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="nestedList"></param>
@@ -194,20 +198,55 @@ namespace PsyForge.Extensions {
             // Check for issues
             TransposeChecks(nestedList);
 
-            var resultStack = new Queue<List<T>>();
+            var result = new Queue<List<T>>();
             for (int col = 0; col < nestedList[0].Count; col++) {
                 var columnList = nestedList.Select(row => row[col]).ToList();
-                resultStack.Enqueue(columnList);
+                result.Enqueue(columnList);
             }
 
-            return resultStack;
+            return result;
         }
+        
         private static void TransposeChecks<T>(List<List<T>> nestedList) {
             if (nestedList == null || nestedList.Count == 0) {
                 throw new ArgumentException("Input list cannot be null or empty");
+            } else if (nestedList.Any(row => row == null)) {
+                throw new ArgumentException("Input list cannot contain null rows");
             } else if (!nestedList.All(row => row.Count == nestedList[0].Count)) {
                 throw new ArgumentException("All rows must have the same length");
             }
+        }
+
+        /// <summary>
+        /// Transpose List of Lists, but allow for uneven lists
+        /// This does not have nulls or defaults for missing values.
+        /// Ex: [[1,2,3],[4,5],[6]] -> [[1,4,6],[2,5],[3]]
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="nestedList"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        public static List<List<T>> TransposeUneven<T>(this List<List<T>> nestedList) {
+            // Check for issues
+            if (nestedList == null || nestedList.Count == 0) {
+                throw new ArgumentException("Input list cannot be null or empty");
+            } else if (nestedList.Any(row => row == null)) {
+                throw new ArgumentException("Input list cannot contain null rows");
+            }
+
+            var result = new List<List<T>>();
+            var maxCols = nestedList.Max(row => row.Count);
+            for (int col = 0; col < maxCols; col++) {
+                var columnList = new List<T>();
+                foreach (var row in nestedList) {
+                    if (col < row.Count) {
+                        columnList.Add(row[col]);
+                    }
+                }
+                result.Add(columnList);
+            }
+
+            return result;
         }
     }
 

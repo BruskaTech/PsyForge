@@ -70,7 +70,7 @@ namespace PsyForge.Utilities {
             { Language.English, "\n(go backward) '[⬅]'   |   '[⮕]' (go forward)\n\n" },
             { Language.German, "\n(zurück) '[⬅]'   |   '[⮕]' (vorwärts)\n\n" },
         }); }
-        public static LangString RatingQuestioneerFooter() { return new( new() {
+        public static LangString RatingQuestionnaireFooter() { return new( new() {
             { Language.English, "Press [Enter] to continue" },
             { Language.German, "Drücken Sie [Enter], um fortzufahren" },
         }); }
