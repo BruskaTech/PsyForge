@@ -22,6 +22,9 @@ namespace PsyForge.Utilities {
                 this.startTime = startTime;
                 this.endTime = endTime;
             }
+            public override string ToString() {
+                return (startTime, endTime).ToString();
+            }
         }
 
         /// <summary>
