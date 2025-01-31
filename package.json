@@ -4,6 +4,11 @@
   "version": "0.2.0",
   "unity": "2022.3",
   "description": "The package provides a framework and tools for building 2D and 3D psychology/neuroscience experiments.",
+  "author": {
+    "name" : "Bruska Tech",
+    "email" : "bruskatech@protonmail.com",
+    "url" : "bruska.tech"
+  },
   "keywords": [
     "psyforge",
     "psych",
@@ -21,6 +26,7 @@
     "com.unity.inputsystem": "1.7.0"
   },
   "documentationUrl": "http://bruska.tech/PsyForge/",
+  "changelogUrl": "https://github.com/BruskaTech/PsyForge/blob/main/CHANGELOG.md",
   "repository": {
     "url": "https://github.com/BruskaTech/PsyForge.git",
     "type": "git"
