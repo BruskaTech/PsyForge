@@ -92,6 +92,10 @@ namespace PsyForge.Utilities {
             { Language.English, "*****" },
             { Language.German, "*****" },
         }); }
+        public static LangString MathDistractorPreTrial() { return new( new() {
+            { Language.English, "Press any key to start the math task." },
+            { Language.German, "Drücken Sie eine beliebige Taste, um die Mathematikaufgabe zu starten." },
+        }); }
         public static LangString ElememConnection() { return new( new() {
             { Language.English, "Waiting for Elemem connection..." },
             { Language.German, "Warte auf Elemem-Verbindung..." },

@@ -49,11 +49,6 @@ namespace PsyForge.Experiment {
         }
 
         public async Task Run(bool isPractice, int trialNum, bool setProblemTimings = false) {
-            if (isPractice) {
-                await ExpHelpers.PressAnyKey("instructions math distractor", LangStrings.IntroSlidesMathDistractorTitle(), 
-                    LangStrings.IntroSlidesMathDistractor().Aggregate((a, b) => a + b));
-            }
-
             ExpHelpers.SetExperimentStatus(HostPcStatusMsg.DISTRACT(trialNum));
             var trueDistractorDurationMs = isPractice ? practiceDistractorDurationMs : distractorDurationMs;
 

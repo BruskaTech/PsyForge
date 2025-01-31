@@ -30,10 +30,8 @@ namespace PsyForge.Experiment {
             this.verbalFreeRecallDurationMs = verbalFreeRecallDurationMs;
         }
 
-        public async Task Run(bool isPractice, uint trialNum) {
-            if (isPractice) {
-                await ExpHelpers.PressAnyKey("instructions verbal free recall", LangStrings.IntroSlidesVerbalFreeRecallTitle(), LangStrings.PracticeVerbalFreeRecall());
-            }
+        public async Task Run(bool isPractice, uint trialNum, LangString verbalRecallDisplay = null) {
+            verbalRecallDisplay ??= LangStrings.VerbalRecallDisplay();
 
             // Setup
             var realVerbalFreeRecallDurationMs = isPractice ?
@@ -45,7 +43,7 @@ namespace PsyForge.Experiment {
 
             // Play start beep
             manager.lowBeep.Play();
-            textDisplayer.Display("verbal recall display", text: LangStrings.VerbalRecallDisplay());
+            textDisplayer.Display("verbal recall display", text: verbalRecallDisplay);
 
             while (manager.lowBeep.isPlaying) { await Awaitable.NextFrameAsync(); }
             await manager.Delay(100); // This is needed so you don't hear the end of the beep in the recording

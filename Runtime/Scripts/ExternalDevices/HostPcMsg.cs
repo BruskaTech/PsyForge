@@ -51,6 +51,12 @@ namespace PsyForge.ExternalDevices {
 
         public static HostPcStatusMsg PAUSE(bool pauseStart) { return new HostPcStatusMsg("PAUSE", new() { {"pause start", pauseStart} }); }
         public static HostPcStatusMsg WAITING() { return new HostPcStatusMsg("WAITING"); }
+        public static HostPcStatusMsg DISTRACT(int trailNum) { return new HostPcStatusMsg("DISTRACT", new() {{"trial", trailNum}}); }
+        public static HostPcStatusMsg MATH(bool correct, string problem, string answer, int responseTimeMs) { return new HostPcStatusMsg("MATH",
+            new() { { "correct", correct }, { "problem", problem }, { "answer", answer }, { "responseTimeMs", responseTimeMs } }
+        ); }
+        public static HostPcStatusMsg ENCODING(uint trailNum) { return new HostPcStatusMsg("ENCODING", new() {{"trial", trailNum}}); }
+        public static HostPcStatusMsg RECALL(float duration, uint trailNum) { return new HostPcStatusMsg("RECALL", new() {{"duration", duration}, {"trial", trailNum}}); }
     }
 
     // Host PC Closed Loop Message
