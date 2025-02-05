@@ -22,6 +22,7 @@ using TMPro;
 
 using PsyForge.DataManagement;
 using PsyForge.Utilities;
+using System.Collections.ObjectModel;
 
 namespace PsyForge.Extensions {
     public static class IEnumerableExtensions {
@@ -664,6 +665,90 @@ namespace PsyForge.Extensions {
             }
 
             return result;
+        }
+    }
+
+    public static class PropertyInfoExtensions {
+        /// <summary>
+        /// Determines if a property is nullable
+        /// Nullable reference types will return true but not standard reference types
+        /// https://stackoverflow.com/a/58454489
+        /// </summary>
+        /// <param name="property"></param>
+        /// <returns></returns>
+        public static bool IsNullable(this PropertyInfo property) {
+            return Helpers.IsNullableHelper(property.PropertyType, property.DeclaringType, property.CustomAttributes);
+        }
+    }
+
+    public static class FieldInfoExtensions {
+        /// <summary>
+        /// Determines if a field is nullable
+        /// Nullable reference types will return true but not standard reference types
+        /// https://stackoverflow.com/a/58454489
+        /// </summary>
+        /// <param name="field"></param>
+        /// <returns></returns>
+        public static bool IsNullable(this FieldInfo field) {
+            return Helpers.IsNullableHelper(field.FieldType, field.DeclaringType, field.CustomAttributes);
+        }
+    }
+
+    public static class ParameterInfoExtensions {
+        /// <summary>
+        /// Determines if a parameter is nullable
+        /// Nullable reference types will return true but not standard reference types
+        /// https://stackoverflow.com/a/58454489
+        /// </summary>
+        /// <param name="parameter"></param>
+        /// <returns></returns>
+        public static bool IsNullable(this ParameterInfo parameter) {
+            return Helpers.IsNullableHelper(parameter.ParameterType, parameter.Member, parameter.CustomAttributes);
+        }
+    }
+
+    internal static class Helpers {
+        /// <summary>
+        /// Determines if a type is nullable
+        /// Nullable reference types will return true but not standard reference types
+        /// https://stackoverflow.com/a/58454489
+        /// </summary>
+        /// <param name="memberType"></param>
+        /// <param name="declaringType"></param>
+        /// <param name="customAttributes"></param>
+        /// <returns></returns>
+        public static bool IsNullableHelper(Type memberType, MemberInfo? declaringType, IEnumerable<CustomAttributeData> customAttributes) {
+            if (memberType.IsValueType)
+                return Nullable.GetUnderlyingType(memberType) != null;
+
+            var nullable = customAttributes
+                .FirstOrDefault(x => x.AttributeType.FullName == "System.Runtime.CompilerServices.NullableAttribute");
+            if (nullable != null && nullable.ConstructorArguments.Count == 1) {
+                var attributeArgument = nullable.ConstructorArguments[0];
+                if (attributeArgument.ArgumentType == typeof(byte[])) {
+                    var args = (ReadOnlyCollection<CustomAttributeTypedArgument>)attributeArgument.Value!;
+                    if (args.Count > 0 && args[0].ArgumentType == typeof(byte)) {
+                        return (byte)args[0].Value! == 2;
+                    }
+                }
+                else if (attributeArgument.ArgumentType == typeof(byte)) {
+                    return (byte)attributeArgument.Value! == 2;
+                }
+            }
+
+            for (var type = declaringType; type != null; type = type.DeclaringType) {
+                var context = type.CustomAttributes
+                    .FirstOrDefault(x => x.AttributeType.FullName == "System.Runtime.CompilerServices.NullableContextAttribute");
+                if (context != null &&
+                    context.ConstructorArguments.Count == 1 &&
+                    context.ConstructorArguments[0].ArgumentType == typeof(byte))
+                {
+                    return (byte)context.ConstructorArguments[0].Value! == 2;
+                }
+            }
+
+            // Couldn't find a suitable attribute
+            return false;
         }
     }
 }
