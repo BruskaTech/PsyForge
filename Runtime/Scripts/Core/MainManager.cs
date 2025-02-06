@@ -118,7 +118,7 @@ namespace PsyForge {
             // Nothing for now
 
             // Setup Configs
-            var configs = SetupConfigs();
+            var configs = await SetupConfigs();
             GetExperiments(configs);
             FileManager.CreateDataFolder();
             LangStrings.SetLanguage();
@@ -141,9 +141,9 @@ namespace PsyForge {
             LaunchLauncher();
         }
 
-        protected string[] SetupConfigs() {
+        protected async Task<string[]> SetupConfigs() {
 #if !UNITY_WEBGL // System.IO
-            Config.SetupSystemConfig(FileManager.ConfigPath());
+            await Config.SetupSystemConfig();
 #else // !UNITY_WEBGL
             Config.SetupSystemConfig(Application.streamingAssetsPath);
 #endif // !UNITY_WEBGL

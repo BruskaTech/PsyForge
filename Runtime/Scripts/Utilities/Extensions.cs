@@ -717,7 +717,7 @@ namespace PsyForge.Extensions {
         /// <param name="declaringType"></param>
         /// <param name="customAttributes"></param>
         /// <returns></returns>
-        public static bool IsNullableHelper(Type memberType, MemberInfo? declaringType, IEnumerable<CustomAttributeData> customAttributes) {
+        public static bool IsNullableHelper(Type memberType, MemberInfo declaringType, IEnumerable<CustomAttributeData> customAttributes) {
             if (memberType.IsValueType)
                 return Nullable.GetUnderlyingType(memberType) != null;
 
