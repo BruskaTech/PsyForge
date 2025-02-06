@@ -121,9 +121,12 @@ namespace PsyForge {
 #endif // UNITY_WEBGL
             experimentConfigText = await SetupConfig(configPath);
 
-            if (unsetRequiredProperties.Count > 0) {
-                throw new Exception($"The following required properties were not set: {string.Join(", ", unsetRequiredProperties)}");
-            }
+            // TODO: JPB: (feature) Figure out how to allow for unset required properties PER EXPERIMENT
+            //            This can be done by marking required properties with a custom attribute [Required] or [Required("ExpName")]
+            //            Then I can check for that with reflection or System.ComponentModel.DataAnnotations
+            // if (unsetRequiredProperties.Count > 0) {
+            //     throw new Exception($"The following required properties were not set: {string.Join(", ", unsetRequiredProperties)}");
+            // }
         }
 
 #pragma warning disable CS1998 // This only runs asynchronously in WebGL

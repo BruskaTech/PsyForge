@@ -49,6 +49,7 @@ namespace PsyForge.Experiment {
         protected SessionType session;
         protected SessionType practiceSession;
         protected SessionType normalSession;
+        protected bool noPracticeSession = false;
 
         protected new void Awake() {
             base.Awake();
@@ -123,8 +124,11 @@ namespace PsyForge.Experiment {
             try {
                 await SetupPracticeTrials();
                 session = practiceSession; // Done again in case the session was created in SetupPracticeTrials
-                if (session == null) {
-                    throw new Exception($"{GetType().Name} did not set a practice session.");
+                if (noPracticeSession) {
+                    throw new EndSessionException();
+                } else if (session == null) {
+                    throw new Exception($"{GetType().Name} did not set a practice session."
+                        + "\n\nEither assign a value to 'practiceSession' in your experiment or set 'noPracticeSession' to true in the experiment.");
                 }
                 while (true) {
                     await PracticeTrialStates();
@@ -138,7 +142,8 @@ namespace PsyForge.Experiment {
                 await SetupTrials();
                 session = normalSession; // Done again in case the session was created in SetupTrials
                 if (session == null) {
-                    throw new Exception($"{GetType().Name} did not set a normal session.");
+                    throw new Exception($"{GetType().Name} did not set a normal session."
+                        + "\n\nAssign a value to 'normalSession' in your experiment.");
                 }
                 while (true) {
                     await TrialStates();

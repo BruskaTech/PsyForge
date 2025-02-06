@@ -62,15 +62,11 @@ namespace PsyForge {
         }
 
         public static string ExperimentPath() {
-            string experiment;
-
-            try {
-                experiment = Config.experimentName;
-            } catch (MissingFieldException e) {
-                throw new MissingFieldException("No experiment selected", e);
+            if (Config.experimentName == null) {
+                throw new MissingFieldException("No experiment selected");
             }
 
-            return Path.Combine(DataPath(), experiment);
+            return Path.Combine(DataPath(), Config.experimentName);
         }
 
         public static string ParticipantPath(string participant) {

@@ -8,6 +8,7 @@
 //PsyForge is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 //You should have received a copy of the GNU General Public License along with PsyForge. If not, see <https://www.gnu.org/licenses/>. 
 
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TMPro;
@@ -25,20 +26,27 @@ namespace PsyForge.GUI {
     public class ExperimentSelection : EventMonoBehaviour {
         TMP_Dropdown dropdown;
 
-        protected override async void AwakeOverride() {
+        [SerializeField]
+        private ParticipantSelection participantSelection;
+
+        protected override void AwakeOverride() {
             dropdown = GetComponent<TMP_Dropdown>();
 
             List<string> experiments = new(Config.availableExperiments);
 
             dropdown.AddOptions(new List<string>(new string[] { "Select Task..." }));
             dropdown.AddOptions(experiments);
-            await SetExperiment();
+            SetExperiment();
         }
 
-        protected async Task SetExperiment() {
+        public void SetExperiment() {
+            DoTS(SetExperimentHelper);
+        }
+        protected async void SetExperimentHelper() {
             if (dropdown.captionText.text != "Select Task...") {
                 Config.experimentConfigName = dropdown.captionText.text;
                 await Config.SetupExperimentConfig();
+                participantSelection.ExperimentUpdated();
             }
         }
 
