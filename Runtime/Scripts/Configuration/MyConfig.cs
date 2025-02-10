@@ -30,7 +30,7 @@ namespace PsyForge {
         /// This will cause all EventLoop errors to have full stack traces that include where it came from.
         /// <br/>This is not turned on by default because it is very slow (since has to create a backtrace for every Do function).
         /// </summary>
-        public static OptionalStructConf<bool> debugEventLoopExtendedStackTrace;
+        public static ConfOptionalStruct<bool> debugEventLoopExtendedStackTrace;
         /// <summary>
         /// The IP for the host server.
         /// </summary>
@@ -139,7 +139,7 @@ namespace PsyForge {
         /// The session number.
         /// <br/>DO NOT INCLUDE IN CONFIG FILE (it will be set automatically by the experiment launcher)
         /// </summary>
-        public static OptionalStructConf<int> sessionNum;
+        public static ConfOptionalStruct<int> sessionNum;
         /// <summary>
         /// The list of available experiments.
         /// <br/>DO NOT INCLUDE IN CONFIG FILE (it will be set automatically by the MainManager)
@@ -156,7 +156,7 @@ namespace PsyForge {
         /// <br/>WARNING: Setting this to -1 (or a non-multiple of the screen refresh rate) is NOT usually good for psychology experiments because it causes a timing issue between when your game thinks it is showing something and when it actually shows up on the screen.
         /// <br/>
         /// </summary>
-        public static OptionalStructConf<int> targetFrameRate;
+        public static ConfOptionalStruct<int> targetFrameRate;
 
         /// <summary>
         /// The name of the experiment scene.
@@ -185,7 +185,7 @@ namespace PsyForge {
         /// <br/>DO NOT USE THIS VARIABLE DIRECTLY. Use FileManager.DataPath() instead.
         /// <br/>If not set, defaults to the location of the application (or desktop for development).
         /// </summary>
-        internal static OptionalClassConf<string> dataPath;
+        internal static ConfOptionalClass<string> dataPath;
         /// <summary>
         /// The path to the wordpool file.
         /// </summary>
@@ -198,17 +198,17 @@ namespace PsyForge {
         /// The regex for participant IDs.
         /// <br/>If set to "", any participant ID is valid.
         /// </summary>
-        public static OptionalClassConf<string> participantIdRegex;
+        public static ConfOptionalClass<string> participantIdRegex;
         /// <summary>
         /// The regex for the prefix for participant IDs.
         /// <br/>If set to "", there is no expected prefix.
         /// </summary>
-        public static OptionalClassConf<string> participantIdPrefixRegex;
+        public static ConfOptionalClass<string> participantIdPrefixRegex;
         /// <summary>
         /// The regex for the postfix for participant IDs.
         /// If set to "", there is no expected postfix.
         /// </summary>
-        public static OptionalClassConf<string> participantIdPostfixRegex;
+        public static ConfOptionalClass<string> participantIdPostfixRegex;
 
 
         // ExperimentBase.cs

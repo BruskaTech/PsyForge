@@ -10,35 +10,40 @@
 using System;
 
 namespace PsyForge {
-    public struct Conf<T> {
-        private T value;
+    public struct ConfOptionalStruct<T> where T : struct {
+        private T? value;
         private readonly string name;
-        private bool valueSet;
 
-        public Conf(T value, string name) { // TODO: JPB: (needed) Make this internal instead of public (and for all Conf classes)
+        public ConfOptionalStruct(T? value, string name) {
             this.value = value;
             this.name = name;
-            valueSet = false;
         }
 
-        public T Val { 
+        public T? Val { 
+            get => value;
+            set => this.value = value;
+        }
+
+        public T Value {
             get {
-                if (!valueSet) {
+                if (!value.HasValue) {
                     string expConfigNotLoaded = Config.IsExperimentConfigSetup() ? "" : "\nNote: Experiment config not loaded yet.";
-                    throw new Exception("You are missing the Config setting: " + name + "." + expConfigNotLoaded);
+                    throw new Exception("You are trying to access an optional config that has not been set yet. You may be missing the Config setting: " + name + "." + expConfigNotLoaded);
                 }
-                return value;
+                return value.Value;
             }
             set {
                 this.value = value;
-                valueSet = true;
             }
         }
 
+        public readonly bool HasValue => value.HasValue;
+
         public readonly string Name => name;
 
-        public static implicit operator T(Conf<T> conf) => conf.Val;
+        public static implicit operator T?(ConfOptionalStruct<T> conf) => conf.Val;
 
+        
         public override string? ToString() {
             return Val?.ToString();
         }

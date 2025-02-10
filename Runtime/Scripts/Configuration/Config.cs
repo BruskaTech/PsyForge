@@ -123,7 +123,7 @@ namespace PsyForge {
             foreach (var f in fields) {
                 var confType = f.FieldType.GetGenericTypeDefinition();
                 if (!f.FieldType.IsGenericType ||
-                    (confType != typeof(Conf<>) && confType != typeof(OptionalStructConf<>) && confType != typeof(OptionalClassConf<>)))
+                    (confType != typeof(Conf<>) && confType != typeof(ConfOptionalStruct<>) && confType != typeof(ConfOptionalClass<>)))
                 {
                     throw new InvalidOperationException($"The Config variable \"{f.Name}\" is not of type Conf, OptionalStructConf, or OptionalClassConf. It is of type {f.FieldType}."
                         + $"Please change it's type to something like this: Conf<{f.FieldType}>");
@@ -133,7 +133,7 @@ namespace PsyForge {
                 var closedConfType = confType.MakeGenericType(innerType);
                 object defaultValue;
                 if (innerType.IsValueType) {
-                    if (confType == typeof(OptionalStructConf<>)) {
+                    if (confType == typeof(ConfOptionalStruct<>)) {
                         defaultValue = null;
                     } else {
                         defaultValue = Activator.CreateInstance(innerType);
