@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -18,6 +19,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PsyForge.DataManagement;
 using PsyForge.Extensions;
+using Unity.Properties;
 
 #if UNITY_WEBGL // System.IO
 using System.Net;
@@ -31,7 +33,7 @@ namespace PsyForge {
         private const string SYSTEM_CONFIG_NAME = "config.json";
         private static string systemConfigText = null;
         private static string experimentConfigText = null;
-        private static List<string> unsetRequiredProperties = GetProperties()
+        private static List<string> unsetRequiredProperties = GetFields()
             .Where(x => !x.IsNullable()) // All non-nullable properties are required
             .Select(x => x.Name)
             .ToList();
@@ -40,28 +42,43 @@ namespace PsyForge {
         internal static string experimentConfigName = null;
 
         // Private Methods
-        private static PropertyInfo[] GetProperties() {
-            return typeof(Config).GetProperties(BindingFlags.Static | BindingFlags.Public);
+        private static FieldInfo[] GetFields() {
+            return typeof(Config).GetFields(BindingFlags.Static | BindingFlags.Public);
         }
-        private static JObject Serialize() {
-            var properties = GetProperties();
+        private static JObject Serialize() { // TODO: JPB: (needed) Check that this works
+            var fields = GetFields();
             var json = new JObject();
-            foreach (var p in properties) {
-                var value = p.GetValue(null);
-                if (value == null || !p.CanWrite || !p.CanRead) continue;
-                json[p.Name] = JToken.FromObject(value);
+            foreach (var f in fields) {
+                var staticObj = f.GetValue(null);
+                var pType = f.FieldType.GetGenericArguments()[0];
+                var confType = f.FieldType.GetGenericTypeDefinition();
+                var closedConfType = confType.MakeGenericType(pType);
+                try {
+                    var val = closedConfType.GetProperty("Val").GetValue(staticObj);
+                    if (val == null) { continue; }
+                    json[f.Name] = JToken.FromObject(val);
+                } catch (Exception) {} // Do Nothing
             }
                 
             return json;
         }
         private static void DeserializeIntoStatic(JObject json) {
             if (json == null) return;
-            var properties = GetProperties();
-            foreach (var p in properties) {
-                if (!json.ContainsKey(p.Name) || !p.CanWrite) continue;
-                unsetRequiredProperties.Remove(p.Name);
-                var obj = json[p.Name].ToObject(p.PropertyType);
-                p.SetValue(null, obj);
+            var fields = GetFields();
+            foreach (var f in fields) {
+                var confType = f.FieldType.GetGenericTypeDefinition();
+                var innerType = f.FieldType.GetGenericArguments()[0];
+                var closedConfType = confType.MakeGenericType(innerType);
+
+                if (json.ContainsKey(f.Name)) {
+                    // UnityEngine.Debug.Log($"Config: " + f.Name + " " + f.GetValue(null));
+                    var newVal = json[f.Name].ToObject(innerType);
+                    var objNew = f.GetValue(null);
+                    closedConfType.GetProperty("Val").SetValue(objNew, newVal);
+                    f.SetValue(null, objNew);
+
+                    // unsetRequiredProperties.Remove(f.Name);
+                }
             }
         }
 
@@ -79,7 +96,6 @@ namespace PsyForge {
         public static Dictionary<string, object> ToDict() {
             return Serialize().ToObject<Dictionary<string, object>>();
         }
-
         public static void SaveConfigs(string path) {
             if (systemConfigText != null) {
                 var json = JObject.Parse(experimentConfigText).ToObject<Dictionary<string, object>>();
@@ -102,6 +118,33 @@ namespace PsyForge {
 
         // Internal Methods
 
+        internal static void Init() {
+            var fields = GetFields();
+            foreach (var f in fields) {
+                var confType = f.FieldType.GetGenericTypeDefinition();
+                if (!f.FieldType.IsGenericType ||
+                    (confType != typeof(Conf<>) && confType != typeof(OptionalStructConf<>) && confType != typeof(OptionalClassConf<>)))
+                {
+                    throw new InvalidOperationException($"The Config variable \"{f.Name}\" is not of type Conf, OptionalStructConf, or OptionalClassConf. It is of type {f.FieldType}."
+                        + $"Please change it's type to something like this: Conf<{f.FieldType}>");
+                }
+
+                var innerType = f.FieldType.GetGenericArguments()[0];
+                var closedConfType = confType.MakeGenericType(innerType);
+                object defaultValue;
+                if (innerType.IsValueType) {
+                    if (confType == typeof(OptionalStructConf<>)) {
+                        defaultValue = null;
+                    } else {
+                        defaultValue = Activator.CreateInstance(innerType);
+                    }
+                } else {
+                    defaultValue = null;
+                }
+                var confInstance = Activator.CreateInstance(closedConfType, defaultValue, f.Name);
+                f.SetValue(null, confInstance);
+            }
+        }
         internal static async Task SetupSystemConfig() {
 #if !UNITY_WEBGL // System.IO
             if (!Directory.Exists(FileManager.ConfigPath())) {

@@ -676,7 +676,7 @@ namespace PsyForge.Threading {
 #else
         private async Task StartTask(Action func) {
             cts.Token.ThrowIfCancellationRequested();
-            StackTrace stackTrace = Config.debugEventLoopExtendedStackTrace ? new(true) : null;
+            StackTrace stackTrace = (Config.debugEventLoopExtendedStackTrace.Val ?? false) ? new(true) : null;
             await Task.Factory.StartNew(TaskErrorHandler(func, stackTrace), cts.Token, TaskCreationOptions.DenyChildAttach, scheduler);
         }
         //private async Task<Task> StartTask(Func<Task> func) {
@@ -689,7 +689,7 @@ namespace PsyForge.Threading {
         //}
         private async Task<Z> StartTask<Z>(Func<Z> func) {
             cts.Token.ThrowIfCancellationRequested();
-            StackTrace stackTrace = Config.debugEventLoopExtendedStackTrace ? new(true) : null;
+            StackTrace stackTrace = (Config.debugEventLoopExtendedStackTrace.Val ?? false) ? new(true) : null;
             return await Task.Factory.StartNew(TaskErrorHandler(func, stackTrace), cts.Token, TaskCreationOptions.DenyChildAttach, scheduler);
         }
 #endif

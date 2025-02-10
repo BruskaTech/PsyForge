@@ -114,7 +114,7 @@ namespace PsyForge {
         /// <param name="enumerator"></param>
         /// <returns></returns>
         protected Coroutine StartCoroutine(IEnumerator enumerator, bool unpausable = false) {
-            StackTrace stackTrace = Config.debugEventLoopExtendedStackTrace ? new(true) : null;
+            StackTrace stackTrace = (Config.debugEventLoopExtendedStackTrace.Val ?? false) ? new(true) : null;
             return base.StartCoroutine(MakeEventEnumerator(enumerator, stackTrace, unpausable));
         }
 
@@ -193,7 +193,7 @@ namespace PsyForge {
         // -------------------------------------
         // TODO: JPB: (feature) Add support for cancellation tokens in EventMonoBehavior Do functions
         private void DoHelper(IEnumerator enumerator) {
-            StackTrace stackTrace = Config.debugEventLoopExtendedStackTrace ? new(true) : null;
+            StackTrace stackTrace = (Config.debugEventLoopExtendedStackTrace.Val ?? false) ? new(true) : null;
             manager.events.Enqueue(MakeEventEnumerator(enumerator, stackTrace: stackTrace));
         }
 

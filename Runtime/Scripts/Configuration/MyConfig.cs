@@ -10,6 +10,8 @@
 
 #nullable enable
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. The class is static...
+#pragma warning disable IDE1006 // Naming Styles
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 
 namespace PsyForge {
     public static partial class Config {
@@ -18,87 +20,87 @@ namespace PsyForge {
         /// <summary>
         /// This is the language of the experiment.
         /// </summary>
-        public static string language { get; private set; }
+        public static Conf<string> language;
 
         /// <summary>
         /// This will cause the experiment to log all network messages.
         /// </summary>
-        public static bool logNetworkMessages { get; private set; }
+        public static Conf<bool> logNetworkMessages;
         /// <summary>
         /// This will cause all EventLoop errors to have full stack traces that include where it came from.
         /// <br/>This is not turned on by default because it is very slow (since has to create a backtrace for every Do function).
         /// </summary>
-        public static bool debugEventLoopExtendedStackTrace { get; private set; }
+        public static OptionalStructConf<bool> debugEventLoopExtendedStackTrace;
         /// <summary>
         /// The IP for the host server.
         /// </summary>
-        public static string hostServerIP { get; private set; }
+        public static Conf<string> hostServerIP;
         /// <summary>
         /// The port for the host server.
         /// </summary>
-        public static int hostServerPort { get; private set; }
+        public static Conf<int> hostServerPort;
         /// <summary>
         /// This will cause the experiment to use the Elemem.
         /// </summary>
-        public static bool elememOn { get; private set; }
+        public static Conf<bool> elememOn;
         /// <summary>
         /// The interval in milliseconds for the elemem heartbeat.
         /// </summary>
-        public static int elememHeartbeatInterval { get; private set; }
+        public static Conf<int> elememHeartbeatInterval;
 
         // Syncbox
 
         /// <summary>
         /// This will cause the experiment to use the sync box.
         /// </summary>
-        public static bool syncBoxOn { get; private set; }
+        public static Conf<bool> syncBoxOn;
         /// <summary>
         /// This will cause the experiment to use the sync box for continuous pulsing.
         /// <br/>The other option is to call the Pulse() function manually in your experiment.
         /// <br/> This should likely be put in the experiment config file.
         /// </summary>
-        public static bool syncBoxContinuousPulsing { get; private set; }
+        public static Conf<bool> syncBoxContinuousPulsing;
         /// <summary>
         /// The class for the sync box.
         /// <br/>The class must be in the namespace PsyForge.ExternalDevices. This may require a reference assembly definition. Check the "Adding a SyncBox" section of the documentation for more information.
         /// </summary>
-        public static string syncBoxClass { get; private set; }
+        public static Conf<string> syncBoxClass;
         /// <summary>
         /// The duration of the sync box test in milliseconds.
         /// </summary>
-        public static int syncBoxTestDurationMs { get; private set; }
+        public static Conf<int> syncBoxTestDurationMs;
         
         /// <summary>
         /// The width of the photo diode image in inches
         /// </summary>
-        public static float photoDiodeSyncBoxImageWidthInch { get; private set; }
+        public static Conf<float> photoDiodeSyncBoxImageWidthInch;
         /// <summary>
         /// The height of the photo diode image in inches
         /// </summary>
-        public static float photoDiodeSyncBoxImageHeightInch { get; private set; }
+        public static Conf<float> photoDiodeSyncBoxImageHeightInch;
         /// <summary>
         /// Which corner of the screen of the photo diode image is in
         /// <br/>The first element is the horizontal position (0 = left, 1 = right)
         /// <br/>The second element is the vertical position (0 = bottom, 1 = top)
         /// </summary>
-        public static uint[] photoDiodeSyncBoxImagePosition { get; private set; }
+        public static Conf<uint[]> photoDiodeSyncBoxImagePosition;
         /// <summary>
         /// The color of the photo diode image when it is off
         /// <br/>This is done as an HTML color string. In other words, it can be a hex code or a color name.
         /// </summary>
-        public static string photoDiodeSyncBoxImageOffColor { get; private set; }
+        public static Conf<string> photoDiodeSyncBoxImageOffColor;
         /// <summary>
         /// The color of the photo diode image when it is on
         /// <br/>This is done as an HTML color string. In other words, it can be a hex code or a color name.
         /// </summary>
-        public static string photoDiodeSyncBoxImageOnColor { get; private set; }
+        public static Conf<string> photoDiodeSyncBoxImageOnColor;
 
         // Hardware
 
         /// <summary>
         /// This will allow the expeiment to use a PS4 controller.
         /// </summary>
-        // public static bool ps4Controller { get; private set; }
+        // public static bool ps4Controller;
 
 
         // Programmer Conveniences
@@ -107,41 +109,42 @@ namespace PsyForge {
         /// This will show the FPS on the screen at all times.
         /// <br/>NOT IMPLEMENTED YET
         /// </summary>
-        // public static bool showFps { get; private set; }
+        // public static bool showFps;
         /// <summary>
         /// This is a flag to determine if the application is in test mode.
         /// <br/>The default should be: false
         /// </summary>
-        public static bool isTest { get; private set; }
+        public static Conf<bool> isTest;
 
         // ExperimentBase.cs
         /// <summary>
         /// The duration of the microphone test in milliseconds.
         /// </summary>
-        public static int micTestDurationMs { get; private set; }
+        public static Conf<int> micTestDurationMs;
         /// <summary>
         /// The path to the introduction video.
         /// </summary>
-        public static string introductionVideo { get; private set; }
+        public static Conf<string> introductionVideo;
 
         // Local variables
-        
+
 
         /// <summary>
         /// The subject ID.
         /// <br/>DO NOT INCLUDE IN CONFIG FILE (it will be set automatically by the experiment launcher)
         /// </summary>
-        public static string? subject { get; internal set; }
+        public static Conf<string> subject;
+
         /// <summary>
         /// The session number.
         /// <br/>DO NOT INCLUDE IN CONFIG FILE (it will be set automatically by the experiment launcher)
         /// </summary>
-        public static int? sessionNum { get; internal set; }
+        public static OptionalStructConf<int> sessionNum;
         /// <summary>
         /// The list of available experiments.
         /// <br/>DO NOT INCLUDE IN CONFIG FILE (it will be set automatically by the MainManager)
         /// </summary>
-        public static string[] availableExperiments { get; internal set; }
+        public static Conf<string[]> availableExperiments;
 
         // MainManager.cs
 
@@ -153,27 +156,27 @@ namespace PsyForge {
         /// <br/>WARNING: Setting this to -1 (or a non-multiple of the screen refresh rate) is NOT usually good for psychology experiments because it causes a timing issue between when your game thinks it is showing something and when it actually shows up on the screen.
         /// <br/>
         /// </summary>
-        public static int? targetFrameRate { get; private set; }
+        public static OptionalStructConf<int> targetFrameRate;
 
         /// <summary>
         /// The name of the experiment scene.
         /// <br/>This is the scene that will be loaded when the experiment is launched.
         /// </summary>
-        public static string experimentScene { get; private set; }
+        public static Conf<string> experimentScene;
         /// <summary>
         /// The experiment class to use.
         /// <br/>This class should always inherit from ExperimentBase (or something else that does).
         /// </summary>
-        public static string experimentClass { get; private set; }
+        public static Conf<string> experimentClass;
         /// <summary>
         /// The name of the experiment.
         /// </summary>
-        public static string experimentName { get; private set; }
+        public static Conf<string> experimentName;
         /// <summary>
         /// The name of the launcher scene.
         /// <br/>The default should be: "Startup"
         /// </summary>
-        public static string launcherScene { get; private set; }
+        public static Conf<string> launcherScene;
 
         // FileManager.cs
 
@@ -182,30 +185,30 @@ namespace PsyForge {
         /// <br/>DO NOT USE THIS VARIABLE DIRECTLY. Use FileManager.DataPath() instead.
         /// <br/>If not set, defaults to the location of the application (or desktop for development).
         /// </summary>
-        internal static string? dataPath { get; private set; }
+        internal static OptionalClassConf<string> dataPath;
         /// <summary>
         /// The path to the wordpool file.
         /// </summary>
-        public static string wordpool { get; private set; }
+        public static Conf<string> wordpool;
         /// <summary>
         /// The path to the practice wordpool file.
         /// </summary>
-        public static string practiceWordpool { get; private set; }
+        public static Conf<string> practiceWordpool;
         /// <summary>
         /// The regex for participant IDs.
         /// <br/>If set to "", any participant ID is valid.
         /// </summary>
-        public static string? participantIdRegex { get; private set; }
+        public static OptionalClassConf<string> participantIdRegex;
         /// <summary>
         /// The regex for the prefix for participant IDs.
         /// <br/>If set to "", there is no expected prefix.
         /// </summary>
-        public static string? participantIdPrefixRegex { get; private set; }
+        public static OptionalClassConf<string> participantIdPrefixRegex;
         /// <summary>
         /// The regex for the postfix for participant IDs.
         /// If set to "", there is no expected postfix.
         /// </summary>
-        public static string? participantIdPostfixRegex { get; private set; }
+        public static OptionalClassConf<string> participantIdPostfixRegex;
 
 
         // ExperimentBase.cs
@@ -213,11 +216,11 @@ namespace PsyForge {
         /// <summary>
         /// This will allow the experiment to quit at any time by pressing the quit button ('Q').
         /// </summary>
-        public static bool quitAnytime { get; private set; }
+        public static Conf<bool> quitAnytime;
         /// <summary>
         /// This will allow the experiment to pause at any time by pressing the pause button ('P').
         /// </summary>
-        public static bool pauseAnytime { get; private set; }
+        public static Conf<bool> pauseAnytime;
         /// <summary>
         /// This causes the experiment to log the display times of each frame.
         /// <br/> This is much closer to the actual time things are displayed on the screen 
@@ -238,7 +241,7 @@ namespace PsyForge {
         /// <br/>    https://discussions.unity.com/t/timing-of-waitforendofframe-relative-to-vertical-blank-onset/173764/3
         /// <br/>    https://discussions.unity.com/t/time-deltatime-not-constant-vsync-camerafollow-and-jitter/639394/280
         /// </summary>
-        public static bool logFrameDisplayTimes { get; private set; }
+        public static Conf<bool> logFrameDisplayTimes;
 
         // ElememInterface.cs
 
@@ -246,6 +249,6 @@ namespace PsyForge {
         /// The type of stimulation to use in this experiment.
         /// <br/>The options are: ReadOnly, OpenLoop, and ClosedLoop
         /// </summary>
-        public static string stimMode { get; private set; }
+        public static Conf<string> stimMode;
     }
 }

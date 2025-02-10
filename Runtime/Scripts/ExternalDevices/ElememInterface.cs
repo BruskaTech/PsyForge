@@ -16,7 +16,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using PsyForge.DataManagement;
-using PsyForge.Extensions;
 using PsyForge.Utilities;
 
 namespace PsyForge.ExternalDevices {
@@ -43,7 +42,7 @@ namespace PsyForge.ExternalDevices {
             // Configure Elemem
             await SendAndReceiveJsonTS("CONNECTED", "CONNECTED_OK");
 
-            string stimMode = Config.stimMode switch {
+            string stimMode = Config.stimMode.Val switch {
                 "ReadOnly" => "none",
                 "OpenLoop" => "open",
                 "ClosedLoop" => "closed",

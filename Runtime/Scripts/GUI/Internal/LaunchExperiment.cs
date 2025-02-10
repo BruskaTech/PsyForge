@@ -117,8 +117,8 @@ namespace PsyForge.GUI {
             string subject = participantNameInput.text;
             int sessionNumber = ParticipantSelection.nextSessionNumber;
             FileManager.CreateSession(subject, sessionNumber);
-            Config.subject = subject;
-            Config.sessionNum = sessionNumber;
+            Config.subject.Val = subject;
+            Config.sessionNum.Val = sessionNumber;
 
             // Setup the stable random seed with the participant name
             Utilities.Random.StableRndSeed = Config.subject.GetHashCode();
@@ -156,7 +156,7 @@ namespace PsyForge.GUI {
                 return;
             }
 
-            var targetFps = Config.targetFrameRate.Value;
+            var targetFps = Config.targetFrameRate.Val ?? -1;
 
             // Make the game run as fast as possible
             if (targetFps < 0) {
@@ -185,7 +185,7 @@ namespace PsyForge.GUI {
                     QualitySettings.vSyncCount = 0;
                     Application.targetFrameRate = targetFps;
                 } else {
-                    throw new Exception($"Config variable targetFrameRate ({Config.targetFrameRate.Value}) must be a factor of the screen refresh rate {screenFps}.");
+                    throw new Exception($"Config variable targetFrameRate ({Config.targetFrameRate.Val}) must be a factor of the screen refresh rate {screenFps}.");
                 }
             }
 

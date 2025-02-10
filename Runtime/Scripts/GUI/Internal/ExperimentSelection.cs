@@ -32,7 +32,7 @@ namespace PsyForge.GUI {
         protected override void AwakeOverride() {
             dropdown = GetComponent<TMP_Dropdown>();
 
-            List<string> experiments = new(Config.availableExperiments);
+            List<string> experiments = new(Config.availableExperiments.Val);
 
             dropdown.AddOptions(new List<string>(new string[] { "Select Task..." }));
             dropdown.AddOptions(experiments);

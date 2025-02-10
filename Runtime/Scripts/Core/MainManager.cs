@@ -109,6 +109,7 @@ namespace PsyForge {
         protected override void AwakeOverride() {
             // Make the MainManager StartTimeTS match the unity start time
             StartTimeTS = Clock.UtcNow - TimeSpan.FromSeconds(Time.realtimeSinceStartup);
+            Config.Init();
         }
 
         protected async void Start() {
@@ -143,11 +144,7 @@ namespace PsyForge {
         }
 
         protected async Task<string[]> SetupConfigs() {
-#if !UNITY_WEBGL // System.IO
             await Config.SetupSystemConfig();
-#else // !UNITY_WEBGL
-            Config.SetupSystemConfig(Application.streamingAssetsPath);
-#endif // !UNITY_WEBGL
 
             // Get all configuration files
             string configPath = FileManager.ConfigPath();
@@ -167,7 +164,7 @@ namespace PsyForge {
                     exps.Add(Path.GetFileNameWithoutExtension(configs[i]));
                 j++;
             }
-            Config.availableExperiments = exps.ToArray();
+            Config.availableExperiments.Val = exps.ToArray();
         }
 
         //////////

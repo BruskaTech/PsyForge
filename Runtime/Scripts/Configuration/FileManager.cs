@@ -33,7 +33,7 @@ namespace PsyForge {
         }
 
         public static string DataPath() {
-            return Config.dataPath ?? Path.Combine(BasePath(), "data");
+            return Config.dataPath.Val ?? Path.Combine(BasePath(), "data");
         }
 
         public static string ConfigPath() {
@@ -62,11 +62,13 @@ namespace PsyForge {
         }
 
         public static string ExperimentPath() {
-            if (Config.experimentName == null) {
-                throw new MissingFieldException("No experiment selected");
+            string experiment;
+            try {
+                experiment = Config.experimentName;
+            } catch (Exception e) {
+                throw new Exception("No experiment selected", e);
             }
-
-            return Path.Combine(DataPath(), Config.experimentName);
+            return Path.Combine(DataPath(), experiment);
         }
 
         public static string ParticipantPath(string participant) {
@@ -94,7 +96,7 @@ namespace PsyForge {
 
 #nullable enable
         public static string? SessionPath() {
-            if (Config.sessionNum == null) {
+            if (!Config.sessionNum.HasValue) {
                 // return null and don't use ErrorTS because of EventReporter::DoWrite
                 return null;
             }
@@ -123,10 +125,10 @@ namespace PsyForge {
                 return true;
             }
 
-            string id = Config.participantIdRegex ?? ".*";
+            string id = Config.participantIdRegex.Val ?? ".*";
             if (id == "") { id = ".*"; }
-            string prefix = Config.participantIdPrefixRegex ?? "";
-            string postfix = Config.participantIdPostfixRegex ?? "";
+            string prefix = Config.participantIdPrefixRegex.Val ?? "";
+            string postfix = Config.participantIdPostfixRegex.Val ?? "";
             
             Regex rx = new Regex(@"^" + prefix + id + postfix + @"$");
 

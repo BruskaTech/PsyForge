@@ -76,7 +76,7 @@ namespace PsyForge.ExternalDevices {
             imageRect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, dpi * Config.photoDiodeSyncBoxImageHeightInch);
 
             // Set the image position
-            var imagePosition = Config.photoDiodeSyncBoxImagePosition;
+            uint[] imagePosition = Config.photoDiodeSyncBoxImagePosition;
             if (imagePosition.Length != 2) {
                 throw new Exception("Config variable photoDiodeImagePosition must have exactly 2 elements");
             } else if (imagePosition[0] > 1 || imagePosition[1] > 1) {

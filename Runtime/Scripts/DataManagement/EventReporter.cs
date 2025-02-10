@@ -30,9 +30,11 @@ namespace PsyForge.DataManagement {
         public bool experimentConfigured = false;
         protected bool eventWrittenThisFrame = false;
 
-        protected override void AwakeOverride() { }
-        protected void Start() {
+        protected override void AwakeOverride() {
             eventReporterLoop = new();
+        }
+        protected async void Start() {
+            while (!Config.IsSystemConfigSetup()) { await Awaitable.NextFrameAsync(); }
             if (Config.logFrameDisplayTimes) {
                 StartCoroutine(LogFrameDisplayTimes());
             }
