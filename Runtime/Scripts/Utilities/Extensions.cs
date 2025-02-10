@@ -752,4 +752,29 @@ namespace PsyForge.Extensions {
             return false;
         }
     }
+
+    public static class TextureExtensions {
+
+        /// <summary>
+        /// Returns a vertically flipped copy of the texture
+        /// </summary>
+        /// <param name="original"></param>
+        /// <returns></returns>
+        public static Texture2D FlipVertically(this Texture2D original){
+            Texture2D flippedTexture = new Texture2D(original.width, original.height);
+
+            int width = original.width;
+            int height = original.height;
+
+            for(int x = 0; x < width; x++){
+                for(int y = 0; y < height; y++){
+                    var pixel = original.GetPixel(x,y);
+                    flippedTexture.SetPixel(x, height - y - 1, pixel);
+                }
+            }
+            flippedTexture.Apply();
+
+            return flippedTexture;
+        }
+    }
 }
