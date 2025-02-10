@@ -14,7 +14,7 @@ namespace PsyForge {
         private T? value;
         private readonly string name;
 
-        public ConfOptionalStruct(T? value, string name) {
+        internal ConfOptionalStruct(T? value, string name) {
             this.value = value;
             this.name = name;
         }

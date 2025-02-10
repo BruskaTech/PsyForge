@@ -14,7 +14,7 @@ namespace PsyForge {
         private T value;
         private readonly string name;
 
-        public ConfOptionalClass(T value, string name) {
+        internal ConfOptionalClass(T value, string name) {
             this.value = value;
             this.name = name;
         }

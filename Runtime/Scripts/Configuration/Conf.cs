@@ -15,7 +15,7 @@ namespace PsyForge {
         private readonly string name;
         private bool valueSet;
 
-        public Conf(T value, string name) { // TODO: JPB: (needed) Make this internal instead of public (and for all Conf classes)
+        internal Conf(T value, string name) { // TODO: JPB: (needed) Make this internal instead of public (and for all Conf classes)
             this.value = value;
             this.name = name;
             valueSet = false;

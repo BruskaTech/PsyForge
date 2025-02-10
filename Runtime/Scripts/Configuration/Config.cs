@@ -11,6 +11,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -141,7 +142,12 @@ namespace PsyForge {
                 } else {
                     defaultValue = null;
                 }
-                var confInstance = Activator.CreateInstance(closedConfType, defaultValue, f.Name);
+                var confInstance = Activator.CreateInstance(
+                    closedConfType,
+                    BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public,
+                    null,
+                    new object[] { defaultValue, f.Name },
+                    CultureInfo.InvariantCulture);
                 f.SetValue(null, confInstance);
             }
         }
