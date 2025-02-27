@@ -777,4 +777,10 @@ namespace PsyForge.Extensions {
             return flippedTexture;
         }
     }
+
+    public static class Vector3Extensions {
+        public static float[] ToArray(this Vector3 vector) {
+            return new float[] {vector.x, vector.y, vector.z};
+        }
+    }
 }
