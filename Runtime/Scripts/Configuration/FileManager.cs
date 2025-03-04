@@ -27,6 +27,8 @@ namespace PsyForge {
 
 #if UNITY_EDITOR
             return Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+#elif UNITY_WEBGL
+            return Application.streamingAssetsPath;
 #else
             return Path.GetFullPath(".");
 #endif
@@ -37,7 +39,11 @@ namespace PsyForge {
         }
 
         public static string ConfigPath() {
+#if UNITY_WEBGL
+            return "configs";
+#else // UNITY_WEBGL
             return Path.Combine(BasePath(), "configs");
+#endif // UNITY_WEBGL
         }
 
         public static string ResourcePath() {

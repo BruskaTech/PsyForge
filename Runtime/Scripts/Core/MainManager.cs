@@ -147,12 +147,7 @@ namespace PsyForge {
             await Config.SetupSystemConfig();
 
             // Get all configuration files
-            string configPath = FileManager.ConfigPath();
-            string[] configs = Directory.GetFiles(configPath, "*.json");
-            if (configs.Length < 2) {
-                throw new Exception("Configuration File Error. Missing system or experiment configuration file in configs folder");
-            }
-            return configs;
+            return Config.GetExperimentConfigs();
         }
 
         protected void GetExperiments(string[] configs) {

@@ -19,6 +19,9 @@ using PsyForge.Extensions;
 
 using PsyForge.Threading;
 using PsyForge.Utilities;
+using UnityEngine.Networking;
+using System.Threading.Tasks;
+using System.Net;
 
 namespace PsyForge.DataManagement {
     [DefaultExecutionOrder(-998)]
@@ -34,6 +37,7 @@ namespace PsyForge.DataManagement {
             eventReporterLoop = new();
         }
         protected async void Start() {
+            await eventReporterLoop.CheckDataDirectory();
             while (!Config.IsSystemConfigSetup()) { await Awaitable.NextFrameAsync(); }
             if (Config.logFrameDisplayTimes) {
                 StartCoroutine(LogFrameDisplayTimes());
@@ -95,7 +99,32 @@ namespace PsyForge.DataManagement {
                         break;
                 }
                 defaultFilePath = filePath;
-                File.Create(defaultFilePath).Close();
+            }
+
+            public async Task CheckDataDirectory() {
+                var dir = Path.GetDirectoryName(filePath);
+#if !UNITY_WEBGL // System.IO
+                File.Create(dir).Close();
+#else // UNITY_WEBGL
+                // var webReq = UnityWebRequest.Get(dir + "/");
+                // await webReq.SendWebRequest();
+                // Debug.Log("CheckDataDirectory: " + webReq.result);
+                // if (webReq.result != UnityWebRequest.Result.Success) {
+                //     Debug.Log(webReq.error);
+                // }
+
+                // if (webReq.result == UnityWebRequest.Result.ConnectionError) {
+                //     throw new WebException($"Failed to fetch {dir} due to connection error\n\n({webReq.error})");
+                // } else if (webReq.result == UnityWebRequest.Result.ProtocolError) {
+                //     if (webReq.responseCode == 404) {
+                //         throw new WebException($"The directory {dir} does not exist on the server\n\n({webReq.error})");
+                //     } else {
+                //         throw new WebException($"Failed to fetch {dir} due to protocol error\n\n({webReq.error})");
+                //     }
+                // } else if (webReq.result == UnityWebRequest.Result.DataProcessingError) {
+                //     throw new WebException($"Failed to fetch {dir} due to data processing error\n\n({webReq.error})");
+                // }
+#endif // UNITY_WEBGL
             }
 
             public void LogTS(string type, DateTime time, Dictionary<string, object> data = null) {
@@ -136,7 +165,12 @@ namespace PsyForge.DataManagement {
                         break;
                 }
 
+                Debug.Log(filePath);
+#if !UNITY_WEBGL // System.IO
                 File.AppendAllText(filePath, lineOutput + Environment.NewLine);
+#else // UNITUY_WEBGL
+                // TODO: JPB: (needed) (feature) Get WebGL to write events back to the server
+#endif // UNITY_WEBGL
             }
         }
     }

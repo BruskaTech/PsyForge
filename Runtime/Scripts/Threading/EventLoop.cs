@@ -15,6 +15,7 @@ using UnityEngine;
 
 using PsyForge.Utilities;
 using PsyForge.Extensions;
+using System.Collections;
 
 namespace PsyForge.Threading {
 
@@ -674,23 +675,29 @@ namespace PsyForge.Threading {
             return await Task.Factory.StartNew(TaskErrorHandler(func), cts.Token, TaskCreationOptions.DenyChildAttach, scheduler);
         }
 #else
-        private async Task StartTask(Action func) {
+        // TODO: JPB: (needed) (refactor) This is super problematic because it can hang the whole application when switching from desktop to webgl
+        private Task StartTask(Action func) {
+            cts.Token.ThrowIfCancellationRequested();
+            func();
+            return Task.CompletedTask;
+        }
+        private async Task<Task> StartTask(Func<Task> func) {
             cts.Token.ThrowIfCancellationRequested();
             StackTrace stackTrace = (Config.debugEventLoopExtendedStackTrace.Val ?? false) ? new(true) : null;
-            await Task.Factory.StartNew(TaskErrorHandler(func, stackTrace), cts.Token, TaskCreationOptions.DenyChildAttach, scheduler);
+
+            var funcNew = TaskErrorHandler(func, stackTrace);
+            return funcNew();
         }
-        //private async Task<Task> StartTask(Func<Task> func) {
-        //    StackTrace stackTrace = Config.debugEventLoopExtendedStackTrace ? new(true) : null;
-        //    return await Task.Factory.StartNew(TaskErrorHandler(func), cts.Token);
-        //}
-        //private async Task<Task<Z>> StartTask<Z>(Func<Task<Z>> func) {
-        //    StackTrace stackTrace = Config.debugEventLoopExtendedStackTrace ? new(true) : null;
-        //    return await Task.Factory.StartNew(TaskErrorHandler(func, stackTrace), cts.Token);
-        //}
+        private async Task<Task<Z>> StartTask<Z>(Func<Task<Z>> func) {
+            cts.Token.ThrowIfCancellationRequested();
+            StackTrace stackTrace = (Config.debugEventLoopExtendedStackTrace.Val ?? false) ? new(true) : null;
+
+            var funcNew = TaskErrorHandler(func, stackTrace);
+            return funcNew();
+        }
         private async Task<Z> StartTask<Z>(Func<Z> func) {
             cts.Token.ThrowIfCancellationRequested();
-            StackTrace stackTrace = (Config.debugEventLoopExtendedStackTrace.Val ?? false) ? new(true) : null;
-            return await Task.Factory.StartNew(TaskErrorHandler(func, stackTrace), cts.Token, TaskCreationOptions.DenyChildAttach, scheduler);
+            return func();
         }
 #endif
 

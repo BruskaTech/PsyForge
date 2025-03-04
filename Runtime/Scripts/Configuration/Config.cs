@@ -152,23 +152,10 @@ namespace PsyForge {
             }
         }
         internal static async Task SetupSystemConfig() {
-#if !UNITY_WEBGL // System.IO
-            if (!Directory.Exists(FileManager.ConfigPath())) {
-                throw new IOException($"Config directory path does not exist: {FileManager.ConfigPath()}");
-            }
-            var configPath = Path.Combine(FileManager.ConfigPath(), SYSTEM_CONFIG_NAME);
-#else // UNITY_WEBGL
-            var configPath = Path.Combine(Application.streamingAssetsPath, SYSTEM_CONFIG_NAME);
-#endif // UNITY_WEBGL
-            systemConfigText = await SetupConfig(configPath);
+            systemConfigText = await SetupConfig(SYSTEM_CONFIG_NAME);
         }
         internal static async Task SetupExperimentConfig() {
-#if !UNITY_WEBGL // System.IO
-            var configPath = Path.Combine(FileManager.ConfigPath(), experimentConfigName + ".json");
-#else // UNITY_WEBGL
-            var configPath = Path.Combine(Application.streamingAssetsPath, experimentConfigName + ".json");
-#endif // UNITY_WEBGL
-            experimentConfigText = await SetupConfig(configPath);
+            experimentConfigText = await SetupConfig(experimentConfigName + ".json");
 
             // TODO: JPB: (feature) Figure out how to allow for unset required properties PER EXPERIMENT
             //            This can be done by marking required properties with a custom attribute [Required] or [Required("ExpName")]
@@ -178,24 +165,59 @@ namespace PsyForge {
             // }
         }
 
-#pragma warning disable CS1998 // This only runs asynchronously in WebGL
-        private static async Task<string> SetupConfig(string configPath) {
+        internal static string[] GetExperimentConfigs() {
+            // Get all configuration files
+            string[] configs;
 #if !UNITY_WEBGL // System.IO
+            configs = Directory.GetFiles(FileManager.ConfigPath(), "*.json");
+#else // UNITY_WEBGL
+            TextAsset[] jsonFiles = Resources.LoadAll<TextAsset>(FileManager.ConfigPath());
+            if (jsonFiles == null || jsonFiles.Length == 0) {
+                throw new Exception("Configuration File Error. No configuration files found in configs folder."
+                    + "\nSince you are using WebGL, you must put all configuration files in the 'Resources/configs' folder of the Unity project itself.");
+            }
+            configs = jsonFiles.Select(x => x.name).ToArray();
+#endif // UNITY_WEBGL
+            if (configs == null || configs.Length < 2) {
+                throw new Exception("Configuration File Error. Missing system or experiment configuration file in configs folder");
+            }
+            return configs.Where(x => x != SYSTEM_CONFIG_NAME && x != Path.GetFileNameWithoutExtension(SYSTEM_CONFIG_NAME)).ToArray();
+        }
+
+#pragma warning disable CS1998 // This only runs asynchronously in WebGL
+        private static async Task<string> SetupConfig(string config) {
+            var configDir = FileManager.ConfigPath();
+#if !UNITY_WEBGL
+            var configPath = Path.Combine(configDir, config);
+            if (!Directory.Exists(configDir)) {
+                throw new IOException($"Config directory path does not exist: {configDir}");
+            }
             string text = File.ReadAllText(configPath);
 #else // UNITY_WEBGL
-            var webReq = UnityWebRequest.Get(configPath);
-            await webReq.SendWebRequest();
-
-            if (webReq.result == UnityWebRequest.Result.ConnectionError) {
-                throw new WebException($"Failed to fetch {Path.GetFileNameWithoutExtension(configPath)} due to connection error\n({configPath})\n\n({webReq.error})");
-            } else if (webReq.result == UnityWebRequest.Result.ProtocolError) {
-                throw new WebException($"Failed to fetch {Path.GetFileNameWithoutExtension(configPath)} due to protocol error\n({configPath})\n\n({webReq.error})");
-            } else if (webReq.result == UnityWebRequest.Result.DataProcessingError) {
-                throw new WebException($"Failed to fetch {Path.GetFileNameWithoutExtension(configPath)} due to data processing error\n({configPath})\n\n({webReq.error})");
+            var configPath = Path.Combine(configDir, Path.GetFileNameWithoutExtension(config));
+            var textAsset = Resources.Load<TextAsset>(configPath);
+            if (textAsset == null) {
+                throw new Exception($"Configuration File Error. The file {config} was not found in the configs folder."
+                    + "\nSince you are using WebGL, you must put all configuration files in the 'Resources/configs' folder of the Unity project itself.");
             }
+            string text = textAsset.text;
+#endif
+// #if !UNITY_WEBGL // System.IO
+//             string text = File.ReadAllText(configPath);
+// #else // UNITY_WEBGL
+//             var webReq = UnityWebRequest.Get(configPath);
+//             await webReq.SendWebRequest();
+
+//             if (webReq.result == UnityWebRequest.Result.ConnectionError) {
+//                 throw new WebException($"Failed to fetch {Path.GetFileNameWithoutExtension(configPath)} due to connection error\n({configPath})\n\n({webReq.error})");
+//             } else if (webReq.result == UnityWebRequest.Result.ProtocolError) {
+//                 throw new WebException($"Failed to fetch {Path.GetFileNameWithoutExtension(configPath)} due to protocol error\n({configPath})\n\n({webReq.error})");
+//             } else if (webReq.result == UnityWebRequest.Result.DataProcessingError) {
+//                 throw new WebException($"Failed to fetch {Path.GetFileNameWithoutExtension(configPath)} due to data processing error\n({configPath})\n\n({webReq.error})");
+//             }
             
-            string text = webReq.downloadHandler.text;
-#endif // UNITY_WEBGL
+//             string text = webReq.downloadHandler.text;
+// #endif // UNITY_WEBGL
 
             var json = JObject.Parse(text);
             DeserializeIntoStatic(json);

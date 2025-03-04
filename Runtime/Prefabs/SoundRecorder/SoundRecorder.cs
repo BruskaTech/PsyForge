@@ -159,10 +159,10 @@ namespace PsyForge.Utilities {
         public void StartRecordingTS(string outputFilePath) { throw new NotImplementedException(); }
 
         public AudioClip StopRecording() { throw new NotImplementedException(); }
-        public async Task<AudioClip> StopRecordingTS() { throw new NotImplementedException(); }
+        public Task<AudioClip> StopRecordingTS() { throw new NotImplementedException(); }
 
         public float[] GetLastSamples(int howManySamples) { throw new NotImplementedException(); }
-        public async Task<float[]> GetLastSamplesTS(int howManySamples) { throw new NotImplementedException(); }
+        public Task<float[]> GetLastSamplesTS(int howManySamples) { throw new NotImplementedException(); }
 
         protected AudioClip AudioClipFromDatapathHelper(string datapath) { throw new NotImplementedException(); }
     }
