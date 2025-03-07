@@ -99,6 +99,7 @@ namespace PsyForge.DataManagement {
                         break;
                 }
                 defaultFilePath = filePath;
+                File.Create(defaultFilePath).Close();
             }
 
             public async Task CheckDataDirectory() {
@@ -164,8 +165,6 @@ namespace PsyForge.DataManagement {
                         lineOutput = dataPoint.ToJSON();
                         break;
                 }
-
-                Debug.Log(filePath);
 #if !UNITY_WEBGL // System.IO
                 File.AppendAllText(filePath, lineOutput + Environment.NewLine);
 #else // UNITUY_WEBGL
