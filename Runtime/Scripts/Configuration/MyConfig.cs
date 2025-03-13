@@ -94,6 +94,18 @@ namespace PsyForge {
         /// <br/>This is done as an HTML color string. In other words, it can be a hex code or a color name.
         /// </summary>
         public static Conf<string> photoDiodeSyncBoxImageOnColor;
+        /// <summary>
+        /// The duration of the photo diode syncbox image in milliseconds
+        /// </summary>
+        public static Conf<int> photoDiodeSyncBoxDurationMs;
+        /// <summary>
+        /// The minimum time between photo diode syncbox pulses in milliseconds
+        /// </summary>
+        public static Conf<int> photoDiodeSyncBoxMinTimeBetweenPulsesMs;
+        /// <summary>
+        /// The maximum time between photo diode syncbox pulses in milliseconds
+        /// </summary>
+        public static Conf<int> photoDiodeSyncBoxMaxTimeBetweenPulsesMs;
 
         // Hardware
 

@@ -21,11 +21,6 @@ namespace PsyForge.ExternalDevices {
         private Color offColor;
         private Color onColor;
 
-        private const int TIME_BETWEEN_PULSES_MS = 1000;
-        private const int TIME_BETWEEN_PULSES_JITTER_MS = 200;
-        private const int TIME_BETWEEN_PULSES_MIN_MS = TIME_BETWEEN_PULSES_MS - TIME_BETWEEN_PULSES_JITTER_MS;
-        private const int TIME_BETWEEN_PULSES_MAX_MS = TIME_BETWEEN_PULSES_MS + TIME_BETWEEN_PULSES_JITTER_MS;
-
         public void InitImage() {
             // Set the name of the GameObject
             gameObject.name = "PhotoDiodeSyncBox";
@@ -101,9 +96,9 @@ namespace PsyForge.ExternalDevices {
 
         protected override async Task PulseInternals() {
             image.color = onColor;
-            await manager.Delay(1000);
+            await manager.Delay(Config.photoDiodeSyncBoxDurationMs);
             image.color = offColor;
-            int delayMs = Utilities.Random.Rnd.Next(TIME_BETWEEN_PULSES_MIN_MS, TIME_BETWEEN_PULSES_MAX_MS);
+            int delayMs = Utilities.Random.Rnd.Next(Config.photoDiodeSyncBoxMinTimeBetweenPulsesMs, Config.photoDiodeSyncBoxMaxTimeBetweenPulsesMs);
             await manager.Delay(delayMs);
         }
 

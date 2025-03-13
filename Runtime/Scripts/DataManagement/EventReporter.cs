@@ -37,7 +37,7 @@ namespace PsyForge.DataManagement {
             eventReporterLoop = new();
         }
         protected async void Start() {
-            await eventReporterLoop.CheckDataDirectory();
+            // await eventReporterLoop.CheckDataDirectory();
             while (!Config.IsSystemConfigSetup()) { await Awaitable.NextFrameAsync(); }
             if (Config.logFrameDisplayTimes) {
                 StartCoroutine(LogFrameDisplayTimes());

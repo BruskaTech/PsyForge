@@ -15,6 +15,7 @@ namespace PsyForge.ExternalDevices {
     public abstract class SyncBox : EventMonoBehaviour {
         private bool continuousPulsing = false;
         private int lastFrameCount = -1;
+        protected int pulseNum { get; private set; } = 0;
 
         public abstract Task Init();
         protected abstract Task PulseInternals();
@@ -27,8 +28,14 @@ namespace PsyForge.ExternalDevices {
         }
 
         public async Task Pulse() {
-            EventReporter.Instance.LogTS("syncbox pulse");
+            EventReporter.Instance.LogTS("syncbox pulse on", new() {
+                { "pulseNum", pulseNum }
+            });
             await PulseInternals();
+            EventReporter.Instance.LogTS("syncbox pulse off", new() {
+                { "pulseNum", pulseNum }
+            });
+            pulseNum++;
         }
 
         public void StartContinuousPulsing() {
