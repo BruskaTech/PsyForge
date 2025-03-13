@@ -161,9 +161,9 @@ namespace PsyForge.Experiment {
             // Log versions and experiment info
             eventReporter.LogTS("session start", new() {
                 { "application version", BuildInfo.ApplicationVersion() },
-                { "experiment name", Config.experimentName },
-                { "participant", Config.subject },
-                { "session", Config.sessionNum },
+                { "experiment name", Config.experimentName.Val },
+                { "participant", Config.subject.Val },
+                { "session", Config.sessionNum.Value },
                 { "psyForge version", BuildInfo.PackageVersion() },
                 { "unity version", BuildInfo.UnityVersion() },
                 { "logfile version", "1.0.0" },
