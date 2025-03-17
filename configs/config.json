@@ -14,6 +14,7 @@
     "syncBoxOn": true,
     "syncBoxClass": "PhotoDiodeSyncBox",
     "syncBoxTestDurationMs": 5000,
+    "syncBoxContinuousPulsing": true,
     "networkedSyncboxPort":  8903,
     "photoDiodeSyncBoxImageWidthInch": 0.5,
     "photoDiodeSyncBoxImageHeightInch": 0.5,

@@ -62,7 +62,9 @@ namespace PsyForge.Experiment {
 
             DoTS(ExperimentQuit);
             DoTS(ExperimentPause);
-            manager.syncBox?.StartContinuousPulsing();
+            if (Config.syncBoxContinuousPulsing) {
+                manager.syncBox?.StartContinuousPulsing();
+            }
         }
 
         protected void OnEnable() {
