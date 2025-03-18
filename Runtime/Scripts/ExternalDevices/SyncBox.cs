@@ -10,6 +10,8 @@
 using System.Threading.Tasks;
 using UnityEngine;
 using PsyForge.DataManagement;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PsyForge.ExternalDevices {
     public abstract class SyncBox : EventMonoBehaviour {
@@ -27,14 +29,43 @@ namespace PsyForge.ExternalDevices {
             TearDown();
         }
 
-        public async Task Pulse() {
-            EventReporter.Instance.LogTS("syncbox pulse on", new() {
-                { "pulseNum", pulseNum }
-            });
+        /// <summary>
+        /// This method is called every time the SyncBox pulses on.
+        //  It should return a dictionary of values that will be logged to the event log.
+        /// Do not use "pulseNum" since it is already used.
+        /// </summary>
+        /// <returns></returns>
+        public virtual Dictionary<string, object> PulseOnLogValues() {
+            return new();
+        }
+
+        /// <summary>
+        /// This method is called every time the SyncBox pulses off.
+        //  It should return a dictionary of values that will be logged to the event log.
+        /// Do not use "pulseNum" since it is already used.
+        /// </summary>
+        /// <returns></returns>
+        public virtual Dictionary<string, object> PulseOffLogValues() {
+            return new();
+        }
+
+        public async Task Pulse(Dictionary<string, object> logOnValues = null, Dictionary<string, object> logOffValues = null) {
+            Dictionary<string, object> logOnDict =
+                new Dictionary<string, object>() { { "pulseNum", pulseNum } }
+                .Concat(PulseOnLogValues() ?? new())
+                .Concat(logOnValues ?? new())
+                .ToDictionary(x=>x.Key,x=>x.Value);
+            EventReporter.Instance.LogTS("syncbox pulse on", logOnDict);
+
             await PulseInternals();
-            EventReporter.Instance.LogTS("syncbox pulse off", new() {
-                { "pulseNum", pulseNum }
-            });
+
+            Dictionary<string, object> logOffDict =
+                new Dictionary<string, object>() { { "pulseNum", pulseNum } }
+                .Concat(PulseOffLogValues() ?? new())
+                .Concat(logOffValues ?? new())
+                .ToDictionary(x=>x.Key,x=>x.Value);
+            EventReporter.Instance.LogTS("syncbox pulse off", logOffDict);
+
             pulseNum++;
         }
 

@@ -10,7 +10,7 @@ using System;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
-using PsyForge.DataManagement;
+using System.Collections.Generic;
 
 namespace PsyForge.ExternalDevices {
 
@@ -93,6 +93,12 @@ namespace PsyForge.ExternalDevices {
             return Task.CompletedTask;
         }
 
+        public override Dictionary<string, object> PulseOnLogValues() {
+            return new() {
+                { "onColorRGBA", new[] { onColor.r, onColor.g, onColor.b, onColor.a } },
+                { "offColorRGBA", new[] { offColor.r, offColor.g, offColor.b, offColor.a  } },
+            };
+        }
 
         protected override async Task PulseInternals() {
             image.color = onColor;

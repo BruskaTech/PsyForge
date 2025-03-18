@@ -38,7 +38,7 @@ namespace PsyForge.DataManagement {
         }
         protected async void Start() {
 #if !UNITY_EDITOR_OSX
-            await eventReporterLoop.CheckDataDirectory();
+            // await eventReporterLoop.CheckDataDirectory();
 #endif
             while (!Config.IsSystemConfigSetup()) { await Awaitable.NextFrameAsync(); }
             if (Config.logFrameDisplayTimes) {

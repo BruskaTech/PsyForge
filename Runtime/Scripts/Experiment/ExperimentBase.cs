@@ -9,7 +9,6 @@
 //You should have received a copy of the GNU General Public License along with PsyForge. If not, see <https://www.gnu.org/licenses/>. 
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -20,7 +19,6 @@ using PsyForge.Utilities;
 using PsyForge.ExternalDevices;
 using PsyForge.GUI;
 using PsyForge.Extensions;
-using PsyForge.DataManagement;
 
 namespace PsyForge.Experiment {
 
