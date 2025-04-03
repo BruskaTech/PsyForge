@@ -44,8 +44,7 @@ namespace PsyForge.GUI {
         }
         protected async void SetExperimentHelper() {
             if (dropdown.captionText.text != "Select Task...") {
-                Config.experimentConfigName = dropdown.captionText.text;
-                await Config.SetupExperimentConfig();
+                await Config.SetupExperimentConfig(dropdown.captionText.text);
                 participantSelection.ExperimentUpdated();
             }
         }

@@ -42,9 +42,9 @@ namespace PsyForge.Utilities {
         }); }
         public static LangString ConfirmStart() { return new( new() {
             { Language.English, "Please let the experimenter know if you have any questions about the task."
-                + "\n\nIf you think you understand, please explain the task to the experimenter in your own words."},
+                + "\n\nIf you think you understand, please explain the task to the experimenter in your own words." },
             { Language.German, "Bitte informieren Sie den Versuchsleiter, wenn Sie Fragen zur Aufgabe haben."
-                + "\n\nWenn Sie glauben, die Aufgabe zu verstehen, erklären Sie sie bitte dem Versuchsleiter in Ihren eigenen Worten."},
+                + "\n\nWenn Sie glauben, die Aufgabe zu verstehen, erklären Sie sie bitte dem Versuchsleiter in Ihren eigenen Worten." },
         }); }
         public static LangString ExperimentQuit() { return new( new() {
             { Language.English, "Do you want to quit?\n\nPress [Y] to Quit.\nPress [N] to Resume." },
@@ -84,9 +84,9 @@ namespace PsyForge.Utilities {
         }); }
         public static LangString SubjectSessionConfirmation(string subject, int sessionNum, string experimentName) { return new( new() {
             { Language.English, $"Running {subject} in session {sessionNum} of {experimentName}."
-                + "\nPress [Y] to continue, [N] to quit." },
+                + "\n\nPress [Y] to continue, [N] to quit." },
             { Language.German, $"Patient {subject} in Session {sessionNum} für Experiment: {experimentName}."
-                + "\nDrücken Sie [Y], um fortzufahren, [N], um aufzuhören." },
+                + "\n\nDrücken Sie [Y], um fortzufahren, [N], um aufzuhören." },
         }); }
         public static LangString VerbalRecallDisplay() { return new( new() {
             { Language.English, "*****" },

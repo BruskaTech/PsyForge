@@ -266,7 +266,7 @@ namespace PsyForge.Experiment {
                 await manager.Delay(Config.micTestDurationMs);
             }, "repeat mic test", LangStrings.RepeatMicTest(), new());
         }
-        protected virtual async Task QuitPrompt() {
+        protected virtual async Task SubjectConfirmation() {
             ExpHelpers.SetExperimentStatus(HostPcStatusMsg.WAITING());
 
             textDisplayer.Display("subject/session confirmation",

@@ -40,7 +40,7 @@ namespace PsyForge {
             .ToList();
 
         // Internal Variables
-        internal static string experimentConfigName = null;
+        internal static string experimentConfigName { get; private set; } = null;
 
         // Private Methods
         private static FieldInfo[] GetFields() {
@@ -154,7 +154,8 @@ namespace PsyForge {
         internal static async Task SetupSystemConfig() {
             systemConfigText = await SetupConfig(SYSTEM_CONFIG_NAME);
         }
-        internal static async Task SetupExperimentConfig() {
+        internal static async Task SetupExperimentConfig(string configName) {
+            experimentConfigName = configName;
             experimentConfigText = await SetupConfig(experimentConfigName + ".json");
 
             // TODO: JPB: (feature) Figure out how to allow for unset required properties PER EXPERIMENT

@@ -55,9 +55,9 @@ namespace PsyForge.GUI {
             loadingButton.GetComponentInChildren<TextMeshProUGUI>().text = LangStrings.StartupLoadingButton();
         }
 
-        void Update() {
+        protected virtual void Update() {
             string experimentName = experimentSelection.GetExperiment();
-            bool participantValid = isValidParticipant(participantNameInput.text);
+            bool participantValid = FileManager.isValidParticipant(participantNameInput.text);
             bool syncboxTestRunning = manager.syncBox?.IsContinuousPulsing() ?? false;
 
             if (experimentName == null) {
@@ -104,122 +104,13 @@ namespace PsyForge.GUI {
             DoTS(LaunchExpHelper);
         }
         protected async void LaunchExpHelper() {
-            if (!Config.IsExperimentConfigSetup()) {
-                throw new Exception("No experiment configuration loaded");
-            }
+            if (launchButton != null) launchButton.SetActive(false);
+            if (loadingButton != null) loadingButton.SetActive(true);
 
-            launchButton.SetActive(false);
-            loadingButton.SetActive(true);
-
-            // Create path for current participant/session and set the subject and sessionNum globally
-            // CreateSession MUST be called before the Config.sessionNum is set because if there is an error in the session creation, 
-            //    there will be a recursive error as it tries to write the the session.json file in the path that doesn't exist yet.
             string subject = participantNameInput.text;
             int sessionNumber = ParticipantSelection.nextSessionNumber;
-            FileManager.CreateSession(subject, sessionNumber);
-            Config.subject.Val = subject;
-            Config.sessionNum.Val = sessionNumber;
 
-            // Setup the stable random seed with the participant name
-            Utilities.Random.StableRndSeed = Config.subject.GetHashCode();
-
-            // Setup basic Unity stuff
-            Cursor.visible = false;
-            Application.runInBackground = true;
-
-            // Connect to HostPC
-            if (Config.elememOn) {
-                TextDisplayer.Instance.Display("Elemem connection display", text: LangStrings.ElememConnection());
-                manager.hostPC = new ElememInterface(sessionNumber);
-            }
-            if (manager.hostPC != null) {
-                await manager.hostPC.ConnectTS();
-                await manager.hostPC.ConfigureTS();
-            }
-
-            // Set the game frame rate
-            await SetFrameRate();
-
-            // Save Configs
-            Config.SaveConfigs(FileManager.SessionPath());
-            eventReporter.experimentConfigured = true;
-
-            SceneManager.sceneLoaded += onExperimentSceneLoaded;
-            SceneManager.LoadScene(Config.experimentScene);
-        }
-
-        private async Task SetFrameRate() {
-            // Make the game run at screen refresh rate if targetFrameRate is not set
-            if (!Config.targetFrameRate.HasValue) {
-                QualitySettings.vSyncCount = 1;
-                Application.targetFrameRate = -1;
-                return;
-            }
-
-            var targetFps = Config.targetFrameRate.Val ?? -1;
-
-            // Make the game run as fast as possible
-            if (targetFps < 0) {
-                QualitySettings.vSyncCount = 0;
-                Application.targetFrameRate = -1;
-                return;
-            }
-
-            if (targetFps == 0) {
-                throw new Exception("Config variable targetFrameRate must not be 0.");
-            }
-
-            // Get the screen refresh rate
-            var screenFpsRatio = Screen.currentResolution.refreshRateRatio;
-            var screenFps = screenFpsRatio.numerator / screenFpsRatio.denominator;
-
-            // Make the game run at the target frame rate
-            if (screenFps % targetFps == 0) {
-                QualitySettings.vSyncCount = (int)(screenFps / targetFps);
-                Application.targetFrameRate = targetFps;
-            } else {
-                TextDisplayer.Instance.Display("incompatible frame rate",
-                    text: LangStrings.IncompatibleTargetFrameRate(targetFps, screenFps));
-                var keyCode = await InputManager.Instance.WaitForKey(ynKeyCodes);
-                if (keyCode == KeyCode.Y) {
-                    QualitySettings.vSyncCount = 0;
-                    Application.targetFrameRate = targetFps;
-                } else {
-                    throw new Exception($"Config variable targetFrameRate ({Config.targetFrameRate.Val}) must be a factor of the screen refresh rate {screenFps}.");
-                }
-            }
-
-            // Check for inaccurate frame display times
-            if (Config.logFrameDisplayTimes && QualitySettings.vSyncCount == 0) {
-                throw new Exception("The config variable 'logFrameDisplayTimes' is enabled but VSync is not enabled. This will cause inaccurate frame display times."
-                    + "\n\nPlease set the config variable 'targetFrameRate' to a multiple of the screen refresh rate or turn off 'logFrameDisplayTimes' in the config."
-                    + "\nYou can also remove 'targetFrameRate' from the config to have the game run at the screen refresh rate.");
-            }
-        }
-
-        private static void onExperimentSceneLoaded(Scene scene, LoadSceneMode mode) {
-            // Experiment Manager
-            // TODO: JPB: (bug) Fix issue where unity crashes if I check for multiple experiments
-            try {
-                // Use gameObject.scene to get values in DontDestroyOnLoad
-                var activeExperiments = MainManager.Instance.gameObject.scene.GetRootGameObjects()
-                    .Where(go => go.name == Config.experimentClass && go.activeSelf);
-
-                if (activeExperiments.Count() == 0) {
-                    var expManager = scene.GetRootGameObjects().Where(go => go.name == Config.experimentClass).First();
-                    expManager.SetActive(true);
-                }
-            } catch (InvalidOperationException exception) {
-                throw new Exception(
-                    $"Missing experiment GameObject that is the same name as the experiment class ({Config.experimentClass})",
-                    exception);
-            }
-
-            SceneManager.sceneLoaded -= onExperimentSceneLoaded;
-        }
-
-        private bool isValidParticipant(string name) {
-            return FileManager.isValidParticipant(name);
+            await Startup.LaunchExperiment(subject, sessionNumber);
         }
     }
 }
