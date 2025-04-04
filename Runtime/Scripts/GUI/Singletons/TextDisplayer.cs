@@ -17,7 +17,7 @@ using UnityEngine;
 using TMPro;
 using System.Linq;
 
-using PsyForge.Utilities;
+using PsyForge.Localization;
 using PsyForge.Threading;
 using PsyForge.Extensions;
 

@@ -14,64 +14,7 @@ using Unity.Collections;
 using PsyForge.Extensions;
 using PsyForge.Threading;
 
-namespace PsyForge.Utilities {
-
-    public enum Language {
-        English,
-        German,
-    }
-
-    // Maybe change name to LangStrs or LangCtrl and chage LangString to LangStr
-    public static partial class LangStrings {
-        public static Language Language {get; private set;} = Language.English;
-
-        /// <summary>
-        /// Set the current language for the LangStrings
-        /// </summary>
-        /// <param name="lang">The language to set</param>
-        public static void SetLanguage(Language lang) {
-            Language = lang;
-        }
-
-        /// <summary>
-        /// Set the current language for the LangStrings from the config
-        /// </summary>
-        /// <exception cref="ArgumentException"></exception>
-        public static void SetLanguage() {
-            try {
-                Language = (Language)Enum.Parse(typeof(Language), Config.language);
-            } catch (ArgumentException e) {
-                throw new ArgumentException($"The language \"{Config.language}\" in the config is not a valid language."
-                    + $"\n\nPlease use one of the following supported lanuages: {string.Join(", ", Enum.GetNames(typeof(Language)))}", e);
-            }
-        }
-
-        /// <summary>
-        /// Generate a LangString for all languages
-        /// ONLY USE THIS FUNCTION IF YOU ARE SURE THE STRING IS THE SAME FOR ALL LANGUAGES
-        /// Examples of this would be: numbers, file paths, subject ids, rich text formatting, etc.
-        /// </summary>
-        /// <param name="val">The string value for all languages</param>
-        /// <returns>A LangString with the value for all languages</returns>
-        public static LangString GenForAllLangs(string val) {
-            Dictionary<Language, string> strings = new();
-            foreach (Language lang in Enum.GetValues(typeof(Language))) {
-                strings.Add(lang, val);
-            }
-            return new(strings);
-        }
-        
-        /// <summary>
-        /// Generate a LangString for the current language
-        /// ONLY USE THIS FUNCTION IF YOU ARE SURE THE STRING IS THE SAME FOR ALL LANGUAGES
-        /// Examples of this would be: numbers, file paths, subject ids, rich text formatting, etc.
-        /// </summary>
-        /// <param name="val">The string value for the current language</param>
-        /// <returns>A LangString with the value for the current language</returns>
-        public static LangString GenForCurrLang(string val) {
-            return new(new() { { Language, val } });
-        }
-    }
+namespace PsyForge.Localization {
 
     public class LangString {
         private readonly Dictionary<Language, string> strings;

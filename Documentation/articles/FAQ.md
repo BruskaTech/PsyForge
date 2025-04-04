@@ -8,7 +8,14 @@ These are general questions often asked.
 
 1. ### What does the name stand for?
 
-    - PsyForge stands for Unity Experiment Programming Library.
+    - PsyForge stands for Psychology Forge. Hopefully you will forge many brilliant psychology experiments with this framework.
+
+1. ### I want to use a language, but it isn't supported yet. What do I do?
+
+    - It is easy. You just have edit a couple things:
+        1. In *Runtime/Scripts/Utilities/Language.cs*, add the name of your language to the "Language" enum
+        1. In *Runtime/Scripts/Utilities/MyLangStrings.cs*, add a translation for each LangString in your language.
+    - It would also be great if you could make a fork of PsyForge and then create a pull request back into the main repo, so that others can use it too!
 
 ## Why Async/Await over IEnumerators
 

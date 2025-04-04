@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 
 using PsyForge.Utilities;
+using PsyForge.Localization;
 using PsyForge.ExternalDevices;
 using PsyForge.GUI;
 using PsyForge.Extensions;

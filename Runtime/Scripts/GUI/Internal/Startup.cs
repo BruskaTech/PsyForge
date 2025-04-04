@@ -7,7 +7,7 @@
 
 using PsyForge.DataManagement;
 using PsyForge.ExternalDevices;
-using PsyForge.Utilities;
+using PsyForge.Localization;
 using System;
 using System.Collections.Generic;
 using System.Linq;

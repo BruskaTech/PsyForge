@@ -6,7 +6,8 @@
 //PsyForge is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 //You should have received a copy of the GNU General Public License along with PsyForge. If not, see <https://www.gnu.org/licenses/>. 
 
-namespace PsyForge.Utilities {
+namespace PsyForge.Localization {
+
     public static partial class LangStrings {
         public static LangString Blank() { return GenForCurrLang(""); }
         public static LangString NewLine() { return GenForCurrLang("\n"); }
@@ -159,6 +160,5 @@ namespace PsyForge.Utilities {
             { Language.English, "Loading..." },
             { Language.German, "" },
         }); }
-        
     }
 }

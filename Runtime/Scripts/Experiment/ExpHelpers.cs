@@ -16,7 +16,7 @@ using UnityEngine;
 using PsyForge.DataManagement;
 using PsyForge.ExternalDevices;
 using PsyForge.GUI;
-using PsyForge.Utilities;
+using PsyForge.Localization;
 
 namespace PsyForge.Experiment {
     public static class ExpHelpers {

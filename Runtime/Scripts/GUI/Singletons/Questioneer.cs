@@ -12,10 +12,9 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using PsyForge;
 using PsyForge.Extensions;
 using PsyForge.Utilities;
-using PsyForge.Experiment;
+using PsyForge.Localization;
 using System.Linq;
 using System;
 
