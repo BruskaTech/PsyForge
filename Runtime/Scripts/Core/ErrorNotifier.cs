@@ -18,7 +18,7 @@ using PsyForge.DataManagement;
 using PsyForge.Extensions;
 using PsyForge.GUI;
 using PsyForge.Threading;
-using PsyForge.Utilities;
+using PsyForge.Localization;
 
 
 namespace PsyForge {

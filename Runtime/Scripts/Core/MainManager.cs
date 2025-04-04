@@ -25,6 +25,7 @@ using PsyForge.ExternalDevices;
 using PsyForge.GUI;
 using PsyForge.Threading;
 using PsyForge.Utilities;
+using PsyForge.Localization;
 
 
 namespace PsyForge {

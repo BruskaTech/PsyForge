@@ -11,7 +11,7 @@ using UnityEngine;
 using System.Collections.Generic;
 
 using PsyForge.Extensions;
-using PsyForge.Utilities;
+using PsyForge.Localization;
 
 namespace PsyForge.GUI {
 

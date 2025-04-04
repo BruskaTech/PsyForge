@@ -7,7 +7,6 @@ This document describes how the startup scene works and how to create your own.
 Before you decide to make your own startup scene, if you only want to add features to the startup scene there is probably a better option.
 Just add it to your experiment scene and run them in the InitialStates section.
 
-
 ## How to Make your own startup scene
 
 Things you have to do (in order):

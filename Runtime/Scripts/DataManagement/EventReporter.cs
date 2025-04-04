@@ -15,10 +15,11 @@ using System.IO;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
-using PsyForge.Extensions;
 
+using PsyForge.Extensions;
 using PsyForge.Threading;
 using PsyForge.Utilities;
+using PsyForge.Localization;
 using UnityEngine.Networking;
 using System.Threading.Tasks;
 using System.Net;
