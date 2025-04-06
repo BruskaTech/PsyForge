@@ -288,13 +288,13 @@ namespace PsyForge {
             Cursor.visible = isLocked == CursorLockMode.None;
         }
 
-        public CursorLockMode IsCursorLocked() {
-            return DoGet(IsCursorLockedHelper);
+        public CursorLockMode CursorLockState() {
+            return DoGet(CursorLockStateHelper);
         }
-        public async Task<CursorLockMode> IsCursorLockedTS() {
-            return await DoGetTS(IsCursorLockedHelper);
+        public async Task<CursorLockMode> CursorLockStateTS() {
+            return await DoGetTS(CursorLockStateHelper);
         }
-        public CursorLockMode IsCursorLockedHelper() {
+        public CursorLockMode CursorLockStateHelper() {
             return Cursor.lockState;
         }
 
