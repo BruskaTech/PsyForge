@@ -39,7 +39,7 @@ namespace PsyForge.DataManagement {
         }
         protected async void Start() {
 #if !UNITY_EDITOR_OSX
-            // await eventReporterLoop.CheckDataDirectory();
+            await eventReporterLoop.CheckDataDirectory();
 #endif
             while (!Config.IsSystemConfigSetup()) { await Awaitable.NextFrameAsync(); }
             if (Config.logFrameDisplayTimes) {
@@ -102,13 +102,13 @@ namespace PsyForge.DataManagement {
                         break;
                 }
                 defaultFilePath = filePath;
-                File.Create(defaultFilePath).Close();
             }
 
             public async Task CheckDataDirectory() {
                 var dir = Path.GetDirectoryName(filePath);
 #if !UNITY_WEBGL // System.IO
                 File.Create(dir).Close();
+                await Task.CompletedTask;
 #else // UNITY_WEBGL
                 // var webReq = UnityWebRequest.Get(dir + "/");
                 // await webReq.SendWebRequest();

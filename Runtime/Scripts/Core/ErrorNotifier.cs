@@ -19,6 +19,7 @@ using PsyForge.Extensions;
 using PsyForge.GUI;
 using PsyForge.Threading;
 using PsyForge.Localization;
+using UnityEngine.UI;
 
 
 namespace PsyForge {
@@ -56,12 +57,12 @@ namespace PsyForge {
             try {
                 gameObject.SetActive(true);
                 // Only show first error on screen, but report all errors
+                Debug.LogError($"Error: {message}\n{stackTrace}");
                 if (!errorSet) {
                     errorSet = true;
                     titleElement.text = LangStrings.ErrorTitle().Color("red");
                     textElement.text = message.ToString();
                     footerElement.text = LangStrings.ErrorFooter();
-                    Debug.LogError($"Error: {message}\n{stackTrace}");
                 }
                 if (Config.IsSystemConfigSetup()) { // This stops an unrecoverable error when EventReport.Instance isn't awake yet
                     eventReporter.LogTS("Error", new() {
@@ -76,6 +77,7 @@ namespace PsyForge {
                 Debug.LogError("UNSAVEABLE ERROR IN ErrorHelper... Quitting...\n" + e);
                 Debug.Assert(gameObject != null);
                 Debug.Assert(manager != null);
+                Debug.Assert(InputManager.Instance != null);
                 Debug.Assert(EventReporter.Instance != null);
                 manager.Quit();
             }

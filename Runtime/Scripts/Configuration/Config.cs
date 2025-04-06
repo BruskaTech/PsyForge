@@ -46,7 +46,7 @@ namespace PsyForge {
         private static FieldInfo[] GetFields() {
             return typeof(Config).GetFields(BindingFlags.Static | BindingFlags.Public);
         }
-        private static JObject Serialize() { // TODO: JPB: (needed) Check that this works
+        private static JObject Serialize() {
             var fields = GetFields();
             var json = new JObject();
             foreach (var f in fields) {
@@ -185,8 +185,8 @@ namespace PsyForge {
             return configs.Where(x => x != SYSTEM_CONFIG_NAME && x != Path.GetFileNameWithoutExtension(SYSTEM_CONFIG_NAME)).ToArray();
         }
 
-#pragma warning disable CS1998 // This only runs asynchronously in WebGL
         private static async Task<string> SetupConfig(string config) {
+            await Task.CompletedTask;
             var configDir = FileManager.ConfigPath();
 #if !UNITY_WEBGL
             var configPath = Path.Combine(configDir, config);
@@ -224,7 +224,5 @@ namespace PsyForge {
             DeserializeIntoStatic(json);
             return text;
         }
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
-
     }
 }
