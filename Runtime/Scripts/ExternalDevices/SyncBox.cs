@@ -19,9 +19,9 @@ namespace PsyForge.ExternalDevices {
         private int lastFrameCount = -1;
         protected int pulseNum { get; private set; } = 0;
 
-        public abstract Task Init();
+        internal abstract Task Init();
         protected abstract Task PulseInternals();
-        public abstract Task TearDown();
+        internal abstract Task TearDown();
 
         protected override void AwakeOverride() { }
         protected void OnDestroy() {
@@ -35,7 +35,7 @@ namespace PsyForge.ExternalDevices {
         /// Do not use "pulseNum" since it is already used.
         /// </summary>
         /// <returns></returns>
-        public virtual Dictionary<string, object> PulseOnLogValues() {
+        protected virtual Dictionary<string, object> PulseOnLogValues() {
             return new();
         }
 
@@ -45,13 +45,15 @@ namespace PsyForge.ExternalDevices {
         /// Do not use "pulseNum" since it is already used.
         /// </summary>
         /// <returns></returns>
-        public virtual Dictionary<string, object> PulseOffLogValues() {
+        protected virtual Dictionary<string, object> PulseOffLogValues() {
             return new();
         }
 
         public async Task Pulse(Dictionary<string, object> logOnValues = null, Dictionary<string, object> logOffValues = null) {
             Dictionary<string, object> logOnDict =
-                new Dictionary<string, object>() { { "pulseNum", pulseNum } }
+                new Dictionary<string, object>() {
+                    { "syncBox", GetType().Name },
+                    { "pulseNum", pulseNum }, }
                 .Concat(PulseOnLogValues() ?? new())
                 .Concat(logOnValues ?? new())
                 .ToDictionary(x=>x.Key,x=>x.Value);
@@ -60,7 +62,9 @@ namespace PsyForge.ExternalDevices {
             await PulseInternals();
 
             Dictionary<string, object> logOffDict =
-                new Dictionary<string, object>() { { "pulseNum", pulseNum } }
+                new Dictionary<string, object>() {
+                    { "syncBox", GetType().Name },
+                    { "pulseNum", pulseNum }, }
                 .Concat(PulseOffLogValues() ?? new())
                 .Concat(logOffValues ?? new())
                 .ToDictionary(x=>x.Key,x=>x.Value);

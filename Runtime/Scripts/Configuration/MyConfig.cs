@@ -61,10 +61,10 @@ namespace PsyForge {
         /// </summary>
         public static Conf<bool> syncBoxContinuousPulsing;
         /// <summary>
-        /// The class for the sync box.
-        /// <br/>The class must be in the namespace PsyForge.ExternalDevices. This may require a reference assembly definition. Check the "Adding a SyncBox" section of the documentation for more information.
+        /// The list of classes for the sync boxes.
+        /// <br/>The classes must be in the namespace PsyForge.ExternalDevices. This may require a reference assembly definition. Check the "Adding a SyncBox" section of the documentation for more information.
         /// </summary>
-        public static Conf<string> syncBoxClass;
+        public static Conf<string[]> syncBoxClasses;
         /// <summary>
         /// The duration of the sync box test in milliseconds.
         /// </summary>

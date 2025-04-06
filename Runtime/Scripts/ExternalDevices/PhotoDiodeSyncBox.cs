@@ -56,7 +56,7 @@ namespace PsyForge.ExternalDevices {
             imageObject.GetComponent<CanvasRenderer>().cullTransparentMesh = false; // Don't cull transparent mesh
         }
 
-        public override Task Init() {
+        internal override Task Init() {
             InitImage();
 
             // Set the image size
@@ -93,7 +93,7 @@ namespace PsyForge.ExternalDevices {
             return Task.CompletedTask;
         }
 
-        public override Dictionary<string, object> PulseOnLogValues() {
+        protected override Dictionary<string, object> PulseOnLogValues() {
             return new() {
                 { "onColorRGBA", new[] { onColor.r, onColor.g, onColor.b, onColor.a } },
                 { "offColorRGBA", new[] { offColor.r, offColor.g, offColor.b, offColor.a  } },
@@ -108,7 +108,7 @@ namespace PsyForge.ExternalDevices {
             await manager.Delay(delayMs);
         }
 
-        public override Task TearDown() {
+        internal override Task TearDown() {
             return Task.CompletedTask;
         }
     }

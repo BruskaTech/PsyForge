@@ -57,8 +57,8 @@ namespace PsyForge {
         public VideoControl videoControl;
         public SoundRecorder recorder;
 
-        private GameObject syncBoxObj;
-        public SyncBox syncBox;
+        private List<GameObject> syncBoxObjs;
+        public SyncBoxes syncBoxes = new();
 
         //////////
         // Provided AudioSources
@@ -113,6 +113,20 @@ namespace PsyForge {
             Config.Init();
         }
 
+        protected async Task LoadSyncBox(string name) {
+            SyncBox syncBox;
+            try {
+                var syncBoxObj = new GameObject(name);
+                var syncBoxTypePath = $"PsyForge.ExternalDevices.{name}, PsyForge";
+                syncBox = (SyncBox) syncBoxObj.AddComponentByName(syncBoxTypePath);
+                DontDestroyOnLoad(syncBoxObj);
+            } catch (Exception e) {
+                throw new Exception($"Syncbox class {name} could not be created", e);
+            }
+
+            await syncBoxes.AddSyncBox(syncBox);
+        }
+
         protected async void Start() {
             // Unity internal event handling
             SceneManager.sceneLoaded += onSceneLoaded;
@@ -128,16 +142,7 @@ namespace PsyForge {
 
             // Setup Syncbox Interface
             if (!Config.isTest && Config.syncBoxOn) {
-                try {
-                    syncBoxObj = new GameObject("Syncbox");
-                    var syncBoxTypePath = $"PsyForge.ExternalDevices.{Config.syncBoxClass}, PsyForge";
-                    syncBox = (SyncBox) syncBoxObj.AddComponentByName(syncBoxTypePath);
-                    DontDestroyOnLoad(syncBoxObj);
-                } catch (Exception e) {
-                    throw new Exception($"Syncbox class {Config.syncBoxClass} could not be created", e);
-                }
-
-                await syncBox.Init();
+                await Task.WhenAll(Config.syncBoxClasses.Val.Select(LoadSyncBox));
             }
 
             // Launch Startup Scene
@@ -258,8 +263,8 @@ namespace PsyForge {
         protected async Task QuitHelper() {
             // TODO: JPB: (needed) (bug) Fix QuitHelper quitting display
             TextDisplayer.Instance.Display("quitting", text: LangStrings.GenForCurrLang("Quitting..."));
-            manager.syncBox?.StopContinuousPulsing();
-            manager.syncBox?.TearDown();
+            manager.syncBoxes?.StopContinuousPulsing();
+            manager.syncBoxes?.TearDown();
 
             // TODO: JPB: (feature) Make EventLoops stop gracefully by awaiting the stop with a timeout that gets logged if triggered
             foreach (var eventLoop in eventLoops) {

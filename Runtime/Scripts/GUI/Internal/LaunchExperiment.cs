@@ -52,7 +52,7 @@ namespace PsyForge.GUI {
         protected virtual void Update() {
             string experimentName = experimentSelection.GetExperiment();
             bool participantValid = FileManager.isValidParticipant(participantNameInput.text);
-            bool syncboxTestRunning = manager.syncBox?.IsContinuousPulsing() ?? false;
+            bool syncboxTestRunning = manager.syncBoxes?.IsContinuousPulsing() ?? false;
 
             if (experimentName == null) {
                 greyedLaunchButtonText.text = LangStrings.StartupGreyedLaunchButtonSelectExp();
@@ -81,13 +81,13 @@ namespace PsyForge.GUI {
             await DoWaitFor(DoSyncBoxTestHelper);
         }
         protected async Task DoSyncBoxTestHelper() {
-            if (!manager.syncBox?.IsContinuousPulsing() ?? false) {
+            if (!manager.syncBoxes?.IsContinuousPulsing() ?? false) {
                 syncButton.GetComponent<Button>().interactable = false;
 
                 // TODO: JPB: (need) Fix Syncbox test
-                manager.syncBox.StartContinuousPulsing();
+                manager.syncBoxes.StartContinuousPulsing();
                 await manager.Delay(Config.syncBoxTestDurationMs);
-                manager.syncBox.StopContinuousPulsing();
+                manager.syncBoxes.StopContinuousPulsing();
 
                 syncButton.GetComponent<Button>().interactable = true;
             }
