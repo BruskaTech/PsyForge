@@ -284,8 +284,18 @@ namespace PsyForge {
             DoTS(LockCursorHelper, isLocked);
         }
         public void LockCursorHelper(CursorLockMode isLocked) {
-            UnityEngine.Cursor.lockState = isLocked;
-            UnityEngine.Cursor.visible = isLocked == CursorLockMode.None;
+            Cursor.lockState = isLocked;
+            Cursor.visible = isLocked == CursorLockMode.None;
+        }
+
+        public CursorLockMode IsCursorLocked() {
+            return DoGet(IsCursorLockedHelper);
+        }
+        public async Task<CursorLockMode> IsCursorLockedTS() {
+            return await DoGetTS(IsCursorLockedHelper);
+        }
+        public CursorLockMode IsCursorLockedHelper() {
+            return Cursor.lockState;
         }
 
         // Timing Functions

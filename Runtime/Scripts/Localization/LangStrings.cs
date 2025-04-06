@@ -96,7 +96,6 @@ namespace PsyForge.Localization {
 
                 // Invoke the static method with the default parameters.
                 var result = (LangString)method.Invoke(null, defaultValues);
-                UnityEngine.Debug.Log(result);
                 if (result.ToString() == null) {
                     throw new Exception($"The LangString \"{method.Name}\"  has not been set for the current language ({Language})");
                 }
