@@ -113,52 +113,52 @@ namespace PsyForge.Localization {
         }); }
 
         public static LangString StartupExperimentLauncher() { return new( new() {
-            { Language.English, "Experiment Launcher" },
-            { Language.German, "" },
+            { Language.English, "Task Launcher" },
+            { Language.German, "Startmenü" },
         }); }
         public static LangString StartupExperiment() { return new( new() {
-            { Language.English, "Experiment:" },
-            { Language.German, "" },
+            { Language.English, "Task:" },
+            { Language.German, "Aufgabe:" },
         }); }
         public static LangString StartupSubject() { return new( new() {
-            { Language.English, "Subject:" },
-            { Language.German, "" },
+            { Language.English, "Participant:" },
+            { Language.German, "Proband:" },
         }); }
         public static LangString StartupSession() { return new( new() {
             { Language.English, "Session:" },
-            { Language.German, "" },
+            { Language.German, "Sitzung:" },
         }); }
         public static LangString StartupParticipantCodePlaceholder() { return new( new() {
             { Language.English, "Participant code" },
-            { Language.German, "" },
+            { Language.German, "Probanden-ID" },
         }); }
         public static LangString StartupTestSyncboxButton() { return new( new() {
             { Language.English, "Test Syncbox" },
-            { Language.German, "" },
+            { Language.German, "Teste die Syncbox" },
         }); }
         public static LangString StartupLaunchButton(int sessionNum) { return new( new() {
             { Language.English, $"Start Session {sessionNum}" },
-            { Language.German, "" },
+            { Language.German, "Starte die Sitzung {sessionNum}" },
         }); }
         public static LangString StartupGreyedLaunchButtonSelectExp() { return new( new() {
-            { Language.English, "Please select an experiment" },
-            { Language.German, "" },
+            { Language.English, "Please select a task" },
+            { Language.German, "Bitte eine Aufgabe auswählen" },
         }); }
         public static LangString StartupGreyedLaunchButtonEnterParticipant() { return new( new() {
             { Language.English, "Please enter participant code" },
-            { Language.German, "" },
+            { Language.German, "Bitte eine Probanden-ID eingeben" },
         }); }
         public static LangString StartupGreyedLaunchButtonEnterValidParticipant() { return new( new() {
             { Language.English, "Please enter a <i>valid</i> participant code..." },
-            { Language.German, "" },
+            { Language.German, "Bitte eine <i>valide</i> Probanden-ID eingeben..." },
         }); }
         public static LangString StartupGreyedLaunchButtonSyncboxTest() { return new( new() {
             { Language.English, "Please wait, syncbox test running..." },
-            { Language.German, "" },
+            { Language.German, "Bitte warten, Syncbox-Test läuft" },
         }); }
         public static LangString StartupLoadingButton() { return new( new() {
             { Language.English, "Loading..." },
-            { Language.German, "" },
+            { Language.German, "Lade..." },
         }); }
     }
 }
