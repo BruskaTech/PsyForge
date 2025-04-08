@@ -12,8 +12,10 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 using PsyForge.Threading;
+using System.Linq;
 
 namespace PsyForge {
 
@@ -37,8 +39,8 @@ namespace PsyForge {
             if (!unpausable && Time.timeScale == 0) { return KeyCode.None; }
 
             foreach (KeyCode key in keys) {
-                if (Input.GetKeyDown(key)) {
-                    return key;
+                if (Input.GetKeyDown(GetLocalizedKey(key))) {
+                    return GetLocalizedKey(key);
                 }
             }
             return KeyCode.None;
@@ -61,8 +63,8 @@ namespace PsyForge {
             if (!unpausable && Time.timeScale == 0) { return KeyCode.None; }
 
             foreach (KeyCode key in keys) {
-                if (Input.GetKey(key)) {
-                    return key;
+                if (Input.GetKey(GetLocalizedKey(key))) {
+                    return GetLocalizedKey(key);
                 }
             }
             return KeyCode.None;
@@ -79,8 +81,8 @@ namespace PsyForge {
                 await Awaitable.NextFrameAsync();
                 if (unpausable || Time.timeScale != 0) {
                     foreach (KeyCode vKey in Enum.GetValues(typeof(KeyCode))) {
-                        if (Input.GetKeyDown(vKey)) {
-                            return vKey;
+                        if (Input.GetKeyDown(GetLocalizedKey(vKey))) {
+                            return GetLocalizedKey(vKey);
                         };
                     }
                 }
@@ -115,7 +117,19 @@ namespace PsyForge {
                 await Awaitable.NextFrameAsync();
                 retKey = GetKeyDownHelper(keys, unpausable);
             }
-            return retKey;
+            return GetLocalizedKey(retKey);
+        }
+
+        // TODO: JPB: (needed) This is a BIG stopgap for the new input system
+        public static KeyCode GetLocalizedKey(KeyCode keyCode) {
+            if (Config.keyboardLanguage.Val?.ToLower() == "german") {
+                if (keyCode == KeyCode.Y) { return KeyCode.Z; }
+                if (keyCode == KeyCode.Z) { return KeyCode.Y; }
+            }
+            return keyCode;
+        }
+        public static List<KeyCode> GetLocalizedKey(List<KeyCode> keyCodes) {
+            return keyCodes.Select(k => GetLocalizedKey(k)).ToList();
         }
     }
 

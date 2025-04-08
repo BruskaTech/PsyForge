@@ -262,5 +262,11 @@ namespace PsyForge {
         /// <br/>The options are: ReadOnly, OpenLoop, and ClosedLoop
         /// </summary>
         public static Conf<string> stimMode;
+
+        /// <summary>
+        /// This is a TEMPORARY option used for adjusting the keyboard layout
+        /// For example: in "German" it is "QWERTZ" instead of "QWERTY"
+        /// </summary>
+        public static ConfOptionalClass<string> keyboardLanguage;
     }
 }
