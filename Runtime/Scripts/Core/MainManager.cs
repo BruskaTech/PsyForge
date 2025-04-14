@@ -50,12 +50,40 @@ namespace PsyForge {
         protected ConcurrentStack<float> pauseTimescales = new();
 
         //////////
-        // Devices that can be accessed by managed
-        // scripts
+        // Devices that can be accessed by managed scripts, but are also pre-fabs
+        //////////
+        private VideoControl _videoControl = null;
+        public VideoControl videoControl {
+            get {
+                if (!isVideoControlAvailable) {
+                    throw new Exception("VideoControl not found in scene."
+                        + "\nPlease add the VideoPlayer prefab to the scene."
+                        + "\n\nThis can be found at PsyForge/Runtime/Prefabs/VideoPlayer/VideoPlayer.prefab");
+                }
+                return _videoControl;
+            }
+            private set => _videoControl = value;
+        }
+        public bool isVideoControlAvailable => _videoControl != null;
+
+        private SoundRecorder _recorder = null;
+        public SoundRecorder recorder {
+            get {
+                if (!isSoundRecorderAvailable) {
+                    throw new Exception("SoundRecorder not found in scene."
+                        + "\nPlease add the SoundRecorder prefab to the scene."
+                        + "\n\nThis can be found at PsyForge/Runtime/Prefabs/SoundRecorder/SoundRecorder.prefab");
+                }
+                return _recorder;
+            }
+            private set => _recorder = value;
+        }
+        public bool isSoundRecorderAvailable => _recorder != null;
+
+        //////////
+        // Devices that can be accessed by managed scripts
         //////////
         public HostPC hostPC;
-        public VideoControl videoControl;
-        public SoundRecorder recorder;
 
         private List<GameObject> syncBoxObjs;
         public SyncBoxes syncBoxes = new();
@@ -244,7 +272,7 @@ namespace PsyForge {
                     Time.timeScale = oldTimeScale;
                 }
             }
-            if (videoControl != null) { videoControl.PauseVideo(oldTimeScale == 0); }
+            if (isVideoControlAvailable) { videoControl.PauseVideo(oldTimeScale == 0); }
         }
         public bool IsPausedTS() {
             return IsPausedHelper();

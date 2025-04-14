@@ -67,6 +67,27 @@ namespace PsyForge {
             return Path.Combine(ResourcePath(), cleanedResourcePath);
         }
 
+        public static string ExpResourcePath() {
+            return Path.Combine(ResourcePath(), Config.experimentName);
+        }
+        /// <summary>
+        /// Returns the full path to a resource file for an experiment
+        /// If the resource path starts with "resource/<ExperimentName>", it uses the remaining path
+        /// </summary>
+        /// <param name="resourcePath"></param>
+        /// <returns></returns>
+        /// <exception cref="MissingFieldException"></exception>
+        public static string ExpResourcePath(string resourcePath) {
+            if (resourcePath == null) {
+                throw new MissingFieldException("resource path is null");
+            } else if (resourcePath == "") {
+                throw new MissingFieldException("resource path is empty");
+            }
+
+            string cleanedResourcePath = resourcePath.TrimStartOnce($"resources/{Config.experimentName}/");
+            return Path.Combine(ExpResourcePath(), cleanedResourcePath);
+        }
+
         public static string ExperimentPath() {
             string experiment;
             try {

@@ -236,11 +236,20 @@ namespace PsyForge.Experiment {
         }
 
         // Pre-Trial States
-        protected virtual async Task Introduction() {
+        protected virtual async Task IntroductionVideo() {
             await ExpHelpers.RepeatUntilYes(async (CancellationToken ct) => {
                 await ExpHelpers.PressAnyKey("show instruction video", LangStrings.ShowInstructionVideo());
 
                 manager.videoControl.SetVideo(Config.introductionVideo, true);
+                await manager.videoControl.PlayVideo();
+            }, "repeat introduction video", LangStrings.RepeatIntroductionVideo(), new());
+        }
+
+        protected virtual async Task IntroductionVideo(string videoPath) {
+            await ExpHelpers.RepeatUntilYes(async (CancellationToken ct) => {
+                await ExpHelpers.PressAnyKey("show instruction video", LangStrings.ShowInstructionVideo());
+
+                manager.videoControl.SetVideo(videoPath, true);
                 await manager.videoControl.PlayVideo();
             }, "repeat introduction video", LangStrings.RepeatIntroductionVideo(), new());
         }
