@@ -107,7 +107,7 @@ namespace PsyForge.DataManagement {
             public async Task CheckDataDirectory() {
                 var dir = Path.GetDirectoryName(filePath);
 #if !UNITY_WEBGL // System.IO
-                File.Create(dir).Close();
+                Directory.CreateDirectory(dir);
                 await Task.CompletedTask;
 #else // UNITY_WEBGL
                 // var webReq = UnityWebRequest.Get(dir + "/");
