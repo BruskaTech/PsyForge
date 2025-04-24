@@ -35,6 +35,14 @@ namespace PsyForge.Experiment {
         }
     }
 
+    internal enum ExperimentPhase {
+        Unitialized,
+        Initial,
+        PracticeTrials,
+        NormalTrials,
+        Final,
+    }
+
     public abstract class ExperimentBase<Self, SessionType, TrialType, Constants> : SingletonEventMonoBehaviour<Self>
         where Self : ExperimentBase<Self, SessionType, TrialType, Constants>
         where SessionType : ExperimentSession<TrialType>
@@ -49,6 +57,9 @@ namespace PsyForge.Experiment {
         protected SessionType practiceSession;
         protected SessionType normalSession;
         protected bool noPracticeSession = false;
+        internal ExperimentPhase experimentPhase = ExperimentPhase.Unitialized;
+
+        private Awaitable experimentSessions;
 
         protected new void Awake() {
             base.Awake();
@@ -64,6 +75,11 @@ namespace PsyForge.Experiment {
             if (Config.syncBoxContinuousPulsing) {
                 manager.syncBoxes?.StartContinuousPulsing();
             }
+        }
+
+        protected virtual void StartOverride() {}
+        protected async void Start() {
+            await Run();
         }
 
         protected void OnEnable() {
@@ -113,14 +129,25 @@ namespace PsyForge.Experiment {
             throw new EndSessionException();
         }
 
-        protected void Run() {
-            DoTS(RunHelper().ToEnumerator);
-        }
-        protected async Task RunHelper() {
+        private async Awaitable Run() {
             // Initilize experiment
+            experimentPhase = ExperimentPhase.Initial;
             await InitialStates();
 
+            try {
+                experimentSessions = RunExperimentSessions();
+                await experimentSessions;
+            } catch (OperationCanceledException) {} // Jumping to FinalStates
+
+            // Final States and quit
+            experimentPhase = ExperimentPhase.Final;
+            await FinalStates();
+            await manager.QuitTS();
+        }
+
+        private async Awaitable RunExperimentSessions() {
             // Run practice session
+            experimentPhase = ExperimentPhase.PracticeTrials;
             session = practiceSession;
             try {
                 await SetupPracticeTrials();
@@ -138,6 +165,7 @@ namespace PsyForge.Experiment {
             } catch (EndSessionException) {} // do nothing
 
             // Run normal session
+            experimentPhase = ExperimentPhase.NormalTrials;
             session = normalSession;
             try {
                 await SetupTrials();
@@ -151,10 +179,6 @@ namespace PsyForge.Experiment {
                     session.TrialNum++;
                 }
             } catch (EndSessionException) {} // do nothing
-
-            // Final Ssates and quit
-            await FinalStates();
-            await manager.QuitTS();
         }
 
         // Logging Functions
@@ -192,22 +216,42 @@ namespace PsyForge.Experiment {
         // Pause and Quit Functions
         protected virtual async void ExperimentQuit() {
             if (Config.quitAnytime) {
-                bool firstLoop = true;
-                await ExpHelpers.RepeatUntilYes(async (CancellationToken ct) => {
-                    // Resume since they don't want to quit (or haven't tried yet)
-                    if (!firstLoop) {
-                        ExpHelpers.SetExperimentStatus(HostPcStatusMsg.PAUSE(false));
-                        firstLoop = false;
-                    }
-                    manager.Pause(false);
-
+                while (true) {
                     // Wait for the quit key
-                    await inputManager.WaitForKey(new List<KeyCode>() { KeyCode.Q }, unpausable: true, ct: ct);
+                    await inputManager.WaitForKey(new List<KeyCode>() { KeyCode.Q }, unpausable: true);
 
                     // Pause everything and ask if they want to quit
                     ExpHelpers.SetExperimentStatus(HostPcStatusMsg.PAUSE(true));
                     manager.Pause(true);
-                }, "experiment quit", LangStrings.ExperimentQuit(), new(), unpausable: true);
+
+                    // Display the quit message and wait for a response
+                    // If they are in the practice or normal trials, they can also skip to the end of the experiment
+                    bool skipInsteadOfQuit = Config.quitAnytimeButSkipAheadInstead && 
+                        (experimentPhase == ExperimentPhase.PracticeTrials || experimentPhase == ExperimentPhase.NormalTrials);
+
+                    List<KeyCode> keyCodes = new() { KeyCode.Y, KeyCode.N };
+                    var quitText = LangStrings.ExperimentQuit();
+                    if (skipInsteadOfQuit) {
+                        keyCodes.Add(KeyCode.Q); // Hidden quit Keu
+                        quitText = LangStrings.ExperimentSkipToEnd();
+                    }
+                    KeyCode response = KeyCode.None;
+                    await TextDisplayer.Instance.DisplayForTask("experiment quit", LangStrings.Blank(), quitText, null, new(), async (CancellationToken ct) => {
+                        response = await InputManager.Instance.WaitForKey(keyCodes, unpausable: true, ct: ct);
+                    });
+
+                    // Handle their response
+                    if (skipInsteadOfQuit) {
+                        if (response == KeyCode.Y) { experimentSessions?.Cancel(); }
+                        else if (response == KeyCode.Q) { break; }
+                    } else {
+                        if (response == KeyCode.Y) { break; }
+                    }
+
+                    // Resume since they don't want to quit (or haven't tried yet)
+                    ExpHelpers.SetExperimentStatus(HostPcStatusMsg.PAUSE(false));
+                    manager.Pause(false);
+                }
                 
                 manager.Pause(false);
                 await manager.QuitTS();

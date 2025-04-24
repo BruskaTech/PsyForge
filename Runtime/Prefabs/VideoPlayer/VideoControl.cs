@@ -17,6 +17,8 @@ using UnityEngine;
 using UnityEngine.Video;
 
 using PsyForge.Threading;
+using TMPro;
+using PsyForge.Localization;
 
 namespace PsyForge.GUI {
 
@@ -25,6 +27,7 @@ namespace PsyForge.GUI {
 
         public RectTransform videoTransform;
         public VideoPlayer videoPlayer;
+        public TextMeshProUGUI skippableText;
 
         protected bool skippable;
         protected string videoPath;
@@ -111,8 +114,9 @@ namespace PsyForge.GUI {
             videoFinished = new();
 
             gameObject.SetActive(true);
-            GameObject textDisplay = GameObject.Find(gameObject.name).transform.Find("VideoPlayerCanvas").transform.Find("Text").gameObject;
-            textDisplay.SetActive(skippable);
+            skippableText.text = skippable
+                ? LangStrings.IntroductionVideoSkip()
+                : LangStrings.Blank();
 
             videoPlayer.Play();
             eventReporter.LogTS("play video", new() { { "video", videoPath } });

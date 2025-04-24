@@ -51,13 +51,17 @@ namespace PsyForge.Localization {
             { Language.English, "Do you want to quit?\n\nPress [Y] to Quit.\nPress [N] to Resume." },
             { Language.German, "Möchten Sie aufhören?\n\nDrücken Sie [Y], um aufzuhören.\nDrücken Sie [N], um fortzufahren." },
         }); }
+        public static LangString ExperimentSkipToEnd() { return new( new() {
+            { Language.English, "Do you want to skip to the end of the experiment?\n\nPress [Y] to Skip.\nPress [N] to Resume." },
+            { Language.German, "" },
+        }); }
         public static LangString ExperimentPaused() { return new( new() {
             { Language.English, "<b>Paused</b>\n\nPress [P] to unpause." },
             { Language.German, "<b>Pausiert</b>\n\nDrücken Sie [P], um fortzufahren." },
         }); }
         public static LangString RepeatIntroductionVideo() { return new( new() {
-            { Language.English, "Press [Y] to continue, \n Press [N] to replay instructional video." },
-            { Language.German, "Drücken Sie [Y], um fortzufahren, \n Drücken Sie [N], um das Anleitung erneut abzuspielen." },
+            { Language.English, "Press [Y] to continue,\n\nPress [N] to replay instructional video." },
+            { Language.German, "Drücken Sie [Y], um fortzufahren.\n\nDrücken Sie [N], um die Anleitung erneut abzuspielen." },
         }); }
         public static LangString RepeatMicTest() { return new( new() {
             { Language.English, "Did you hear the recording? \n([Y] = Continue / [N] = Try Again)." },
@@ -110,6 +114,10 @@ namespace PsyForge.Localization {
                 + "\n\nWenn Sie ein neues Gerät oder einen neuen Monitor verwenden, erwägen Sie, die targetFrameRate zu ändern. Bedenken Sie auch, was das für Ihr Experiment bedeutet."
                 + "\n\nWenn es für Ihr Experiment nicht möglich ist, die Bildrate zu ändern, können Sie mit der alten Bildrate fortfahren. Bitte beachten Sie, dass dies bedeutet, dass die Frames des Spiels nicht unbedingt mit den Frames des Bildschirms übereinstimmen (was die Timing-Analysen beeinflusst)."
                 + $"\n\nDrücken Sie [Y], um mit der angegebenen Bildrate ({targetFps}) fortzufahren.\nDrücken Sie [N], um aufzuhören." },
+        }); }
+        public static LangString IntroductionVideoSkip() { return new( new() {
+            { Language.English, "Press [SPACE] at any time to continue." },
+            { Language.German, "Drücken Sie [LEERTASTE], um fortzufahren." },
         }); }
 
         public static LangString StartupExperimentLauncher() { return new( new() {

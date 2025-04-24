@@ -230,6 +230,11 @@ namespace PsyForge {
         /// </summary>
         public static Conf<bool> quitAnytime;
         /// <summary>
+        /// This changes the quit screen so that you skip to the FinalStates instead quitting during the practice and normal trials.
+        /// The quit option is still actually there (hidden option), just you must press the quit button ('Q') to quit.
+        /// </summary>
+        public static Conf<bool> quitAnytimeButSkipAheadInstead;
+        /// <summary>
         /// This will allow the experiment to pause at any time by pressing the pause button ('P').
         /// </summary>
         public static Conf<bool> pauseAnytime;

@@ -84,6 +84,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   videoTransform: {fileID: 224126303121770298}
   videoPlayer: {fileID: 328937643129792720}
+  skippableText: {fileID: 9088725465964630998}
 --- !u!1 &1637647007570538
 GameObject:
   m_ObjectHideFlags: 0

@@ -305,15 +305,15 @@ namespace PsyForge {
         }
 
         // Helpful functions
-        public void LockCursor(CursorLockMode isLocked) {
-            Do(LockCursorHelper, isLocked);
+        public void LockCursor(CursorLockMode lockMode) {
+            Do(LockCursorHelper, lockMode);
         }
-        public void LockCursorTS(CursorLockMode isLocked) {
-            DoTS(LockCursorHelper, isLocked);
+        public void LockCursorTS(CursorLockMode lockMode) {
+            DoTS(LockCursorHelper, lockMode);
         }
-        public void LockCursorHelper(CursorLockMode isLocked) {
-            Cursor.lockState = isLocked;
-            Cursor.visible = isLocked == CursorLockMode.None;
+        public void LockCursorHelper(CursorLockMode lockMode) {
+            Cursor.lockState = lockMode;
+            Cursor.visible = lockMode != CursorLockMode.Locked;
         }
 
         public CursorLockMode CursorLockState() {
