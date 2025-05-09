@@ -107,7 +107,7 @@ namespace PsyForge.Experiment {
         /// These are the practice trials.
         /// </summary>
         /// <returns></returns>
-        protected abstract Task PracticeTrialStates();
+        protected abstract Task PracticeTrialStates(CancellationToken ct);
         /// <summary>
         /// Things to set up and run before the experiment trials.
         /// </summary>
@@ -160,7 +160,7 @@ namespace PsyForge.Experiment {
                         + "\n\nEither assign a value to 'practiceSession' in your experiment or set 'noPracticeSession' to true in the experiment.");
                 }
                 while (true) {
-                    await PracticeTrialStates();
+                    await PracticeTrialStates(experimentSessionsCTS.Token);
                     session.TrialNum++;
                 }
             } catch (EndSessionException) {} // do nothing
