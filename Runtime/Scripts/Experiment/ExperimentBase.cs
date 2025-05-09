@@ -214,7 +214,15 @@ namespace PsyForge.Experiment {
             eventReporter.LogTS("constants and configs", Config.ToDict());
         }
 
-        protected virtual async Awaitable SkipAheadHandler() { await Task.CompletedTask; }
+        protected virtual async Awaitable SkipAheadHandler() { 
+            if (manager.isSoundRecorderAvailable && (manager.recorder?.IsRecording() ?? false)) {
+                manager.recorder.StopRecording();
+            }
+            if (manager.isVideoControlAvailable && (manager.videoControl?.IsPlaying() ?? false)) {
+                manager.videoControl.StopVideo();
+            }
+            await Task.CompletedTask;
+        }
 
         // Pause and Quit Functions
         protected virtual async void ExperimentQuit() {
