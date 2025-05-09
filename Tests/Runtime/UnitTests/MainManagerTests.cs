@@ -57,27 +57,7 @@ namespace PsyForgeTests {
         [UnityTest]
         public IEnumerator Delay() {
             var start = Clock.UtcNow;
-            yield return MainManager.Instance.Delay(1000).ToEnumerator();
-            var diff = (Clock.UtcNow - start).TotalMilliseconds;
-            Assert.GreaterOrEqual(diff, 1000);
-            Assert.LessOrEqual(diff, 1000 + ONE_FRAME_MS);
-        }
-
-        // Enumerator Delay has 9ms leniency (due to frame linking at 120fps)
-        [UnityTest]
-        public IEnumerator DelayE() {
-            var start = Clock.UtcNow;
-            yield return MainManager.Instance.DelayE(1000);
-            var diff = (Clock.UtcNow - start).TotalMilliseconds;
-            Assert.GreaterOrEqual(diff, 1000);
-            Assert.LessOrEqual(diff, 1000 + ONE_FRAME_MS);
-        }
-
-        // Enumerator Delay has 3ms leniency
-        [UnityTest]
-        public IEnumerator IEnumeratorDelay() {
-            var start = Clock.UtcNow;
-            yield return MainManager.Instance.Delay(1000).ToEnumerator();
+            yield return MainManager.Instance.Delay(1000);
             var diff = (Clock.UtcNow - start).TotalMilliseconds;
             Assert.GreaterOrEqual(diff, 1000);
             Assert.LessOrEqual(diff, 1000 + ONE_FRAME_MS);

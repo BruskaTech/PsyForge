@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using System.Threading;
 
 namespace PsyForge.ExternalDevices {
     public class SyncBoxes {
@@ -28,7 +29,7 @@ namespace PsyForge.ExternalDevices {
             return syncBoxes.OfType<T>().FirstOrDefault();
         }
 
-        private async Task Init() {
+        internal async Task Init() {
             await Task.WhenAll(syncBoxes.Select(x => x.Init()));
         }
 
@@ -36,12 +37,12 @@ namespace PsyForge.ExternalDevices {
             await Task.WhenAll(syncBoxes.Select(x => x.TearDown()));
         }
 
-        public async Task Pulse(Dictionary<string, object> logOnValues = null, Dictionary<string, object> logOffValues = null) {
-            await Task.WhenAll(syncBoxes.Select(x => x.Pulse(logOnValues, logOffValues)));
+        public async Task Pulse(Dictionary<string, object> logOnValues = null, Dictionary<string, object> logOffValues = null, CancellationToken ct = default) {
+            await Task.WhenAll(syncBoxes.Select(x => x.Pulse(logOnValues, logOffValues, ct)));
         }
 
-        public void StartContinuousPulsing() {
-            syncBoxes.ForEach(syncBox => syncBox.StartContinuousPulsing());
+        public void StartContinuousPulsing(CancellationToken ct = default) {
+            syncBoxes.ForEach(syncBox => syncBox.StartContinuousPulsing(ct));
         }
         public void StopContinuousPulsing() {
             syncBoxes.ForEach(syncBox => syncBox.StopContinuousPulsing());

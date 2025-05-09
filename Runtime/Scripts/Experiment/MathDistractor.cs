@@ -18,6 +18,7 @@ using PsyForge.ExternalDevices;
 using PsyForge.GUI;
 using PsyForge.Utilities;
 using PsyForge.Localization;
+using System.Threading;
 
 namespace PsyForge.Experiment {
 
@@ -44,12 +45,12 @@ namespace PsyForge.Experiment {
             this.mathDistractorTimeout = mathDistractorTimeout;
         }
 
-        public async Task RunInitialTimings() {
-            await ExpHelpers.PressAnyKey("pre-trial math distractor", LangStrings.MathDistractorPreTrial());
+        public async Task RunInitialTimings(CancellationToken ct = default) {
+            await ExpHelpers.PressAnyKey("pre-trial math distractor", LangStrings.MathDistractorPreTrial(), ct);
             await Run(false, -1, true);
         }
 
-        public async Task Run(bool isPractice, int trialNum, bool setProblemTimings = false) {
+        public async Task Run(bool isPractice, int trialNum, bool setProblemTimings = false, CancellationToken ct = default) {
             ExpHelpers.SetExperimentStatus(HostPcStatusMsg.DISTRACT(trialNum));
             var trueDistractorDurationMs = isPractice ? practiceDistractorDurationMs : distractorDurationMs;
 
@@ -75,9 +76,9 @@ namespace PsyForge.Experiment {
                     if (mathDistractorTimeout && !setProblemTimings && mathDistractorProblemTimeMs > 0) {
                         int problemTimeLeftMs = (int)(problemStartTime - Clock.UtcNow).TotalMilliseconds + mathDistractorProblemTimeMs;
                         if (problemTimeLeftMs <= 0) { throw new TimeoutException(); }
-                        keyCode = await inputManager.WaitForKey().Timeout(problemTimeLeftMs, new(), "MathDistractor timeout", true);
+                        keyCode = await inputManager.WaitForKey(ct: ct).Timeout(problemTimeLeftMs, new(), "MathDistractor timeout", true);
                     } else {
-                        keyCode = await inputManager.WaitForKey();
+                        keyCode = await inputManager.WaitForKey(ct: ct);
                     }
                 } catch (TimeoutException) {
                     textDisplayer.Display("math distractor timeout", text: LangStrings.GenForCurrLang(problem + answer));

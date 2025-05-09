@@ -8,24 +8,54 @@
 //You should have received a copy of the GNU General Public License along with PsyForge. If not, see <https://www.gnu.org/licenses/>. 
 
 using System;
+using UnityEditor;
 
 namespace PsyForge.Utilities {
-    public struct Timer {
-        DateTime startTime;
-        DateTime stopTime;
+    public class Timer {
+        readonly DateTime startTime;
+        readonly DateTime stopTime;
+        TimeSpan pausedDuration;
+        DateTime pauseStart;
 
-        public Timer(TimeSpan duration) {
-            this.startTime = Clock.UtcNow;
-            this.stopTime = startTime + duration;
-        }
-
-        public Timer(DateTime stopTime) {
+        /// <summary>
+        /// Creates a timer that will stop after the specified duration.
+        /// If pauseAware is true, the timer will ignore any time the application is paused.
+        /// By default, pauseAware will be on for things on unity main thread, and off for things on other threads.
+        /// </summary>
+        /// <param name="duration"></param>
+        /// <param name="pauseAware"></param>
+        public Timer(DateTime stopTime, bool? pauseAware = null) {
             this.startTime = Clock.UtcNow;
             this.stopTime = stopTime;
+            this.pausedDuration = TimeSpan.Zero;
+            this.pauseStart = default;
+
+            var manager = MainManager.Instance;
+            if (pauseAware ?? manager.OnUnityThread()) {
+                manager.AddTimerTS(this);
+            }
+        }
+        public Timer(TimeSpan duration, bool? pauseAware = null) : this(Clock.UtcNow + duration, pauseAware) {}
+        public Timer(int durationMs, bool? pauseAware = null) : this(TimeSpan.FromMilliseconds(durationMs), pauseAware) {}
+
+        public void Pause() {
+            if (pauseStart == default) { // Don't reset if already paused
+                pauseStart = Clock.UtcNow;
+            }
+        }
+
+        public void UnPause() {
+            if (pauseStart != default) {
+                pausedDuration += Clock.UtcNow - pauseStart;
+                pauseStart = default; // Reset pause start
+            }
         }
 
         public bool IsFinished() {
-            return Clock.UtcNow >= stopTime;
+            var currentPauseDuration = pauseStart != default ? Clock.UtcNow - pauseStart : TimeSpan.Zero;
+            var ret = Clock.UtcNow >= stopTime + pausedDuration + currentPauseDuration;
+            if (ret) { MainManager.Instance.TryRemoveTimerTS(this); }
+            return Clock.UtcNow >= stopTime + pausedDuration + currentPauseDuration;
         }
     }
 }

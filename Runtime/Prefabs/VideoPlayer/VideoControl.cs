@@ -19,15 +19,18 @@ using UnityEngine.Video;
 using PsyForge.Threading;
 using TMPro;
 using PsyForge.Localization;
+using System.Threading;
+using UnityEngine.UI;
 
 namespace PsyForge.GUI {
 
     public class VideoControl : EventMonoBehaviour {
         protected override void AwakeOverride() { }
 
-        public RectTransform videoTransform;
-        public VideoPlayer videoPlayer;
-        public TextMeshProUGUI skippableText;
+        [SerializeField] RectTransform videoTransform;
+        [SerializeField] VideoPlayer videoPlayer;
+        [SerializeField] TextMeshProUGUI skippableText;
+        [SerializeField] AspectRatioFitter aspectRatioFitter;
 
         protected bool skippable;
         protected string videoPath;
@@ -101,16 +104,17 @@ namespace PsyForge.GUI {
                 this.videoPlayer.url = "file://" + FileManager.ExpResourcePath(this.videoPath);
             }
             this.skippable = skippable;
+            videoPlayer.Prepare();
             videoPath.Dispose();
         }
 
-        public async Task PlayVideo() {
-            await DoWaitFor(PlayVideoHelper);
+        public async Task PlayVideo(CancellationToken ct = default) {
+            await DoWaitFor(PlayVideoHelper, ct);
         }
-        public async Task PlayVideoTS() {
-            await DoWaitForTS(PlayVideoHelper);
+        public async Task PlayVideoTS(CancellationToken ct = default) {
+            await DoWaitForTS(PlayVideoHelper, ct);
         }
-        protected async Task PlayVideoHelper() {
+        protected async Task PlayVideoHelper(CancellationToken ct = default) {
             videoFinished = new();
 
             gameObject.SetActive(true);
@@ -118,8 +122,15 @@ namespace PsyForge.GUI {
                 ? LangStrings.IntroductionVideoSkip()
                 : LangStrings.Blank();
 
+            videoPlayer.Prepare();
+            while (!videoPlayer.isPrepared) { await Awaitable.NextFrameAsync(ct); }
+            aspectRatioFitter.aspectRatio = videoPlayer.width / (float)videoPlayer.height;
+
             videoPlayer.Play();
             eventReporter.LogTS("play video", new() { { "video", videoPath } });
+            while (!videoFinished.Task.IsCompleted) {
+                await Awaitable.NextFrameAsync(ct);
+            }
             await videoFinished.Task;
             gameObject.SetActive(false);
         }
@@ -138,6 +149,19 @@ namespace PsyForge.GUI {
                 } else {
                     videoPlayer.Play();
                 }
+            }
+        }
+
+        public void StopVideo() {
+            Do(StopVideoHelper);
+        }
+        public void StopVideoTS() {
+            DoTS(StopVideoHelper);
+        }
+        protected void StopVideoHelper() {
+            if (videoPlayer.isActiveAndEnabled) {
+                eventReporter.LogTS("stop video", new() { { "video", videoPath } });
+                videoPlayer.Stop();
             }
         }
 

@@ -27,7 +27,7 @@ namespace PsyForge.Localization {
         }); }
         public static LangString WarningFooter() { return new( new() {
             { Language.English, "Press [Enter] to continue or press [Q] to quit" },
-            { Language.German, "Drücken Sie [Enter], um fortzufahren, oder drücken Sie [Q], um aufzuhören" },
+            { Language.German, "Drücken Sie [Eingabetaste], um fortzufahren, oder drücken Sie [Q], um aufzuhören" },
         }); }
         public static LangString ShowInstructionVideo() { return new( new() {
             { Language.English, "Press any key to show instruction video" },
@@ -48,12 +48,12 @@ namespace PsyForge.Localization {
                 + "\n\nWenn Sie glauben, die Aufgabe zu verstehen, erklären Sie sie bitte dem Versuchsleiter in Ihren eigenen Worten." },
         }); }
         public static LangString ExperimentQuit() { return new( new() {
-            { Language.English, "Do you want to quit?\n\nPress [Y] to Quit.\nPress [N] to Resume." },
+            { Language.English, "Do you want to quit?\n\nPress [Y] to quit.\nPress [N] to resume." },
             { Language.German, "Möchten Sie aufhören?\n\nDrücken Sie [Y], um aufzuhören.\nDrücken Sie [N], um fortzufahren." },
         }); }
         public static LangString ExperimentSkipToEnd() { return new( new() {
-            { Language.English, "Do you want to skip to the end of the experiment?\n\nPress [Y] to Skip.\nPress [N] to Resume." },
-            { Language.German, "" },
+            { Language.English, "Do you want to skip to the end of the experiment?\n\nPress [Y] to skip.\nPress [N] to resume." },
+            { Language.German, "Möchten Sie die Studie beenden? Bitte drücken Sie [Y] für Ja, [N] um fortzufahren." },
         }); }
         public static LangString ExperimentPaused() { return new( new() {
             { Language.English, "<b>Paused</b>\n\nPress [P] to unpause." },
@@ -116,8 +116,8 @@ namespace PsyForge.Localization {
                 + $"\n\nDrücken Sie [Y], um mit der angegebenen Bildrate ({targetFps}) fortzufahren.\nDrücken Sie [N], um aufzuhören." },
         }); }
         public static LangString IntroductionVideoSkip() { return new( new() {
-            { Language.English, "Press [SPACE] at any time to continue." },
-            { Language.German, "Drücken Sie [LEERTASTE], um fortzufahren." },
+            { Language.English, "Press [Space] to skip the instructions." },
+            { Language.German, "Drücken Sie die [Leertaste], um die Anleitung zu überspringen." },
         }); }
 
         public static LangString StartupExperimentLauncher() { return new( new() {

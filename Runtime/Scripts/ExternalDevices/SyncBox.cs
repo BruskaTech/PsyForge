@@ -12,6 +12,7 @@ using UnityEngine;
 using PsyForge.DataManagement;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace PsyForge.ExternalDevices {
     public abstract class SyncBox : EventMonoBehaviour {
@@ -20,7 +21,7 @@ namespace PsyForge.ExternalDevices {
         protected int pulseNum { get; private set; } = 0;
 
         internal abstract Task Init();
-        protected abstract Task PulseInternals();
+        protected abstract Task PulseInternals(CancellationToken ct = default);
         internal abstract Task TearDown();
 
         protected override void AwakeOverride() { }
@@ -49,7 +50,7 @@ namespace PsyForge.ExternalDevices {
             return new();
         }
 
-        public async Task Pulse(Dictionary<string, object> logOnValues = null, Dictionary<string, object> logOffValues = null) {
+        public async Task Pulse(Dictionary<string, object> logOnValues = null, Dictionary<string, object> logOffValues = null, CancellationToken ct = default) {
             Dictionary<string, object> logOnDict =
                 new Dictionary<string, object>() {
                     { "syncBox", GetType().Name },
@@ -59,7 +60,7 @@ namespace PsyForge.ExternalDevices {
                 .ToDictionary(x=>x.Key,x=>x.Value);
             EventReporter.Instance.LogTS("syncbox pulse on", logOnDict);
 
-            await PulseInternals();
+            await PulseInternals(ct);
 
             Dictionary<string, object> logOffDict =
                 new Dictionary<string, object>() {
@@ -73,17 +74,17 @@ namespace PsyForge.ExternalDevices {
             pulseNum++;
         }
 
-        public void StartContinuousPulsing() {
-            DoTS(StartContinuousPulsingHelper);
+        public void StartContinuousPulsing(CancellationToken ct = default) {
+            DoTS(StartContinuousPulsingHelper, ct);
         }
-        private async void StartContinuousPulsingHelper() {
+        private async void StartContinuousPulsingHelper(CancellationToken ct) {
             continuousPulsing = true;
-            while (continuousPulsing) {
+            while (continuousPulsing && !ct.IsCancellationRequested) {
                 if (lastFrameCount == Time.frameCount) {
                     throw new System.Exception($"SyncBox ({this.GetType().Name}) is pulsing too fast (or has no delays in it). You can only pulse once per frame.");
                 }
                 lastFrameCount = Time.frameCount;
-                await Pulse();
+                await Pulse(ct: ct);
             }
         }
         public void StopContinuousPulsing() {

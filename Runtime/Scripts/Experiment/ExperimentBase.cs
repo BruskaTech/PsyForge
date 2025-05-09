@@ -20,6 +20,7 @@ using PsyForge.Localization;
 using PsyForge.ExternalDevices;
 using PsyForge.GUI;
 using PsyForge.Extensions;
+using System.Reflection;
 
 namespace PsyForge.Experiment {
 
@@ -59,7 +60,7 @@ namespace PsyForge.Experiment {
         protected bool noPracticeSession = false;
         internal ExperimentPhase experimentPhase = ExperimentPhase.Unitialized;
 
-        private Awaitable experimentSessions;
+        private CancellationTokenSource experimentSessionsCTS;
 
         protected new void Awake() {
             base.Awake();
@@ -116,7 +117,7 @@ namespace PsyForge.Experiment {
         /// These are the experiment trials.
         /// </summary>
         /// <returns></returns>
-        protected abstract Task TrialStates();
+        protected abstract Awaitable TrialStates(CancellationToken ct);
         /// <summary>
         /// Things run at the very end of the experiment.
         /// This is useful for things like post-experiment questionnaires.
@@ -135,8 +136,7 @@ namespace PsyForge.Experiment {
             await InitialStates();
 
             try {
-                experimentSessions = RunExperimentSessions();
-                await experimentSessions;
+                await RunExperimentSessions();
             } catch (OperationCanceledException) {} // Jumping to FinalStates
 
             // Final States and quit
@@ -147,6 +147,7 @@ namespace PsyForge.Experiment {
 
         private async Awaitable RunExperimentSessions() {
             // Run practice session
+            experimentSessionsCTS = new CancellationTokenSource();
             experimentPhase = ExperimentPhase.PracticeTrials;
             session = practiceSession;
             try {
@@ -175,7 +176,7 @@ namespace PsyForge.Experiment {
                         + "\n\nAssign a value to 'normalSession' in your experiment.");
                 }
                 while (true) {
-                    await TrialStates();
+                    await TrialStates(experimentSessionsCTS.Token);
                     session.TrialNum++;
                 }
             } catch (EndSessionException) {} // do nothing
@@ -213,9 +214,18 @@ namespace PsyForge.Experiment {
             eventReporter.LogTS("constants and configs", Config.ToDict());
         }
 
+        protected virtual async Awaitable SkipAheadHandler() { await Task.CompletedTask; }
+
         // Pause and Quit Functions
         protected virtual async void ExperimentQuit() {
             if (Config.quitAnytime) {
+                if (Config.quitAnytimeButSkipAheadInstead) {
+                    var quitHandlerMethod = GetType().GetMethod(nameof(SkipAheadHandler), BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                    if (!Reflection.IsOverride(quitHandlerMethod)) {
+                        throw new NotImplementedException($"The {nameof(SkipAheadHandler)} method must be overridden in {GetType().Name} if you want to use the {nameof(Config.quitAnytimeButSkipAheadInstead)} config option.");
+                    }
+                }
+
                 while (true) {
                     // Wait for the quit key
                     await inputManager.WaitForKey(new List<KeyCode>() { KeyCode.Q }, unpausable: true);
@@ -242,18 +252,22 @@ namespace PsyForge.Experiment {
 
                     // Handle their response
                     if (skipInsteadOfQuit) {
-                        if (response == KeyCode.Y) { experimentSessions?.Cancel(); }
+                        if (response == KeyCode.Y) {
+                            experimentSessionsCTS?.Cancel();
+                            await SkipAheadHandler();
+                        }
                         else if (response == KeyCode.Q) { break; }
                     } else {
                         if (response == KeyCode.Y) { break; }
                     }
 
-                    // Resume since they don't want to quit (or haven't tried yet)
+                    // Resume since they don't want to quit
                     ExpHelpers.SetExperimentStatus(HostPcStatusMsg.PAUSE(false));
                     manager.Pause(false);
                 }
                 
                 manager.Pause(false);
+                await SkipAheadHandler();
                 await manager.QuitTS();
             }
         }
@@ -280,59 +294,59 @@ namespace PsyForge.Experiment {
         }
 
         // Pre-Trial States
-        protected virtual async Task IntroductionVideo() {
+        protected virtual async Task IntroductionVideo(CancellationToken ct = default) {
             await ExpHelpers.RepeatUntilYes(async (CancellationToken ct) => {
-                await ExpHelpers.PressAnyKey("show instruction video", LangStrings.ShowInstructionVideo());
+                await ExpHelpers.PressAnyKey("show instruction video", LangStrings.ShowInstructionVideo(), ct);
 
                 manager.videoControl.SetVideo(Config.introductionVideo, true);
-                await manager.videoControl.PlayVideo();
-            }, "repeat introduction video", LangStrings.RepeatIntroductionVideo(), new());
+                await manager.videoControl.PlayVideo(ct);
+            }, "repeat introduction video", LangStrings.RepeatIntroductionVideo(), ct);
         }
 
-        protected virtual async Task IntroductionVideo(string videoPath) {
+        protected virtual async Task IntroductionVideo(string videoPath, CancellationToken ct = default) {
             await ExpHelpers.RepeatUntilYes(async (CancellationToken ct) => {
-                await ExpHelpers.PressAnyKey("show instruction video", LangStrings.ShowInstructionVideo());
+                await ExpHelpers.PressAnyKey("show instruction video", LangStrings.ShowInstructionVideo(), ct);
 
                 manager.videoControl.SetVideo(videoPath, true);
-                await manager.videoControl.PlayVideo();
-            }, "repeat introduction video", LangStrings.RepeatIntroductionVideo(), new());
+                await manager.videoControl.PlayVideo(ct);
+            }, "repeat introduction video", LangStrings.RepeatIntroductionVideo(), ct);
         }
-        protected virtual async Task MicrophoneTest() {
+        protected virtual async Task MicrophoneTest(CancellationToken ct = default) {
             await ExpHelpers.RepeatUntilYes(async (CancellationToken ct) => {
-                await ExpHelpers.PressAnyKey("microphone test prompt", LangStrings.MicrophoneTestTitle(), LangStrings.MicrophoneTest());
+                await ExpHelpers.PressAnyKey("microphone test prompt", LangStrings.MicrophoneTestTitle(), LangStrings.MicrophoneTest(), ct);
 
                 string wavPath = System.IO.Path.Combine(FileManager.SessionPath(), "microphone_test_"
                         + Clock.UtcNow.ToString("yyyy-MM-dd_HH_mm_ss") + ".wav");
 
                 manager.lowBeep.Play();
-                await DoWaitWhile(() => manager.lowBeep.isPlaying);
-                await manager.Delay(100); // This is needed so you don't hear the end of the beep in the recording
+                await DoWaitWhile(() => manager.lowBeep.isPlaying, ct);
+                await manager.Delay(100, ct: ct); // This is needed so you don't hear the end of the beep in the recording
 
                 manager.recorder.StartRecording(wavPath);
                 var coloredTestRec = LangStrings.MicrophoneTestRecording().Color("red");
                 textDisplayer.Display("microphone test recording", text: coloredTestRec);
-                await manager.Delay(Config.micTestDurationMs);
+                await manager.Delay(Config.micTestDurationMs, ct: ct);
                 var clip = manager.recorder.StopRecording();
 
                 var coloredTestPlay = LangStrings.MicrophoneTestPlaying().Color("green");
                 textDisplayer.Display("microphone test playing", text: coloredTestPlay);
                 manager.playback.PlayOneShot(clip);
-                await manager.Delay(Config.micTestDurationMs);
+                await manager.Delay(Config.micTestDurationMs, ct: ct);
             }, "repeat mic test", LangStrings.RepeatMicTest(), new());
         }
-        protected virtual async Task SubjectConfirmation() {
+        protected virtual async Task SubjectConfirmation(CancellationToken ct = default) {
             ExpHelpers.SetExperimentStatus(HostPcStatusMsg.WAITING());
 
             textDisplayer.Display("subject/session confirmation",
                 text: LangStrings.SubjectSessionConfirmation(Config.subject, Config.sessionNum.Value, Config.experimentName));
-            var keyCode = await inputManager.WaitForKey(new List<KeyCode>() { KeyCode.Y, KeyCode.N });
+            var keyCode = await inputManager.WaitForKey(new List<KeyCode>() { KeyCode.Y, KeyCode.N }, ct: ct);
 
             if (keyCode == KeyCode.N) {
                 await manager.QuitTS();
             }
         }
-        protected virtual async Task ConfirmStart() {
-            await ExpHelpers.PressAnyKey("confirm start", LangStrings.ConfirmStart());
+        protected virtual async Task ConfirmStart(CancellationToken ct = default) {
+            await ExpHelpers.PressAnyKey("confirm start", LangStrings.ConfirmStart(), ct);
         }
         protected void ReportSessionNum(Dictionary<string, object> extraData = null) {
             var exp = HostPcExpMsg.SESSION(Config.sessionNum.Value);

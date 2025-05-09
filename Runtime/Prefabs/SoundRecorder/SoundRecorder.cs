@@ -71,6 +71,16 @@ namespace PsyForge.Utilities {
             isRecording = true;
             outputFilePath.Dispose();
         }
+
+        public bool IsRecording() {
+            return DoGet(IsRecordingHelper);
+        }
+        public async Task<Bool> IsRecordingTS() {
+            return await DoGetTS(IsRecordingHelper);
+        }
+        protected Bool IsRecordingHelper() {
+            return isRecording;
+        }
       
         public AudioClip StopRecording() {
             return DoGet(StopRecordingHelper);

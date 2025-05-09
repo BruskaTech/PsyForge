@@ -26,6 +26,7 @@ using PsyForge.GUI;
 using PsyForge.Threading;
 using PsyForge.Utilities;
 using PsyForge.Localization;
+using System.Threading;
 
 
 namespace PsyForge {
@@ -84,8 +85,6 @@ namespace PsyForge {
         // Devices that can be accessed by managed scripts
         //////////
         public HostPC hostPC;
-
-        private List<GameObject> syncBoxObjs;
         public SyncBoxes syncBoxes = new();
 
         //////////
@@ -171,6 +170,7 @@ namespace PsyForge {
             // Setup Syncbox Interface
             if (!Config.isTest && Config.syncBoxOn) {
                 await Task.WhenAll(Config.syncBoxClasses.Val.Select(LoadSyncBox));
+                await syncBoxes.Init();
             }
 
             // Launch Startup Scene
@@ -258,18 +258,37 @@ namespace PsyForge {
         //     PauseHelper(pause);
         //     yield return null;
         // }
+
+        ConcurrentDictionary<PsyForge.Utilities.Timer, PsyForge.Utilities.Timer> timers = new();
+        internal void AddTimerTS(PsyForge.Utilities.Timer timer) {
+            timers.TryAdd(timer, timer);
+        }
+        internal bool TryRemoveTimerTS(PsyForge.Utilities.Timer timer) {
+            return timers.TryRemove(timer, out _);
+        }
+
         public void Pause(bool pause) {
             Do<Bool>(PauseHelper, pause);
         }
         protected void PauseHelper(Bool pause) {
-            // TODO: JPB: (needed) Implement pause functionality correctly
             float oldTimeScale = 0;
             if (pause) {
                 pauseTimescales.Push(Time.timeScale);
                 Time.timeScale = 0;
+                if (pauseTimescales.Count == 1) { // The pause actually started
+                    foreach (var (timer, _) in timers) {
+                        timer.Pause();
+                    }
+                }
+
             } else {
                 if (pauseTimescales.TryPop(out oldTimeScale) ) {
                     Time.timeScale = oldTimeScale;
+                    if (pauseTimescales.Count == 0) { // The pause actually ended
+                        foreach (var (timer, _) in timers) {
+                            timer.UnPause();
+                        }
+                    }
                 }
             }
             if (isVideoControlAvailable) { videoControl.PauseVideo(oldTimeScale == 0); }
@@ -327,69 +346,21 @@ namespace PsyForge {
         }
 
         // Timing Functions
-        public async Task DelayWithAction(int millisecondsDelay, Action<TimeSpan> action) {
-            await ToCoroutineTask(DelayWithActionE(millisecondsDelay, action));
-        }
-        public IEnumerator DelayWithActionE(int millisecondsDelay, Action<TimeSpan> action) {
-            return DoWaitFor(DelayEHelper, millisecondsDelay, action);
-        }
-        public async Task DelayTS(int millisecondsDelay) {
-            if (millisecondsDelay != 0) {
-                await DoWaitForTS(DelayEHelper, millisecondsDelay);
-            }
-        }
-        public async Task Delay(int millisecondsDelay) {
-            if (millisecondsDelay != 0) {
-                await ToCoroutineTask(DelayE(millisecondsDelay));
-            }
-        }
-        private IEnumerator DoNothing() {
-            yield break;
-        }
-        public IEnumerator DelayE(int millisecondsDelay) {
-            if (millisecondsDelay == 0) { return DoNothing(); }
-            return DoWaitFor(DelayEHelper, millisecondsDelay);
-        }
-        public IEnumerator DelayEHelper(int millisecondsDelay) {
-            return DelayEHelper(millisecondsDelay, null);
-        }
-        public IEnumerator DelayEHelper(int millisecondsDelay, Action<TimeSpan> action) {
+        public async Awaitable Delay(int millisecondsDelay, bool pauseAware = true, CancellationToken ct = default) {
             if (millisecondsDelay < 0) {
                 throw new ArgumentOutOfRangeException($"millisecondsDelay <= 0 ({millisecondsDelay})");
             } else if (millisecondsDelay == 0) {
-                yield break;
+                return;
             }
 
-            yield return new Delay(millisecondsDelay, action);
+            PsyForge.Utilities.Timer timer = new(millisecondsDelay, pauseAware);
+            while (!timer.IsFinished()) {
+                await Awaitable.NextFrameAsync(ct);
+            }
         }
-    }
-
-    class Delay : CustomYieldInstruction {
-        private TimeSpan timeRemaining;
-        private Action<TimeSpan> action;
-        private DateTime lastTime;
-
-        public Delay(double seconds, Action<TimeSpan> action = null) {
-            timeRemaining = TimeSpan.FromSeconds(seconds);
-            this.action = action;
-            lastTime = Clock.UtcNow;
-        }
-
-        public Delay(int millisecondsDelay, Action<TimeSpan> action = null) {
-            timeRemaining = TimeSpan.FromMilliseconds(millisecondsDelay);
-            this.action = action;
-            lastTime = Clock.UtcNow;
-        }
-
-        public override bool keepWaiting {
-            get {
-                if (MainManager.Instance.IsPaused()) { return true; }
-                var time = Clock.UtcNow;
-                var diff = time - lastTime;
-                timeRemaining -= diff;
-                lastTime = time;
-                action?.Invoke(timeRemaining > TimeSpan.Zero ? timeRemaining : TimeSpan.Zero);
-                return timeRemaining > TimeSpan.Zero;
+        public async Task DelayTS(int millisecondsDelay, bool pauseAware = true, CancellationToken ct = default) {
+            if (millisecondsDelay != 0) {
+                await DoWaitForTS(Delay, millisecondsDelay, pauseAware, ct);
             }
         }
     }

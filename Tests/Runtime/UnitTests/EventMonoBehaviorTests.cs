@@ -310,13 +310,13 @@ namespace PsyForgeTests {
 
             Assert.AreEqual(i + 1, emb.GetIMB());
 
-            yield return MainManager.Instance.DelayE(900);
+            yield return MainManager.Instance.Delay(900);
             Assert.AreEqual(i + 1, emb.GetIMB());
 
-            yield return MainManager.Instance.DelayE(200);
+            yield return MainManager.Instance.Delay(200);
             Assert.AreEqual(i + 2, emb.GetIMB());
 
-            yield return MainManager.Instance.DelayE(1000);
+            yield return MainManager.Instance.Delay(1000);
             Assert.AreEqual(i + 3, emb.GetIMB());
         }
 
@@ -326,16 +326,16 @@ namespace PsyForgeTests {
 
             yield return emb.IncThreeTimesEnumMB(500, 1000, 3);
 
-            yield return MainManager.Instance.DelayE(400);
+            yield return MainManager.Instance.Delay(400);
             Assert.AreEqual(i, emb.GetIMB());
 
-            yield return MainManager.Instance.DelayE(200);
+            yield return MainManager.Instance.Delay(200);
             Assert.AreEqual(i + 1, emb.GetIMB());
 
-            yield return MainManager.Instance.DelayE(1000);
+            yield return MainManager.Instance.Delay(1000);
             Assert.AreEqual(i + 2, emb.GetIMB());
 
-            yield return MainManager.Instance.DelayE(1000);
+            yield return MainManager.Instance.Delay(1000);
             Assert.AreEqual(i + 3, emb.GetIMB());
         }
 
@@ -369,13 +369,13 @@ namespace PsyForgeTests {
 
             Assert.AreEqual(i + 1, emb.GetIMB());
 
-            yield return MainManager.Instance.DelayE(900);
+            yield return MainManager.Instance.Delay(900);
             Assert.AreEqual(i + 1, emb.GetIMB());
 
-            yield return MainManager.Instance.DelayE(200);
+            yield return MainManager.Instance.Delay(200);
             Assert.AreEqual(i + 2, emb.GetIMB());
 
-            yield return MainManager.Instance.DelayE(1000);
+            yield return MainManager.Instance.Delay(1000);
             Assert.AreEqual(i + 3, emb.GetIMB());
         }
 
@@ -385,16 +385,16 @@ namespace PsyForgeTests {
 
             emb.IncThreeTimesActMB(500, 1000, 3);
 
-            yield return MainManager.Instance.DelayE(400);
+            yield return MainManager.Instance.Delay(400);
             Assert.AreEqual(i, emb.GetIMB());
 
-            yield return MainManager.Instance.DelayE(200);
+            yield return MainManager.Instance.Delay(200);
             Assert.AreEqual(i + 1, emb.GetIMB());
 
-            yield return MainManager.Instance.DelayE(1000);
+            yield return MainManager.Instance.Delay(1000);
             Assert.AreEqual(i + 2, emb.GetIMB());
 
-            yield return MainManager.Instance.DelayE(1000);
+            yield return MainManager.Instance.Delay(1000);
             Assert.AreEqual(i + 3, emb.GetIMB());
         }
 
@@ -526,12 +526,12 @@ namespace PsyForgeTests {
 
             emb.DelayedIncEnum(1000);
 
-            yield return MainManager.Instance.DelayE(900);
+            yield return MainManager.Instance.Delay(900);
             task = emb.GetI();
             yield return task.ToEnumerator();
             Assert.AreEqual(i, task.Result);
 
-            yield return MainManager.Instance.DelayE(200);
+            yield return MainManager.Instance.Delay(200);
             task = emb.GetI();
             yield return task.ToEnumerator();
             Assert.AreEqual(i+1, task.Result);
@@ -545,12 +545,12 @@ namespace PsyForgeTests {
 
             emb.DelayedIncAct(1000);
 
-            yield return MainManager.Instance.DelayE(900);
+            yield return MainManager.Instance.Delay(900);
             task = emb.GetI();
             yield return task.ToEnumerator();
             Assert.AreEqual(i, task.Result);
 
-            yield return MainManager.Instance.DelayE(200);
+            yield return MainManager.Instance.Delay(200);
             task = emb.GetI();
             yield return task.ToEnumerator();
             Assert.AreEqual(i + 1, task.Result);
@@ -568,17 +568,17 @@ namespace PsyForgeTests {
             yield return task.ToEnumerator();
             Assert.AreEqual(i + 1, task.Result);
 
-            yield return MainManager.Instance.DelayE(900);
+            yield return MainManager.Instance.Delay(900);
             task = emb.GetI();
             yield return task.ToEnumerator();
             Assert.AreEqual(i + 1, task.Result);
 
-            yield return MainManager.Instance.DelayE(200);
+            yield return MainManager.Instance.Delay(200);
             task = emb.GetI();
             yield return task.ToEnumerator();
             Assert.AreEqual(i + 2, task.Result);
 
-            yield return MainManager.Instance.DelayE(1000);
+            yield return MainManager.Instance.Delay(1000);
             task = emb.GetI();
             yield return task.ToEnumerator();
             Assert.AreEqual(i + 3, task.Result);
@@ -592,22 +592,22 @@ namespace PsyForgeTests {
 
             emb.IncThreeTimesEnum(500, 1000, 3);
 
-            yield return MainManager.Instance.DelayE(400);
+            yield return MainManager.Instance.Delay(400);
             task = emb.GetI();
             yield return task.ToEnumerator();
             Assert.AreEqual(i, task.Result);
 
-            yield return MainManager.Instance.DelayE(200);
+            yield return MainManager.Instance.Delay(200);
             task = emb.GetI();
             yield return task.ToEnumerator();
             Assert.AreEqual(i + 1, task.Result);
 
-            yield return MainManager.Instance.DelayE(1000);
+            yield return MainManager.Instance.Delay(1000);
             task = emb.GetI();
             yield return task.ToEnumerator();
             Assert.AreEqual(i + 2, task.Result);
 
-            yield return MainManager.Instance.DelayE(1000);
+            yield return MainManager.Instance.Delay(1000);
             task = emb.GetI();
             yield return task.ToEnumerator();
             Assert.AreEqual(i + 3, task.Result);
@@ -625,17 +625,17 @@ namespace PsyForgeTests {
             yield return task.ToEnumerator();
             Assert.AreEqual(i + 1, task.Result);
 
-            yield return MainManager.Instance.DelayE(900);
+            yield return MainManager.Instance.Delay(900);
             task = emb.GetI();
             yield return task.ToEnumerator();
             Assert.AreEqual(i + 1, task.Result);
 
-            yield return MainManager.Instance.DelayE(200);
+            yield return MainManager.Instance.Delay(200);
             task = emb.GetI();
             yield return task.ToEnumerator();
             Assert.AreEqual(i + 2, task.Result);
 
-            yield return MainManager.Instance.DelayE(1000);
+            yield return MainManager.Instance.Delay(1000);
             task = emb.GetI();
             yield return task.ToEnumerator();
             Assert.AreEqual(i + 3, task.Result);
@@ -649,22 +649,22 @@ namespace PsyForgeTests {
 
             emb.IncThreeTimesAct(500, 1000, 3);
 
-            yield return MainManager.Instance.DelayE(400);
+            yield return MainManager.Instance.Delay(400);
             task = emb.GetI();
             yield return task.ToEnumerator();
             Assert.AreEqual(i, task.Result);
 
-            yield return MainManager.Instance.DelayE(200);
+            yield return MainManager.Instance.Delay(200);
             task = emb.GetI();
             yield return task.ToEnumerator();
             Assert.AreEqual(i + 1, task.Result);
 
-            yield return MainManager.Instance.DelayE(1000);
+            yield return MainManager.Instance.Delay(1000);
             task = emb.GetI();
             yield return task.ToEnumerator();
             Assert.AreEqual(i + 2, task.Result);
 
-            yield return MainManager.Instance.DelayE(1000);
+            yield return MainManager.Instance.Delay(1000);
             task = emb.GetI();
             yield return task.ToEnumerator();
             Assert.AreEqual(i + 3, task.Result);
@@ -912,7 +912,7 @@ namespace PsyForgeTests {
                 yield return DoWaitFor(DelayedIncAndWaitEnumMBHelper, millisecondsDelay);
             }
             protected IEnumerator DelayedIncAndWaitEnumMBHelper(int millisecondsDelay) {
-                yield return MainManager.Instance.DelayE(1000);
+                yield return MainManager.Instance.Delay(1000);
                 i += 1;
             }
 
@@ -986,7 +986,7 @@ namespace PsyForgeTests {
                 await DoWaitForTS(DelayedIncAndWaitEnumHelper, millisecondsDelay);
             }
             protected IEnumerator DelayedIncAndWaitEnumHelper(int millisecondsDelay) {
-                yield return MainManager.Instance.DelayE(1000);
+                yield return MainManager.Instance.Delay(1000);
                 i += 1;
             }
 
@@ -1015,7 +1015,7 @@ namespace PsyForgeTests {
                 await DoWaitForManualTriggerTS(DelayedIncAndWaitManualTriggerEnumHelper, millisecondsDelay);
             }
             protected IEnumerator DelayedIncAndWaitManualTriggerEnumHelper(TaskCompletionSource<bool> tcs, int millisecondsDelay) {
-                yield return MainManager.Instance.DelayE(1000);
+                yield return MainManager.Instance.Delay(1000);
                 i += 1;
                 tcs.SetResult(true);
             }

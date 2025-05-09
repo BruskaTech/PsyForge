@@ -28,13 +28,13 @@ namespace PsyForge.Experiment {
         /// <param name="displayText"></param>
         /// <param name="displayText"></param>
         /// <returns></returns>
-        public static async Task<KeyCode> PressAnyKey(string description, LangString displayText) {
-            return await PressAnyKey(description, null, displayText);
+        public static async Task<KeyCode> PressAnyKey(string description, LangString displayText, CancellationToken ct = default) {
+            return await PressAnyKey(description, null, displayText, ct);
         }
-        public static async Task<KeyCode> PressAnyKey(string description, LangString displayTitle, LangString displayText) {
+        public static async Task<KeyCode> PressAnyKey(string description, LangString displayTitle, LangString displayText, CancellationToken ct = default) {
             SetExperimentStatus(HostPcStatusMsg.WAITING());
             TextDisplayer.Instance.Display($"{description} (press any key prompt)", displayTitle, displayText, LangStrings.AnyKeyToContinue());
-            var keyCode = await InputManager.Instance.WaitForKey();
+            var keyCode = await InputManager.Instance.WaitForKey(ct: ct);
             TextDisplayer.Instance.Clear();
             return keyCode;
         }

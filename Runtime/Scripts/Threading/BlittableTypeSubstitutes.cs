@@ -125,8 +125,8 @@ namespace PsyForge.Threading {
             return bdt.Value;
         }
 
-        public double ConvertToMillisecondsSinceEpoch() {
-            return Value.ConvertToMillisecondsSinceEpoch();
+        public double ConvertToMillisecondsSinceEpoch(bool convertToUTC = false) {
+            return Value.ConvertToMillisecondsSinceEpoch(convertToUTC);
         }
 
         public override string ToString() {

@@ -141,9 +141,9 @@ namespace PsyForge {
         /// </summary>
         /// <param name="conditional">The condition to wait while it's true</param>
         /// <returns>The task to await</returns>
-        protected async Task DoWaitWhile(Func<bool> conditional) {
+        protected async Task DoWaitWhile(Func<bool> conditional, CancellationToken ct = default) {
             while (conditional()) {
-                await Awaitable.NextFrameAsync();
+                await Awaitable.NextFrameAsync(ct);
             }
             // await ToCoroutineTask(new WaitWhile(conditional)); // This is bad because it uses another Task in TaskCompletionSource
         }
@@ -153,9 +153,9 @@ namespace PsyForge {
         /// </summary>
         /// <param name="conditional">The condition to wait until it's true</param>
         /// <returns>The task to await</returns>
-        protected async Task DoWaitUntil(Func<bool> conditional) {
+        protected async Task DoWaitUntil(Func<bool> conditional, CancellationToken ct = default) {
             while (!conditional()) {
-                await Awaitable.NextFrameAsync();
+                await Awaitable.NextFrameAsync(ct);
             }
             // await ToCoroutineTask(new WaitUntil(conditional)); // This is bad because it uses another Task in TaskCompletionSource
         }
@@ -1444,27 +1444,27 @@ namespace PsyForge {
         // -------------------------------------
 
         private IEnumerator DelayedEnumeratorCaller(int millisecondsDelay, IEnumerator func) {
-            yield return manager.DelayE(millisecondsDelay);
+            yield return manager.Delay(millisecondsDelay);
             yield return func;
         }
         private IEnumerator DelayedEnumeratorCaller(int millisecondsDelay, Action func) {
-            yield return manager.DelayE(millisecondsDelay);
+            yield return manager.Delay(millisecondsDelay);
             func();
         }
         private IEnumerator DelayedEnumeratorCaller<T>(int millisecondsDelay, Action<T> func, T t) {
-            yield return manager.DelayE(millisecondsDelay);
+            yield return manager.Delay(millisecondsDelay);
             func(t);
         }
         private IEnumerator DelayedEnumeratorCaller<T, U>(int millisecondsDelay, Action<T, U> func, T t, U u) {
-            yield return manager.DelayE(millisecondsDelay);
+            yield return manager.Delay(millisecondsDelay);
             func(t, u);
         }
         private IEnumerator DelayedEnumeratorCaller<T, U, V>(int millisecondsDelay, Action<T, U, V> func, T t, U u, V v) {
-            yield return manager.DelayE(millisecondsDelay);
+            yield return manager.Delay(millisecondsDelay);
             func(t, u, v);
         }
         private IEnumerator DelayedEnumeratorCaller<T, U, V, W>(int millisecondsDelay, Action<T, U, V, W> func, T t, U u, V v, W w) {
-            yield return manager.DelayE(millisecondsDelay);
+            yield return manager.Delay(millisecondsDelay);
             func(t, u, v, w);
         }
 
@@ -1474,7 +1474,7 @@ namespace PsyForge {
         // -------------------------------------
 
         private IEnumerator RepeatingEnumeratorCaller(CancellationTokenSource cts, int delayMs, int intervalMs, uint? iterations, Func<IEnumerator> func) {
-            if (delayMs != 0) { yield return manager.DelayE(delayMs); }
+            if (delayMs != 0) { yield return manager.Delay(delayMs); }
 
             uint totalIterations = iterations ?? uint.MaxValue;
             var initTime = Clock.UtcNow;
@@ -1483,11 +1483,11 @@ namespace PsyForge {
                 yield return MakeEventEnumerator(func());
                 var delayTime = (i + 1) * intervalMs - (Clock.UtcNow - initTime).TotalMilliseconds;
                 if (delayTime < 0) { throw new TimeoutException("DoRepeating execution took longer than the interval assigned"); }
-                yield return manager.DelayE((int)delayTime);
+                yield return manager.Delay((int)delayTime);
             }
         }
         private IEnumerator RepeatingEnumeratorCaller<T>(CancellationTokenSource cts, int delayMs, int intervalMs, uint? iterations, Func<T, IEnumerator> func, T t) {
-            if (delayMs != 0) { yield return manager.DelayE(delayMs); }
+            if (delayMs != 0) { yield return manager.Delay(delayMs); }
 
             uint totalIterations = iterations ?? uint.MaxValue;
             var initTime = Clock.UtcNow;
@@ -1496,11 +1496,11 @@ namespace PsyForge {
                 yield return MakeEventEnumerator(func(t));
                 var delayTime = (i + 1) * intervalMs - (Clock.UtcNow - initTime).TotalMilliseconds;
                 if (delayTime < 0) { throw new TimeoutException("DoRepeating execution took longer than the interval assigned"); }
-                yield return manager.DelayE((int)delayTime);
+                yield return manager.Delay((int)delayTime);
             }
         }
         private IEnumerator RepeatingEnumeratorCaller<T, U>(CancellationTokenSource cts, int delayMs, int intervalMs, uint? iterations, Func<T, U, IEnumerator> func, T t, U u) {
-            if (delayMs != 0) { yield return manager.DelayE(delayMs); }
+            if (delayMs != 0) { yield return manager.Delay(delayMs); }
 
             uint totalIterations = iterations ?? uint.MaxValue;
             var initTime = Clock.UtcNow;
@@ -1509,11 +1509,11 @@ namespace PsyForge {
                 yield return MakeEventEnumerator(func(t, u));
                 var delayTime = (i + 1) * intervalMs - (Clock.UtcNow - initTime).TotalMilliseconds;
                 if (delayTime < 0) { throw new TimeoutException("DoRepeating execution took longer than the interval assigned"); }
-                yield return manager.DelayE((int)delayTime);
+                yield return manager.Delay((int)delayTime);
             }
         }
         private IEnumerator RepeatingEnumeratorCaller<T, U, V>(CancellationTokenSource cts, int delayMs, int intervalMs, uint? iterations, Func<T, U, V, IEnumerator> func, T t, U u, V v) {
-            if (delayMs != 0) { yield return manager.DelayE(delayMs); }
+            if (delayMs != 0) { yield return manager.Delay(delayMs); }
 
             uint totalIterations = iterations ?? uint.MaxValue;
             var initTime = Clock.UtcNow;
@@ -1522,11 +1522,11 @@ namespace PsyForge {
                 yield return MakeEventEnumerator(func(t, u, v));
                 var delayTime = (i + 1) * intervalMs - (Clock.UtcNow - initTime).TotalMilliseconds;
                 if (delayTime < 0) { throw new TimeoutException("DoRepeating execution took longer than the interval assigned"); }
-                yield return manager.DelayE((int)delayTime);
+                yield return manager.Delay((int)delayTime);
             }
         }
         private IEnumerator RepeatingEnumeratorCaller<T, U, V, W>(CancellationTokenSource cts, int delayMs, int intervalMs, uint? iterations, Func<T, U, V, W, IEnumerator> func, T t, U u, V v, W w) {
-            if (delayMs != 0) { yield return manager.DelayE(delayMs); }
+            if (delayMs != 0) { yield return manager.Delay(delayMs); }
 
             uint totalIterations = iterations ?? uint.MaxValue;
             var initTime = Clock.UtcNow;
@@ -1535,12 +1535,12 @@ namespace PsyForge {
                 yield return MakeEventEnumerator(func(t, u, v, w));
                 var delayTime = (i + 1) * intervalMs - (Clock.UtcNow - initTime).TotalMilliseconds;
                 if (delayTime < 0) { throw new TimeoutException("DoRepeating execution took longer than the interval assigned"); }
-                yield return manager.DelayE((int)delayTime);
+                yield return manager.Delay((int)delayTime);
             }
         }
 
         private IEnumerator RepeatingEnumeratorCaller(CancellationTokenSource cts, int delayMs, int intervalMs, uint? iterations, Action func) {
-            if (delayMs != 0) { yield return manager.DelayE(delayMs); }
+            if (delayMs != 0) { yield return manager.Delay(delayMs); }
 
             uint totalIterations = iterations ?? uint.MaxValue;
             var initTime = Clock.UtcNow;
@@ -1549,11 +1549,11 @@ namespace PsyForge {
                 func();
                 var delayTime = (i + 1) * intervalMs - (Clock.UtcNow - initTime).TotalMilliseconds;
                 if (delayTime < 0) { throw new TimeoutException("DoRepeating execution took longer than the interval assigned"); }
-                yield return manager.DelayE((int)delayTime);
+                yield return manager.Delay((int)delayTime);
             }
         }
         private IEnumerator RepeatingEnumeratorCaller<T>(CancellationTokenSource cts, int delayMs, int intervalMs, uint? iterations, Action<T> func, T t) {
-            if (delayMs != 0) { yield return manager.DelayE(delayMs); }
+            if (delayMs != 0) { yield return manager.Delay(delayMs); }
 
             uint totalIterations = iterations ?? uint.MaxValue;
             var initTime = Clock.UtcNow;
@@ -1562,11 +1562,11 @@ namespace PsyForge {
                 func(t);
                 var delayTime = (i + 1) * intervalMs - (Clock.UtcNow - initTime).TotalMilliseconds;
                 if (delayTime < 0) { throw new TimeoutException("DoRepeating execution took longer than the interval assigned"); }
-                yield return manager.DelayE((int)delayTime);
+                yield return manager.Delay((int)delayTime);
             }
         }
         private IEnumerator RepeatingEnumeratorCaller<T, U>(CancellationTokenSource cts, int delayMs, int intervalMs, uint? iterations, Action<T, U> func, T t, U u) {
-            if (delayMs != 0) { yield return manager.DelayE(delayMs); }
+            if (delayMs != 0) { yield return manager.Delay(delayMs); }
 
             uint totalIterations = iterations ?? uint.MaxValue;
             var initTime = Clock.UtcNow;
@@ -1575,11 +1575,11 @@ namespace PsyForge {
                 func(t, u);
                 var delayTime = (i + 1) * intervalMs - (Clock.UtcNow - initTime).TotalMilliseconds;
                 if (delayTime < 0) { throw new TimeoutException("DoRepeating execution took longer than the interval assigned"); }
-                yield return manager.DelayE((int)delayTime);
+                yield return manager.Delay((int)delayTime);
             }
         }
         private IEnumerator RepeatingEnumeratorCaller<T, U, V>(CancellationTokenSource cts, int delayMs, int intervalMs, uint? iterations, Action<T, U, V> func, T t, U u, V v) {
-            if (delayMs != 0) { yield return manager.DelayE(delayMs); }
+            if (delayMs != 0) { yield return manager.Delay(delayMs); }
 
             uint totalIterations = iterations ?? uint.MaxValue;
             var initTime = Clock.UtcNow;
@@ -1588,11 +1588,11 @@ namespace PsyForge {
                 func(t, u, v);
                 var delayTime = (i + 1) * intervalMs - (Clock.UtcNow - initTime).TotalMilliseconds;
                 if (delayTime < 0) { throw new TimeoutException("DoRepeating execution took longer than the interval assigned"); }
-                yield return manager.DelayE((int)delayTime);
+                yield return manager.Delay((int)delayTime);
             }
         }
         private IEnumerator RepeatingEnumeratorCaller<T, U, V, W>(CancellationTokenSource cts, int delayMs, int intervalMs, uint? iterations, Action<T, U, V, W> func, T t, U u, V v, W w) {
-            if (delayMs != 0) { yield return manager.DelayE(delayMs); }
+            if (delayMs != 0) { yield return manager.Delay(delayMs); }
 
             uint totalIterations = iterations ?? uint.MaxValue;
             var initTime = Clock.UtcNow;
@@ -1601,7 +1601,7 @@ namespace PsyForge {
                 func(t, u, v, w);
                 var delayTime = (i + 1) * intervalMs - (Clock.UtcNow - initTime).TotalMilliseconds;
                 if (delayTime < 0) { throw new TimeoutException("DoRepeating execution took longer than the interval assigned"); }
-                yield return manager.DelayE((int)delayTime);
+                yield return manager.Delay((int)delayTime);
             }
         }
 

@@ -141,7 +141,7 @@ namespace PsyForge.GUI {
 
             // Display the new text and wait for the task to complete
             Display(description, title, text, null, textFontSize);
-            await Awaitable.NextFrameAsync();
+            await Awaitable.NextFrameAsync(ct);
             await func(ct);
 
             // Put the old state back

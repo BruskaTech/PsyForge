@@ -97,8 +97,8 @@ namespace PsyForge {
             // If it is, then it will repeatedly be checked over and over on the same frame, causing the program to hang
             // It does add a one frame delay, but if you are using an await in the first place, you are probably not concerned about that
             await Awaitable.NextFrameAsync();
-            while (!ct.IsCancellationRequested && !GetKeyDownHelper(key, unpausable)) {
-                await Awaitable.NextFrameAsync();
+            while (!GetKeyDownHelper(key, unpausable)) {
+                await Awaitable.NextFrameAsync(ct);
             }
         }
         // TODO: JPB: (refactor) Make WaitForKey a static method
@@ -114,7 +114,7 @@ namespace PsyForge {
             // It does add a one frame delay, but if you are using an await in the first place, you are probably not concerned about that
             var retKey = KeyCode.None;
             while (!ct.IsCancellationRequested && retKey == KeyCode.None) {
-                await Awaitable.NextFrameAsync();
+                await Awaitable.NextFrameAsync(ct);
                 retKey = GetKeyDownHelper(keys, unpausable);
             }
             return GetLocalizedKey(retKey);
