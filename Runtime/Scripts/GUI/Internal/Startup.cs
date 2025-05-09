@@ -19,7 +19,7 @@ namespace PsyForge.GUI {
     internal static class Startup {
         private static readonly List<KeyCode> ynKeyCodes = new List<KeyCode> {KeyCode.Y, KeyCode.N};
 
-        public static async Task LaunchExperiment(string subject, int sessionNumber) {
+        public static async Awaitable LaunchExperiment(string subject, int sessionNumber) {
             MainManager manager = MainManager.Instance;
             EventReporter eventReporter = EventReporter.Instance;
 
@@ -62,7 +62,7 @@ namespace PsyForge.GUI {
             SceneManager.LoadScene(Config.experimentScene);
         }
 
-        private static async Task SetFrameRate() {
+        private static async Awaitable SetFrameRate() {
             // Make the game run at screen refresh rate if targetFrameRate is not set
             if (!Config.targetFrameRate.HasValue) {
                 QualitySettings.vSyncCount = 1;

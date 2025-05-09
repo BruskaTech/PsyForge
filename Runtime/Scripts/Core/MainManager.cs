@@ -303,11 +303,11 @@ namespace PsyForge {
             return pauseTimescales.Count > 0;
         }
 
-        public async Task QuitTS() {
+        public async Awaitable QuitTS() {
             hostPC?.QuitTS();
             await DoWaitForTS(QuitHelper);
         }
-        protected async Task QuitHelper() {
+        protected async Awaitable QuitHelper() {
             // TODO: JPB: (needed) (bug) Fix QuitHelper quitting display
             TextDisplayer.Instance.Display("quitting", text: LangStrings.GenForCurrLang("Quitting..."));
             manager.syncBoxes?.StopContinuousPulsing();

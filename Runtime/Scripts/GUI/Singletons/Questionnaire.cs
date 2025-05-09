@@ -49,7 +49,7 @@ namespace PsyForge.GUI {
             return optionText;
         }
 
-        public async Task RatingQuestionnaire(List<RatingQuestion> questions) {
+        public async Awaitable RatingQuestionnaire(List<RatingQuestion> questions) {
             gameObject.SetActive(true);
 
             var questionStrs = questions.Select(x => x.question.ToString()).ToList();

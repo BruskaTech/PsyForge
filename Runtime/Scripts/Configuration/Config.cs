@@ -21,6 +21,7 @@ using Newtonsoft.Json.Linq;
 using PsyForge.DataManagement;
 using PsyForge.Extensions;
 using Unity.Properties;
+using UnityEngine;
 
 #if UNITY_WEBGL // System.IO
 using System.Net;
@@ -151,10 +152,10 @@ namespace PsyForge {
                 f.SetValue(null, confInstance);
             }
         }
-        internal static async Task SetupSystemConfig() {
+        internal static async Awaitable SetupSystemConfig() {
             systemConfigText = await SetupConfig(SYSTEM_CONFIG_NAME);
         }
-        internal static async Task SetupExperimentConfig(string configName) {
+        internal static async Awaitable SetupExperimentConfig(string configName) {
             experimentConfigName = configName;
             experimentConfigText = await SetupConfig(experimentConfigName + ".json");
 

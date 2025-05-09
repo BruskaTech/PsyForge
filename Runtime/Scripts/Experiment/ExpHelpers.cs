@@ -51,7 +51,7 @@ namespace PsyForge.Experiment {
             bool isKeypadNum = keyCode >= KeyCode.Keypad0 && keyCode <= KeyCode.Keypad9;
             return isAlphaNum || isKeypadNum;
         }
-        public static async Task RepeatUntilYes(Func<CancellationToken, Task> preFunc, string description, LangString displayText, CancellationToken ct, Func<bool, CancellationToken, Task> postFunc = null, bool unpausable = false) {
+        public static async Awaitable RepeatUntilYes(Func<CancellationToken, Task> preFunc, string description, LangString displayText, CancellationToken ct, Func<bool, CancellationToken, Task> postFunc = null, bool unpausable = false) {
             var repeat = true;
             while (repeat && !ct.IsCancellationRequested) {
                 await preFunc(ct);
@@ -66,7 +66,7 @@ namespace PsyForge.Experiment {
                 if (postFunc != null) { await postFunc(repeat, ct); }
             }
         }
-        public static async Task RepeatUntilNo(Func<CancellationToken, Task> preFunc, string description, LangString displayText, CancellationToken ct, Func<bool, CancellationToken, Task> postFunc = null, bool unpausable = false) {
+        public static async Awaitable RepeatUntilNo(Func<CancellationToken, Task> preFunc, string description, LangString displayText, CancellationToken ct, Func<bool, CancellationToken, Task> postFunc = null, bool unpausable = false) {
             var repeat = true;
             while (repeat && !ct.IsCancellationRequested) {
                 await preFunc(ct);
@@ -81,7 +81,7 @@ namespace PsyForge.Experiment {
                 if (postFunc != null) { await postFunc(repeat, ct); }
             }
         }
-        public static async Task RepeatForever(Func<CancellationToken, Task> preFunc, string description, LangString displayText, List<KeyCode> keyCodes, CancellationToken ct, Func<CancellationToken, Task> postFunc = null, bool unpausable = false) {
+        public static async Awaitable RepeatForever(Func<CancellationToken, Task> preFunc, string description, LangString displayText, List<KeyCode> keyCodes, CancellationToken ct, Func<CancellationToken, Task> postFunc = null, bool unpausable = false) {
             while (!ct.IsCancellationRequested) {
                 await preFunc(ct);
                 ct.ThrowIfCancellationRequested();

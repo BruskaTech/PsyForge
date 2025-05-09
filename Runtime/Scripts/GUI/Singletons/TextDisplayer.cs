@@ -131,7 +131,7 @@ namespace PsyForge.GUI {
         //     text.Dispose();
         // }
 
-        public async Task DisplayForTask(string description, LangString title, LangString text, LangString footer, float textFontSize, CancellationToken ct, Func<CancellationToken, Task> func) {
+        public async Awaitable DisplayForTask(string description, LangString title, LangString text, LangString footer, float textFontSize, CancellationToken ct, Func<CancellationToken, Task> func) {
             // Remember the current state
             var activeOld = IsActive();
             var titleOld = titleElement.text;
@@ -151,7 +151,7 @@ namespace PsyForge.GUI {
             textElement.enableAutoSizing = textAutoSizingOld;
             if (!activeOld) { Hide(); }
         }
-        public async Task DisplayForTask(string description, LangString title, LangString text, LangString footer, CancellationToken ct, Func<CancellationToken, Task> func) {
+        public async Awaitable DisplayForTask(string description, LangString title, LangString text, LangString footer, CancellationToken ct, Func<CancellationToken, Task> func) {
             await DisplayForTask(description, title, text, footer, 0, ct, func);
         }
 

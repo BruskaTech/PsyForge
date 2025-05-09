@@ -30,7 +30,7 @@ namespace PsyForge.Experiment {
             this.verbalFreeRecallDurationMs = verbalFreeRecallDurationMs;
         }
 
-        public async Task Run(bool isPractice, uint trialNum, LangString verbalRecallDisplay = null) {
+        public async Awaitable Run(bool isPractice, uint trialNum, LangString verbalRecallDisplay = null) {
             verbalRecallDisplay ??= LangStrings.VerbalRecallDisplay();
 
             // Setup

@@ -45,12 +45,12 @@ namespace PsyForge.Experiment {
             this.mathDistractorTimeout = mathDistractorTimeout;
         }
 
-        public async Task RunInitialTimings(CancellationToken ct = default) {
+        public async Awaitable RunInitialTimings(CancellationToken ct = default) {
             await ExpHelpers.PressAnyKey("pre-trial math distractor", LangStrings.MathDistractorPreTrial(), ct);
             await Run(false, -1, true);
         }
 
-        public async Task Run(bool isPractice, int trialNum, bool setProblemTimings = false, CancellationToken ct = default) {
+        public async Awaitable Run(bool isPractice, int trialNum, bool setProblemTimings = false, CancellationToken ct = default) {
             ExpHelpers.SetExperimentStatus(HostPcStatusMsg.DISTRACT(trialNum));
             var trueDistractorDurationMs = isPractice ? practiceDistractorDurationMs : distractorDurationMs;
 

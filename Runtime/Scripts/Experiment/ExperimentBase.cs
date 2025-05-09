@@ -96,23 +96,23 @@ namespace PsyForge.Experiment {
         /// This is useful for setting up resources and doing initial things like microphone tests.
         /// </summary>
         /// <returns></returns>
-        protected abstract Task InitialStates();
+        protected abstract Awaitable InitialStates();
         /// <summary>
         /// Things to set up and run before the practice trials.
         /// Technically, anything done here can be done in InitialStates, but this is useful for organization.
         /// </summary>
         /// <returns></returns>
-        protected virtual Task SetupPracticeTrials() { return Task.CompletedTask; }
+        protected virtual async Awaitable SetupPracticeTrials() { await Task.CompletedTask; }
         /// <summary>
         /// These are the practice trials.
         /// </summary>
         /// <returns></returns>
-        protected abstract Task PracticeTrialStates(CancellationToken ct);
+        protected abstract Awaitable PracticeTrialStates(CancellationToken ct);
         /// <summary>
         /// Things to set up and run before the experiment trials.
         /// </summary>
         /// <returns></returns>
-        protected virtual Task SetupTrials() { return Task.CompletedTask; }
+        protected virtual async Awaitable SetupTrials() { await Task.CompletedTask; }
         /// <summary>
         /// These are the experiment trials.
         /// </summary>
@@ -123,7 +123,7 @@ namespace PsyForge.Experiment {
         /// This is useful for things like post-experiment questionnaires.
         /// </summary>
         /// <returns></returns>
-        protected abstract Task FinalStates();
+        protected abstract Awaitable FinalStates();
 
 
         protected void EndCurrentSession() {
@@ -302,7 +302,7 @@ namespace PsyForge.Experiment {
         }
 
         // Pre-Trial States
-        protected virtual async Task IntroductionVideo(CancellationToken ct = default) {
+        protected virtual async Awaitable IntroductionVideo(CancellationToken ct = default) {
             await ExpHelpers.RepeatUntilYes(async (CancellationToken ct) => {
                 await ExpHelpers.PressAnyKey("show instruction video", LangStrings.ShowInstructionVideo(), ct);
 
@@ -311,7 +311,7 @@ namespace PsyForge.Experiment {
             }, "repeat introduction video", LangStrings.RepeatIntroductionVideo(), ct);
         }
 
-        protected virtual async Task IntroductionVideo(string videoPath, CancellationToken ct = default) {
+        protected virtual async Awaitable IntroductionVideo(string videoPath, CancellationToken ct = default) {
             await ExpHelpers.RepeatUntilYes(async (CancellationToken ct) => {
                 await ExpHelpers.PressAnyKey("show instruction video", LangStrings.ShowInstructionVideo(), ct);
 
@@ -319,7 +319,7 @@ namespace PsyForge.Experiment {
                 await manager.videoControl.PlayVideo(ct);
             }, "repeat introduction video", LangStrings.RepeatIntroductionVideo(), ct);
         }
-        protected virtual async Task MicrophoneTest(CancellationToken ct = default) {
+        protected virtual async Awaitable MicrophoneTest(CancellationToken ct = default) {
             await ExpHelpers.RepeatUntilYes(async (CancellationToken ct) => {
                 await ExpHelpers.PressAnyKey("microphone test prompt", LangStrings.MicrophoneTestTitle(), LangStrings.MicrophoneTest(), ct);
 
@@ -342,7 +342,7 @@ namespace PsyForge.Experiment {
                 await manager.Delay(Config.micTestDurationMs, ct: ct);
             }, "repeat mic test", LangStrings.RepeatMicTest(), new());
         }
-        protected virtual async Task SubjectConfirmation(CancellationToken ct = default) {
+        protected virtual async Awaitable SubjectConfirmation(CancellationToken ct = default) {
             ExpHelpers.SetExperimentStatus(HostPcStatusMsg.WAITING());
 
             textDisplayer.Display("subject/session confirmation",
@@ -353,7 +353,7 @@ namespace PsyForge.Experiment {
                 await manager.QuitTS();
             }
         }
-        protected virtual async Task ConfirmStart(CancellationToken ct = default) {
+        protected virtual async Awaitable ConfirmStart(CancellationToken ct = default) {
             await ExpHelpers.PressAnyKey("confirm start", LangStrings.ConfirmStart(), ct);
         }
         protected void ReportSessionNum(Dictionary<string, object> extraData = null) {

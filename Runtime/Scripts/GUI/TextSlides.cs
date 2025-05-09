@@ -80,7 +80,7 @@ namespace PsyForge.GUI {
         /// </summary>
         /// <param name="textSlides"></param>
         /// <returns></returns>
-        public static async Task Display(List<TextSlide> textSlides) {
+        public static async Awaitable Display(List<TextSlide> textSlides) {
             // Create a list of all the text slides (including the incrementally displayed ones)
             List<TextSlide> slides = new();
             foreach (var slide in textSlides) {
