@@ -346,7 +346,21 @@ namespace PsyForge {
         }
 
         // Timing Functions
-        public async Awaitable Delay(int millisecondsDelay, bool pauseAware = true, CancellationToken ct = default) {
+        public async Task Delay(int millisecondsDelay, bool pauseAware = true, CancellationToken ct = default) {
+            if (millisecondsDelay != 0) {
+                await DoWaitFor(DelayHelper, millisecondsDelay, (Bool)pauseAware, ct);
+            }
+        }
+        public async Task DelayTS(int millisecondsDelay, bool pauseAware = true, CancellationToken ct = default) {
+            if (millisecondsDelay != 0) {
+                // This is hack to get arround the Blittability check for CancellationToken, because I know it is thread safe
+                Func<int, Bool, Task> func = async (int _millisecondsDelay, Bool _pauseAware) => {
+                    await DelayHelper(millisecondsDelay, pauseAware, ct);
+                };
+                await DoWaitForTS(func, millisecondsDelay, pauseAware);
+            }
+        }
+        public async Task DelayHelper(int millisecondsDelay, Bool pauseAware, CancellationToken ct) {
             if (millisecondsDelay < 0) {
                 throw new ArgumentOutOfRangeException($"millisecondsDelay <= 0 ({millisecondsDelay})");
             } else if (millisecondsDelay == 0) {
@@ -356,11 +370,6 @@ namespace PsyForge {
             PsyForge.Utilities.Timer timer = new(millisecondsDelay, pauseAware);
             while (!timer.IsFinished()) {
                 await Awaitable.NextFrameAsync(ct);
-            }
-        }
-        public async Task DelayTS(int millisecondsDelay, bool pauseAware = true, CancellationToken ct = default) {
-            if (millisecondsDelay != 0) {
-                await DoWaitForTS(Delay, millisecondsDelay, pauseAware, ct);
             }
         }
     }
