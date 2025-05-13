@@ -104,7 +104,6 @@ namespace PsyForge.GUI {
                 this.videoPlayer.url = "file://" + FileManager.ExpResourcePath(this.videoPath);
             }
             this.skippable = skippable;
-            videoPlayer.Prepare();
             videoPath.Dispose();
         }
 
