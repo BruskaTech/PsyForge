@@ -151,7 +151,8 @@ namespace PsyForge {
                 throw new Exception($"Syncbox class {name} could not be created", e);
             }
 
-            await syncBoxes.AddSyncBox(syncBox);
+            syncBoxes.AddSyncBox(syncBox);
+            await syncBox.Init();
         }
 
         protected async void Start() {
@@ -170,7 +171,6 @@ namespace PsyForge {
             // Setup Syncbox Interface
             if (!Config.isTest && Config.syncBoxOn) {
                 await Task.WhenAll(Config.syncBoxClasses.Val.Select(LoadSyncBox));
-                await syncBoxes.Init();
             }
 
             // Launch Startup Scene

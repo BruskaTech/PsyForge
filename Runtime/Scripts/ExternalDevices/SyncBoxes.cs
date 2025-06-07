@@ -17,20 +17,15 @@ namespace PsyForge.ExternalDevices {
     public class SyncBoxes {
         private List<SyncBox> syncBoxes = new List<SyncBox>();
 
-        public async Task AddSyncBox(SyncBox syncBox) {
+        public void AddSyncBox(SyncBox syncBox) {
             if (syncBoxes.Any(x => x.GetType() == syncBox.GetType())) {
                 throw new Exception($"SyncBox of type {syncBox.GetType()} already exists."
                     + "\n\nMake sure you do not have the same SyncBox multiple times in the config.");
             }
             syncBoxes.Add(syncBox);
-            await syncBox.Init();
         }
         public T GetSyncBox<T>() where T : SyncBox {
             return syncBoxes.OfType<T>().FirstOrDefault();
-        }
-
-        internal async Task Init() {
-            await Task.WhenAll(syncBoxes.Select(x => x.Init()));
         }
 
         internal async Task TearDown() {

@@ -75,7 +75,7 @@ namespace PsyForge.ExternalDevices {
         }
 
         public void StartContinuousPulsing(CancellationToken ct = default) {
-            DoTS(StartContinuousPulsingHelper, ct);
+            DoTS(() => StartContinuousPulsingHelper(ct)); // This is safe because CancellationToken is thread-safe.
         }
         private async void StartContinuousPulsingHelper(CancellationToken ct) {
             continuousPulsing = true;
