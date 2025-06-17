@@ -112,11 +112,11 @@ namespace PsyForge.GUI {
             }
         }
 
-        public void SetLanguage(int value) {
-            DoTS(SetLanguageHelper, value);
+        public void SetLanguage() {
+            DoTS(SetLanguageHelper);
         }
-        protected virtual void SetLanguageHelper(int value) {
-            LangStrings.SetLanguage((Language)value);
+        protected virtual void SetLanguageHelper() {
+            LangStrings.SetLanguage((Language)languageDropdown.value);
             SetText();
         }
 
