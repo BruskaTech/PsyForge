@@ -12,6 +12,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using TMPro;
+using UnityEngine.UI;
+using PsyForge.Localization;
+using System;
+using UnityEngine.EventSystems;
 
 namespace PsyForge.GUI {
 
@@ -34,80 +38,90 @@ namespace PsyForge.GUI {
         public void ExperimentUpdated() {
             Do(ExperimentUpdatedHelper);
         }
-        protected void ExperimentUpdatedHelper() {
+        protected virtual void ExperimentUpdatedHelper() {
             FindParticipants();
         }
 
-        
+
         public void ParticipantSelected() {
             Do(ParticipantSelectedHelper);
         }
-        protected void ParticipantSelectedHelper() {
-            var dropdown = GetComponent<TMP_Dropdown>();
-            if (dropdown.value <= 1) {
-                participantNameInput.text = "New Participant";
-            } else {
-                LoadParticipant();
-            }
+        protected virtual void ParticipantSelectedHelper() {
+            LoadParticipant();
         }
 
 
         public void DecreaseSessionNumber() {
             Do(DecreaseSessionNumberHelper);
         }
-        protected void DecreaseSessionNumberHelper() {
+        protected virtual void DecreaseSessionNumberHelper() {
             if (nextSessionNumber > 0)
                 nextSessionNumber--;
-            UpdateTexts();
+            UpdateSessionNumTexts();
         }
 
         public void IncreaseSessionNumber() {
             Do(IncreaseSessionNumberHelper);
         }
-        protected void IncreaseSessionNumberHelper() {
+        protected virtual void IncreaseSessionNumberHelper() {
             nextSessionNumber++;
-            UpdateTexts();
+            UpdateSessionNumTexts();
         }
 
-        protected void FindParticipants() {
+        protected virtual void FindParticipants() {
             var dropdown = GetComponent<TMP_Dropdown>();
 
             dropdown.ClearOptions();
-            dropdown.AddOptions(new List<string>() { "Select participant", "New Participant" });
+            dropdown.AddOptions(new List<string>() { LangStrings.StartupNewParticipant() });
 
             string participantDirectory = FileManager.ExperimentPath();
             if (Directory.Exists(participantDirectory)) {
                 string[] filepaths = Directory.GetDirectories(participantDirectory);
                 List<string> filenames = new List<string>();
 
-                for (int i = 0; i < filepaths.Length; i++)
-                    if (FileManager.isValidParticipant(Path.GetFileName(filepaths[i])))
-                        filenames.Add(Path.GetFileName(filepaths[i]));
+                for (int i = 0; i < filepaths.Length; i++) {
+                    var filename = Path.GetFileName(filepaths[i]);
+                    var participantInput = participantNameInput.text ?? "";
+                    if (FileManager.isValidParticipant(filename) && filename.StartsWith(participantInput)) {
+                        filenames.Add(filename);
+                    }
+                }
 
                 dropdown.AddOptions(filenames);
             }
-            dropdown.value = 0;
             dropdown.RefreshShownValue();
 
             nextSessionNumber = 0;
             nextListNumber = 0;
-            UpdateTexts();
+            UpdateSessionNumTexts();
         }
-        protected void LoadParticipant() {
+        protected virtual void LoadParticipant() {
             var dropdown = GetComponent<TMP_Dropdown>();
+            if (dropdown.value < 0) return;
+
             string selectedParticipant = dropdown.captionText.text;
+
+            if (selectedParticipant == LangStrings.StartupNewParticipant()) {
+                participantNameInput.text = "";
+                nextSessionNumber = 0;
+                UpdateSessionNumTexts();
+                return;
+            }
 
             if (!Directory.Exists(FileManager.ParticipantPath(selectedParticipant)))
                 throw new UnityException("You tried to load a participant that doesn't exist.");
 
             participantNameInput.text = selectedParticipant;
-
             nextSessionNumber = FileManager.CurrentSession(selectedParticipant);
 
-            UpdateTexts();
+            UpdateSessionNumTexts();
         }
-        protected void UpdateTexts() {
+        protected virtual void UpdateSessionNumTexts() {
             sessionNumberText.text = nextSessionNumber.ToString();
+        }
+
+        public virtual void UpdateParticipantDropDown() {
+            FindParticipants();
         }
     }
 

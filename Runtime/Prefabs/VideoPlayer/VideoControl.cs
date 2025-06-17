@@ -33,6 +33,7 @@ namespace PsyForge.GUI {
         [SerializeField] AspectRatioFitter aspectRatioFitter;
 
         protected bool skippable;
+        protected bool showSkippableText;
         protected string videoPath;
         protected KeyCode pauseToggleKey = KeyCode.P;
         protected KeyCode deactivateKey = KeyCode.Space;
@@ -90,13 +91,13 @@ namespace PsyForge.GUI {
             return Task.CompletedTask;
         }
 
-        public void SetVideo(string videoPath, bool skippable = false, bool absolutePath=false) {
-            Do(SetVideoHelper, videoPath.ToNativeText(), (Bool)skippable, (Bool)absolutePath);
+        public void SetVideo(string videoPath, bool skippable = false, bool showSkippableText = true, bool absolutePath=false) {
+            Do(SetVideoHelper, videoPath.ToNativeText(), (Bool)skippable, (Bool) showSkippableText, (Bool)absolutePath);
         }
-        public void SetVideoTS(string videoPath, bool skippable = false, bool absolutePath=false) {
-            DoTS(SetVideoHelper, videoPath.ToNativeText(), (Bool)skippable, (Bool)absolutePath);
+        public void SetVideoTS(string videoPath, bool skippable = false, bool showSkippableText = true, bool absolutePath=false) {
+            DoTS(SetVideoHelper, videoPath.ToNativeText(), (Bool)skippable, (Bool) showSkippableText, (Bool)absolutePath);
         }
-        protected void SetVideoHelper(NativeText videoPath, Bool skippable, Bool absolutePath) {
+        protected void SetVideoHelper(NativeText videoPath, Bool skippable, Bool showSkippableText, Bool absolutePath) {
             this.videoPath = videoPath.ToString();
             if (absolutePath) {
                 this.videoPlayer.url = "file://" + this.videoPath;
@@ -104,6 +105,7 @@ namespace PsyForge.GUI {
                 this.videoPlayer.url = "file://" + FileManager.ExpResourcePath(this.videoPath);
             }
             this.skippable = skippable;
+            this.showSkippableText = skippable ? showSkippableText : false;
             videoPath.Dispose();
         }
 
@@ -117,9 +119,16 @@ namespace PsyForge.GUI {
             videoFinished = new();
 
             gameObject.SetActive(true);
-            skippableText.text = skippable
-                ? LangStrings.IntroductionVideoSkip()
-                : LangStrings.Blank();
+
+            if (showSkippableText) {
+                skippableText.text = LangStrings.IntroductionVideoSkip();
+                videoTransform.anchorMin = new Vector2(0.1f, 0.15f);
+                videoTransform.anchorMax = new Vector2(0.9f, 0.9f);
+            } else {
+                skippableText.text = LangStrings.Blank();
+                videoTransform.anchorMin = new Vector2(0.1f, 0.1f);
+                videoTransform.anchorMax = new Vector2(0.9f, 0.9f);
+            }
 
             videoPlayer.Prepare();
             while (!videoPlayer.isPrepared) { await Awaitable.NextFrameAsync(ct); }

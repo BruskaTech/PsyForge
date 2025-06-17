@@ -17,6 +17,8 @@ namespace PsyForge.ExternalDevices {
     public class SyncBoxes {
         private List<SyncBox> syncBoxes = new List<SyncBox>();
 
+        public bool HasSyncbox => syncBoxes.Count > 0;
+
         public void AddSyncBox(SyncBox syncBox) {
             if (syncBoxes.Any(x => x.GetType() == syncBox.GetType())) {
                 throw new Exception($"SyncBox of type {syncBox.GetType()} already exists."

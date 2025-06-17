@@ -60,7 +60,7 @@ namespace PsyForge.Localization {
             { Language.German, "<b>Pausiert</b>\n\nDrücken Sie [P], um fortzufahren." },
         }); }
         public static LangString RepeatIntroductionVideo() { return new( new() {
-            { Language.English, "Press [Y] to continue,\n\nPress [N] to replay instructional video." },
+            { Language.English, "Press [Y] to continue.\n\nPress [N] to replay instructional video." },
             { Language.German, "Drücken Sie [Y], um fortzufahren.\n\nDrücken Sie [N], um die Anleitung erneut abzuspielen." },
         }); }
         public static LangString RepeatMicTest() { return new( new() {
@@ -136,11 +136,19 @@ namespace PsyForge.Localization {
             { Language.English, "Session:" },
             { Language.German, "Sitzung:" },
         }); }
-        public static LangString StartupParticipantCodePlaceholder() { return new( new() {
+        public static LangString StartupExperimentPlaceholder() { return new( new() {
+            { Language.English, "Select Task..." },
+            { Language.German, "Aufgabe auswählen..." },
+        }); }
+        public static LangString StartupParticipantCodePlaceholder() { return new(new() {
             { Language.English, "Participant code" },
             { Language.German, "Probanden-ID" },
         }); }
-        public static LangString StartupTestSyncboxButton() { return new( new() {
+        public static LangString StartupNewParticipant() { return new( new() {
+            { Language.English, "New Participant" },
+            { Language.German, "Neue Probanden" },
+        }); }
+        public static LangString StartupTestSyncboxButton() { return new(new() {
             { Language.English, "Test Syncbox" },
             { Language.German, "Teste die Syncbox" },
         }); }

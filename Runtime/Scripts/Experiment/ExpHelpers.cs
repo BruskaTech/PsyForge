@@ -57,7 +57,7 @@ namespace PsyForge.Experiment {
                 await preFunc(ct);
                 ct.ThrowIfCancellationRequested();
 
-                await TextDisplayer.Instance.DisplayForTask(description, LangStrings.Blank(), displayText, null, ct, async (CancellationToken ct) => {
+                await TextDisplayer.Instance.DisplayForTask(description, null, displayText, null, ct, async (CancellationToken ct) => {
                     var keyCode = await InputManager.Instance.WaitForKey(new List<KeyCode>() { KeyCode.Y, KeyCode.N }, unpausable: unpausable, ct: ct);
                     repeat = keyCode != KeyCode.Y;
                 });
@@ -72,7 +72,7 @@ namespace PsyForge.Experiment {
                 await preFunc(ct);
                 ct.ThrowIfCancellationRequested();
 
-                await TextDisplayer.Instance.DisplayForTask(description, LangStrings.Blank(), displayText, null, ct, async (CancellationToken ct) => {
+                await TextDisplayer.Instance.DisplayForTask(description, null, displayText, null, ct, async (CancellationToken ct) => {
                     var keyCode = await InputManager.Instance.WaitForKey(new List<KeyCode>() { KeyCode.Y, KeyCode.N }, unpausable: unpausable, ct: ct);
                     repeat = keyCode != KeyCode.N;
                 });
@@ -86,7 +86,7 @@ namespace PsyForge.Experiment {
                 await preFunc(ct);
                 ct.ThrowIfCancellationRequested();
 
-                await TextDisplayer.Instance.DisplayForTask(description, LangStrings.Blank(), displayText, null, ct, async (CancellationToken ct) => {
+                await TextDisplayer.Instance.DisplayForTask(description, null, displayText, null, ct, async (CancellationToken ct) => {
                     var keyCode = await InputManager.Instance.WaitForKey(keyCodes, unpausable: unpausable, ct: ct);
                 });
                 ct.ThrowIfCancellationRequested();

@@ -74,7 +74,7 @@ namespace PsyForge.Experiment {
             DoTS(ExperimentQuit);
             DoTS(ExperimentPause);
             if (Config.syncBoxContinuousPulsing) {
-                manager.syncBoxes?.StartContinuousPulsing();
+                manager.syncBoxes.StartContinuousPulsing();
             }
         }
 
@@ -254,7 +254,7 @@ namespace PsyForge.Experiment {
                         quitText = LangStrings.ExperimentSkipToEnd();
                     }
                     KeyCode response = KeyCode.None;
-                    await TextDisplayer.Instance.DisplayForTask("experiment quit", LangStrings.Blank(), quitText, null, new(), async (CancellationToken ct) => {
+                    await TextDisplayer.Instance.DisplayForTask("experiment quit", null, quitText, null, new(), async (CancellationToken ct) => {
                         response = await InputManager.Instance.WaitForKey(keyCodes, unpausable: true, ct: ct);
                     });
 
@@ -302,20 +302,20 @@ namespace PsyForge.Experiment {
         }
 
         // Pre-Trial States
-        protected virtual async Awaitable IntroductionVideo(CancellationToken ct = default) {
+        protected virtual async Awaitable IntroductionVideo(bool showSkippableText = true, CancellationToken ct = default) {
             await ExpHelpers.RepeatUntilYes(async (CancellationToken ct) => {
                 await ExpHelpers.PressAnyKey("show instruction video", LangStrings.ShowInstructionVideo(), ct);
 
-                manager.videoControl.SetVideo(Config.introductionVideo, true);
+                manager.videoControl.SetVideo(Config.introductionVideo, true, showSkippableText);
                 await manager.videoControl.PlayVideo(ct);
             }, "repeat introduction video", LangStrings.RepeatIntroductionVideo(), ct);
         }
 
-        protected virtual async Awaitable IntroductionVideo(string videoPath, CancellationToken ct = default) {
+        protected virtual async Awaitable IntroductionVideo(string videoPath, bool showSkippableText = true, CancellationToken ct = default) {
             await ExpHelpers.RepeatUntilYes(async (CancellationToken ct) => {
                 await ExpHelpers.PressAnyKey("show instruction video", LangStrings.ShowInstructionVideo(), ct);
 
-                manager.videoControl.SetVideo(videoPath, true);
+                manager.videoControl.SetVideo(videoPath, true, showSkippableText);
                 await manager.videoControl.PlayVideo(ct);
             }, "repeat introduction video", LangStrings.RepeatIntroductionVideo(), ct);
         }

@@ -14,6 +14,7 @@ using UnityEngine.UI;
 using TMPro;
 
 using PsyForge.Localization;
+using System.Linq;
 
 namespace PsyForge.GUI {
 
@@ -35,11 +36,26 @@ namespace PsyForge.GUI {
         [SerializeField] protected TextMeshProUGUI experimentTitleText;
         [SerializeField] protected TextMeshProUGUI subjectTitleText;
         [SerializeField] protected TextMeshProUGUI sessionTitleText;
+        [SerializeField] protected TextMeshProUGUI languageTitleText;
         [SerializeField] protected TextMeshProUGUI greyedLaunchButtonText;
+        
+        [SerializeField] protected TMP_Dropdown languageDropdown;
 
-        protected readonly List<KeyCode> ynKeyCodes = new List<KeyCode> {KeyCode.Y, KeyCode.N};
+        protected readonly List<KeyCode> ynKeyCodes = new List<KeyCode> { KeyCode.Y, KeyCode.N };
 
         protected override void AwakeOverride() {
+            SetText();
+            launchButton.SetActive(false);
+            greyedLaunchButton.SetActive(true);
+
+            if (languageDropdown != null) {
+                languageDropdown.ClearOptions();
+                languageDropdown.AddOptions(System.Enum.GetNames(typeof(Language)).ToList());
+                languageDropdown.value = (int) LangStrings.Language;
+            }
+        }
+
+        protected virtual void SetText() {
             experimentLauncherTitleText.text = LangStrings.StartupExperimentLauncher();
             experimentTitleText.text = LangStrings.StartupExperiment();
             subjectTitleText.text = LangStrings.StartupSubject();
@@ -47,12 +63,16 @@ namespace PsyForge.GUI {
             participantNameInput.placeholder.GetComponent<TextMeshProUGUI>().text = LangStrings.StartupParticipantCodePlaceholder();
             syncButton.GetComponentInChildren<TextMeshProUGUI>().text = LangStrings.StartupTestSyncboxButton();
             loadingButton.GetComponentInChildren<TextMeshProUGUI>().text = LangStrings.StartupLoadingButton();
+
+            if (languageTitleText != null) {
+                languageTitleText.text = LangStrings.LanguageText();
+            }
         }
 
         protected virtual void Update() {
             string experimentName = experimentSelection.GetExperiment();
             bool participantValid = FileManager.isValidParticipant(participantNameInput.text);
-            bool syncboxTestRunning = manager.syncBoxes?.IsContinuousPulsing() ?? false;
+            bool syncboxTestRunning = manager.syncBoxes.IsContinuousPulsing();
 
             if (experimentName == null) {
                 greyedLaunchButtonText.text = LangStrings.StartupGreyedLaunchButtonSelectExp();
@@ -80,11 +100,10 @@ namespace PsyForge.GUI {
         public async void DoSyncBoxTest() {
             await DoWaitFor(DoSyncBoxTestHelper);
         }
-        protected async Task DoSyncBoxTestHelper() {
-            if (!manager.syncBoxes?.IsContinuousPulsing() ?? false) {
+        protected virtual async Task DoSyncBoxTestHelper() {
+            if (manager.syncBoxes.HasSyncbox && !manager.syncBoxes.IsContinuousPulsing()) {
                 syncButton.GetComponent<Button>().interactable = false;
 
-                // TODO: JPB: (need) Fix Syncbox test
                 manager.syncBoxes.StartContinuousPulsing();
                 await manager.Delay(Config.syncBoxTestDurationMs);
                 manager.syncBoxes.StopContinuousPulsing();
@@ -93,11 +112,19 @@ namespace PsyForge.GUI {
             }
         }
 
+        public void SetLanguage(int value) {
+            DoTS(SetLanguageHelper, value);
+        }
+        protected virtual void SetLanguageHelper(int value) {
+            LangStrings.SetLanguage((Language)value);
+            SetText();
+        }
+
         // activated by UI launch button
         public void LaunchExp() {
             DoTS(LaunchExpHelper);
         }
-        protected async void LaunchExpHelper() {
+        protected virtual async void LaunchExpHelper() {
             if (launchButton != null) launchButton.SetActive(false);
             if (loadingButton != null) loadingButton.SetActive(true);
 

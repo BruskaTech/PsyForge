@@ -310,8 +310,8 @@ namespace PsyForge {
         protected async Awaitable QuitHelper() {
             // TODO: JPB: (needed) (bug) Fix QuitHelper quitting display
             TextDisplayer.Instance.Display("quitting", text: LangStrings.GenForCurrLang("Quitting..."));
-            manager.syncBoxes?.StopContinuousPulsing();
-            manager.syncBoxes?.TearDown();
+            manager.syncBoxes.StopContinuousPulsing();
+            await manager.syncBoxes.TearDown();
 
             // TODO: JPB: (feature) Make EventLoops stop gracefully by awaiting the stop with a timeout that gets logged if triggered
             foreach (var eventLoop in eventLoops) {

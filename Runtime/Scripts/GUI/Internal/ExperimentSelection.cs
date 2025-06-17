@@ -8,6 +8,7 @@
 //PsyForge is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 //You should have received a copy of the GNU General Public License along with PsyForge. If not, see <https://www.gnu.org/licenses/>. 
 
+using PsyForge.Localization;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -24,17 +25,17 @@ namespace PsyForge.GUI {
     /// </summary>
     [RequireComponent(typeof(TMP_Dropdown))]
     public class ExperimentSelection : EventMonoBehaviour {
-        TMP_Dropdown dropdown;
+        protected TMP_Dropdown dropdown;
 
         [SerializeField]
-        private ParticipantSelection participantSelection;
+        protected ParticipantSelection participantSelection;
 
         protected override void AwakeOverride() {
             dropdown = GetComponent<TMP_Dropdown>();
 
             List<string> experiments = new(Config.availableExperiments.Val);
 
-            dropdown.AddOptions(new List<string>(new string[] { "Select Task..." }));
+            dropdown.AddOptions(new List<string>(new string[] { LangStrings.StartupExperimentPlaceholder() }));
             dropdown.AddOptions(experiments);
             SetExperiment();
         }
@@ -42,8 +43,8 @@ namespace PsyForge.GUI {
         public void SetExperiment() {
             DoTS(SetExperimentHelper);
         }
-        protected async void SetExperimentHelper() {
-            if (dropdown.captionText.text != "Select Task...") {
+        protected virtual async void SetExperimentHelper() {
+            if (dropdown.captionText.text != LangStrings.StartupExperimentPlaceholder()) {
                 await Config.SetupExperimentConfig(dropdown.captionText.text);
                 participantSelection.ExperimentUpdated();
             }
@@ -52,8 +53,8 @@ namespace PsyForge.GUI {
         public string GetExperiment() {
             return DoGet(GetExperimentHelper);
         }
-        protected string GetExperimentHelper() {
-            if (dropdown.captionText.text != "Select Task...") {
+        protected virtual string GetExperimentHelper() {
+            if (dropdown.captionText.text != LangStrings.StartupExperimentPlaceholder()) {
                 return dropdown.captionText.text;
             } else {
                 return null;
