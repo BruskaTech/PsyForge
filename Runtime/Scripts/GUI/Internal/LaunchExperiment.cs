@@ -15,6 +15,7 @@ using TMPro;
 
 using PsyForge.Localization;
 using System.Linq;
+using PsyForge.Extensions;
 
 namespace PsyForge.GUI {
 
@@ -42,16 +43,19 @@ namespace PsyForge.GUI {
         [SerializeField] protected TMP_Dropdown languageDropdown;
 
         protected readonly List<KeyCode> ynKeyCodes = new List<KeyCode> { KeyCode.Y, KeyCode.N };
+        protected float screenWidth;
+        protected float screenHeight;
 
         protected override void AwakeOverride() {
             SetText();
+            AdjustTextSizes();
             launchButton.SetActive(false);
             greyedLaunchButton.SetActive(true);
 
             if (languageDropdown != null) {
                 languageDropdown.ClearOptions();
                 languageDropdown.AddOptions(System.Enum.GetNames(typeof(Language)).ToList());
-                languageDropdown.value = (int) LangStrings.Language;
+                languageDropdown.value = (int)LangStrings.Language;
             }
         }
 
@@ -67,6 +71,21 @@ namespace PsyForge.GUI {
             if (languageTitleText != null) {
                 languageTitleText.text = LangStrings.LanguageText();
             }
+        }
+
+        protected virtual void AdjustTextSizes() {
+            var texts = new List<string> {
+                experimentTitleText.text, subjectTitleText.text, languageTitleText.text,
+            };
+            var fontSize = (int)experimentTitleText.FindMaxFittingFontSize(texts);
+
+            experimentTitleText.enableAutoSizing = false;
+            subjectTitleText.enableAutoSizing = false;
+            languageTitleText.enableAutoSizing = false;
+
+            experimentTitleText.fontSize = fontSize;
+            subjectTitleText.fontSize = fontSize;
+            languageTitleText.fontSize = fontSize;
         }
 
         protected virtual void Update() {
@@ -95,6 +114,8 @@ namespace PsyForge.GUI {
                 int sessionNumber = ParticipantSelection.nextSessionNumber;
                 launchButton.GetComponentInChildren<TextMeshProUGUI>().text = LangStrings.StartupLaunchButton(sessionNumber);
             }
+
+            AdjustTextsOnScreenChange();
         }
 
         public async void DoSyncBoxTest() {
@@ -118,6 +139,16 @@ namespace PsyForge.GUI {
         protected virtual void SetLanguageHelper() {
             LangStrings.SetLanguage((Language)languageDropdown.value);
             SetText();
+            AdjustTextSizes();
+        }
+
+        // Call this from update to check for screen size changes
+        protected virtual void AdjustTextsOnScreenChange() {
+            if (screenWidth != Screen.width || screenHeight != Screen.height) {
+                screenWidth = Screen.width;
+                screenHeight = Screen.height;
+                AdjustTextSizes();
+            }
         }
 
         // activated by UI launch button

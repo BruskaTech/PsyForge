@@ -133,8 +133,8 @@ namespace PsyForge.Localization {
             { Language.German, "Proband:" },
         }); }
         public static LangString StartupSession() { return new( new() {
-            { Language.English, "Session:" },
-            { Language.German, "Sitzung:" },
+            { Language.English, "Session" },
+            { Language.German, "Sitzung" },
         }); }
         public static LangString StartupExperimentPlaceholder() { return new( new() {
             { Language.English, "Select Task..." },
