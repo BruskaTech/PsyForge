@@ -24,6 +24,9 @@ namespace PsyForge.ExternalDevices {
             Debug.Log("DummySyncBox Pulse Off");
             await manager.Delay(500, ct: ct);
         }
+        public override int MaxPulseDuration() {
+            return 1000;
+        }
     }
 
 }

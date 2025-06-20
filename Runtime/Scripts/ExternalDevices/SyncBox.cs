@@ -23,6 +23,7 @@ namespace PsyForge.ExternalDevices {
         internal abstract Task Init();
         protected abstract Task PulseInternals(CancellationToken ct = default);
         internal abstract Task TearDown();
+        public abstract int MaxPulseDuration();
 
         protected override void AwakeOverride() { }
         protected void OnDestroy() {

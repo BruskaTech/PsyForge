@@ -37,7 +37,7 @@ namespace PsyForge.ExternalDevices {
             // Create the new UI Image GameObject
             GameObject imageObject = new GameObject("PhotoDiodeImage");
             imageObject.transform.SetParent(gameObject.transform); // Set the canvas as the parent
-            
+
             // Create the Image component
             image = imageObject.AddComponent<Image>();
             image.color = Color.black; // Set the color to black
@@ -111,6 +111,10 @@ namespace PsyForge.ExternalDevices {
 
         internal override Task TearDown() {
             return Task.CompletedTask;
+        }
+
+        public override int MaxPulseDuration() {
+            return Config.photoDiodeSyncBoxDurationMs + Config.photoDiodeSyncBoxMaxTimeBetweenPulsesMs;
         }
     }
 
