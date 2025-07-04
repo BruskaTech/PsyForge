@@ -124,10 +124,16 @@ namespace PsyForge.Localization {
             { Language.English, "Task Launcher" },
             { Language.German, "Startmenü" },
         }); }
-        public static LangString StartupExperiment() { return new( new() {
+        public static LangString LanguageText() { return new( new() {
+            { Language.English, "Language:" },
+            { Language.German, "Sprache:" },
+        }); }
+        public static LangString StartupExperiment() {
+            return new(new() {
             { Language.English, "Task:" },
             { Language.German, "Aufgabe:" },
-        }); }
+        });
+        }
         public static LangString StartupSubject() { return new( new() {
             { Language.English, "Participant:" },
             { Language.German, "Proband:" },
