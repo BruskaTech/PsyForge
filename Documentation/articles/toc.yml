@@ -3,3 +3,7 @@ items:
     href: FAQ.md
   - name: Architecture
     href: Architecture.md
+  - name: Features
+    href: Features.md
+  - name: Frame Render Timings
+    href: FrameRenderTimings.md
