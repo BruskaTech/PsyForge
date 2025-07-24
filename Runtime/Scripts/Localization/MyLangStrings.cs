@@ -64,8 +64,8 @@ namespace PsyForge.Localization {
             { Language.German, "Drücken Sie [Y], um fortzufahren.\n\nDrücken Sie [N], um die Anleitung erneut abzuspielen." },
         }); }
         public static LangString RepeatMicTest() { return new( new() {
-            { Language.English, "Did you hear the recording? \n([Y] = Continue / [N] = Try Again)." },
-            { Language.German, "Haben Sie die Aufnahme gehört? \n([Y] = Fortfahren / [N] = Erneut versuchen)." },
+            { Language.English, "Did you hear the recording?\n\n[Y] = Continue\n[N] = Try Again." },
+            { Language.German, "Haben Sie die Aufnahme gehört?\n\n[Y] = Fortfahren\n[N] = Erneut versuchen." },
         }); }
         public static LangString AnyKeyToContinue() { return new( new() {
             { Language.English, "\nPress any key to continue\n\n" },

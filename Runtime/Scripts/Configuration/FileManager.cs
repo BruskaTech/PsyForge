@@ -163,12 +163,10 @@ namespace PsyForge {
         }
 
         public static string GetWordList() {
-            string root = BasePath();
-            return Path.Combine(root, Config.wordpool);
+            return ExpResourcePath(Config.wordpool);
         }
         public static string GetPracticeWordList() {
-            string root = BasePath();
-            return Path.Combine(root, Config.practiceWordpool);
+            return ExpResourcePath(Config.practiceWordpool);
         }
 
         internal static void CreateSession(string participant, int session) {
