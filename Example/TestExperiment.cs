@@ -7,54 +7,51 @@
 //PsyForge is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 //You should have received a copy of the GNU General Public License along with PsyForge. If not, see <https://www.gnu.org/licenses/>. 
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
 using PsyForge.Experiment;
+using PsyForge.Localization;
+using System.Collections.Generic;
+using Codice.CM.Common;
 
-public class TestExperiment : ExperimentBase<TestExperiment, TestSession, TestTrial> {
-    protected override void AwakeOverride() {  }
+public class TestExperiment : ExperimentBase<TestExperiment, TestSession, TestTrial, TestConstants> {
+    protected override void AwakeOverride() { }
 
-    protected void Start() {
-        Run();
+    protected override async Awaitable InitialStates() { await Task.CompletedTask; }
+    protected override async Awaitable FinalStates() { await Task.CompletedTask; }
+    protected override Awaitable PracticeTrialStates(CancellationToken ct) {
+        throw new EndSessionException(); // This exception will end either the practice trials or the normal trials, depending on which is currently running.
     }
 
-    protected override Task InitialStates() { return Task.CompletedTask; }
-    protected override Task PracticeTrialStates() { return Task.CompletedTask; }
-    protected override Task FinalStates() { return Task.CompletedTask; }
+    protected override async Awaitable TrialStates(CancellationToken ct) {
+        // Show a starting message and wait for a key press to begin.
+        // This automatically puts a "Press Any Key to Continue" message at the bottom.
+        await ExpHelpers.PressAnyKey("session start", LangStrings.SessionStart(), ct);
 
-    protected async Task RepeatedGetKey() {
-        var key = await inputManager.WaitForKey();
-        UnityEngine.Debug.Log("Got key " + key);
-        _ = DoWaitForTS(RepeatedGetKey);
+        // Tell the user to press one of two keys, and wait for them to do so, and then log it.
+        textDisplayer.Display("Press 1 or 2", text: LangStrings.Press1or2());
+        var keyOptions = new List<KeyCode>() { KeyCode.Alpha1, KeyCode.Alpha2 };
+        var selectedKey = await inputManager.WaitForKey(keyOptions, ct: ct);
+        eventReporter.LogTS("key selection", new() {
+            { "keyOptions", keyOptions },
+            { "selectedKey", selectedKey },
+        });
+        textDisplayer.Clear();
+
+        // Delay for a few seconds so the user can see what they pressed.
+        textDisplayer.Display("You pressed: " + selectedKey, text: LangStrings.YouPressed(selectedKey));
+        await Task.Delay(CONSTANTS.keycodeDisplayDurationMs, ct);
+
+        // End the session if we have completed enough trials.
+        if (session.TrialNum >= CONSTANTS.numTrialsPerSession) { // Trial number is 1-indexed, so this is after numTrialsPerSession (2) trials.
+            EndCurrentSession(); // This also will end the current set of trials (practice or normal).
+        }
     }
 
-    protected override async Task TrialStates() {
-        //await manager.textDisplayer.AwaitableUpdateText("AwaitableUpdateText");
-        //await MainManager2.Delay(1000);
-        //manager.textDisplayer.UpdateText("DONE");
-        //var a = await manager.textDisplayer.ReturnableUpdateText("ReturnableUpdateText");
-        //UnityEngine.Debug.Log("DoGet: " + a);
+    
 
-        var cts = DoRepeatingTS(1000, 500, 10, () => { UnityEngine.Debug.Log("Repeat"); });
-        await inputManager.WaitForKey();
-        cts.Cancel();
-        await inputManager.WaitForKey();
+    
 
-        //var key = await manager.inputManager.GetKey();
-        //UnityEngine.Debug.Log("Got key " + key);
-
-        //DelayedGet();
-        //DelayedStop();
-        //DelayedTriggerKeyPress();
-        //KeyMsg keyMsg = await WaitOnKey(default);
-        //UnityEngine.Debug.Log("MainStates - WaitOnKey: " + keyMsg.key);
-        //manager.textDisplayer.UpdateText("UpdateText");
-        //await MainManager2.Delay(1000);
-        //await DelayedGet();
-    }
 }
