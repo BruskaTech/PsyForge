@@ -328,18 +328,18 @@ namespace PsyForge.Experiment {
 
                 manager.lowBeep.Play();
                 await DoWaitWhile(() => manager.lowBeep.isPlaying, ct);
-                await manager.Delay(100, ct: ct); // This is needed so you don't hear the end of the beep in the recording
+                await Timing.Delay(100, ct: ct); // This is needed so you don't hear the end of the beep in the recording
 
                 manager.recorder.StartRecording(wavPath);
                 var coloredTestRec = LangStrings.MicrophoneTestRecording().Color("red");
                 textDisplayer.Display("microphone test recording", text: coloredTestRec);
-                await manager.Delay(Config.micTestDurationMs, ct: ct);
+                await Timing.Delay(Config.micTestDurationMs, ct: ct);
                 var clip = manager.recorder.StopRecording();
 
                 var coloredTestPlay = LangStrings.MicrophoneTestPlaying().Color("green");
                 textDisplayer.Display("microphone test playing", text: coloredTestPlay);
                 manager.playback.PlayOneShot(clip);
-                await manager.Delay(Config.micTestDurationMs, ct: ct);
+                await Timing.Delay(Config.micTestDurationMs, ct: ct);
             }, "repeat mic test", LangStrings.RepeatMicTest(), new());
         }
         protected virtual async Awaitable SubjectConfirmation(CancellationToken ct = default) {

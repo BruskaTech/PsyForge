@@ -12,6 +12,7 @@ using PsyForge.Experiment;
 using PsyForge.ExternalDevices;
 using PsyForge.GUI;
 using PsyForge.Localization;
+using PsyForge.Utilities;
 using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -46,14 +47,14 @@ namespace PsyForge.Experiment {
             textDisplayer.Display("verbal recall display", text: verbalRecallDisplay);
 
             while (manager.lowBeep.isPlaying) { await Awaitable.NextFrameAsync(); }
-            await manager.Delay(100); // This is needed so you don't hear the end of the beep in the recording
+            await Timing.Delay(100); // This is needed so you don't hear the end of the beep in the recording
 
             // Start recording
             manager.recorder.StartRecording(wavPath);
             eventReporter.LogTS("start verbal recall period");
 
             // Wait for recall duration
-            await manager.Delay(realVerbalFreeRecallDurationMs);
+            await Timing.Delay(realVerbalFreeRecallDurationMs);
 
             // Stop recording and beep for indication
             textDisplayer.Clear();

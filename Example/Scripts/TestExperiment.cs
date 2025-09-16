@@ -19,18 +19,50 @@ using Codice.CM.Common;
 public class TestExperiment : ExperimentBase<TestExperiment, TestSession, TestTrial, TestConstants> {
     protected override void AwakeOverride() { }
 
-    protected override async Awaitable InitialStates() { await Task.CompletedTask; }
     protected override async Awaitable FinalStates() { await Task.CompletedTask; }
     protected override Awaitable PracticeTrialStates(CancellationToken ct) {
         throw new EndSessionException(); // This exception will end either the practice trials or the normal trials, depending on which is currently running.
     }
 
+    protected override async Awaitable InitialStates() {
+        await SubjectConfirmation();
+        await MicrophoneTest();
+        await StartSession();
+        await IntroductionVideo();
+        await ConfirmStart();
+    }
+
+    // Try to keep this as simple as possible, future you will REALLY appreciate it
     protected override async Awaitable TrialStates(CancellationToken ct) {
-        // Show a starting message and wait for a key press to begin.
+        await StartTrial();
+        await SoundPhase();
+        await KeySelectionPhase();
+        await DisplayChoicePhase();
+    }
+
+    // Show a starting message and wait for a key press to begin.
+    protected virtual async Awaitable StartSession() {
         // This automatically puts a "Press Any Key to Continue" message at the bottom.
         await ExpHelpers.PressAnyKey("session start", LangStrings.SessionStart(), ct);
+    }
 
-        // Tell the user to press one of two keys, and wait for them to do so, and then log it.
+    // End the session if we have completed enough trials.
+    protected virtual async Awaitable StartTrial() {
+        if (session.TrialNum > CONSTANTS.numTrialsPerSession) { // Trial number is 1-indexed, so this is after numTrialsPerSession (2) trials.
+            EndCurrentSession(); // This also will end the current set of trials (practice or normal).
+        }
+        // Helpful tip.
+        // If you put this code in a StartTrial function, then you want to use >
+        // If you put this code in an EndTrial function, then you want to use >=
+        // This is a common cause of off-by-one errors.
+    }
+
+    // Raise an error, display it to screen, stop the experiment, and log it
+    protected override void HowToThrowError() {
+        throw new Exception("This is an error!");
+    }
+
+    protected virtual async Awaitable KeySelectionPhase() {
         textDisplayer.Display("Press 1 or 2", text: LangStrings.Press1or2());
         var keyOptions = new List<KeyCode>() { KeyCode.Alpha1, KeyCode.Alpha2 };
         var selectedKey = await inputManager.WaitForKey(keyOptions, ct: ct);
@@ -39,19 +71,29 @@ public class TestExperiment : ExperimentBase<TestExperiment, TestSession, TestTr
             { "selectedKey", selectedKey },
         });
         textDisplayer.Clear();
-
-        // Delay for a few seconds so the user can see what they pressed.
-        textDisplayer.Display("You pressed: " + selectedKey, text: LangStrings.YouPressed(selectedKey));
-        await Task.Delay(CONSTANTS.keycodeDisplayDurationMs, ct);
-
-        // End the session if we have completed enough trials.
-        if (session.TrialNum >= CONSTANTS.numTrialsPerSession) { // Trial number is 1-indexed, so this is after numTrialsPerSession (2) trials.
-            EndCurrentSession(); // This also will end the current set of trials (practice or normal).
-        }
     }
 
+    // Display Choice Phase
+    protected virtual async Awaitable DisplayChoicePhase() {
+        textDisplayer.Display("You pressed: " + selectedKey, text: LangStrings.YouPressed(selectedKey));
+        await Timing.Delay(CONSTANTS.keycodeDisplayDurationMs, ct);
+    }
     
+    protected virtual async Awaitable SoundPhase() {
+        // Load the clip
+        audioPath = FileManager.ExpResourcePath(Config.testAudioPath);
+        manager.playback.clip = await UnityUtilities.LoadAudioAsync(audioPath);
+        int durationMs = (int) manager.playback.clip.length*1000;
 
-    
-
+        // Play the audio
+        eventReporter.LogTS("play test sound", new() {
+            { "durationMs", durationMs },
+        });
+        manager.playback.Play();
+        
+        // Wait for the audio to finish
+        while (manager.playback.isPlaying) {
+            await Awaitable.NextFrameAsync();
+        }
+    }
 }

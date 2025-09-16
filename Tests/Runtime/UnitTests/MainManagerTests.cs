@@ -57,7 +57,7 @@ namespace PsyForgeTests {
         [UnityTest]
         public IEnumerator Delay() {
             var start = Clock.UtcNow;
-            yield return MainManager.Instance.Delay(1000);
+            yield return Timing.Delay(1000);
             var diff = (Clock.UtcNow - start).TotalMilliseconds;
             Assert.GreaterOrEqual(diff, 1000);
             Assert.LessOrEqual(diff, 1000 + ONE_FRAME_MS);

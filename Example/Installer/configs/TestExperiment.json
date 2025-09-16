@@ -1,0 +1,17 @@
+{
+    "experimentClass": "TestExperiment",
+    "experimentName": "Test",
+    "experimentScene": "OpenField",
+
+    "skipIntros": false,
+
+    "quitAnytime": true,
+    "quitAnytimeButSkipAheadInstead": true,
+    "pauseAnytime": true,
+    "logFrameDisplayTimes": true,
+
+    "testAudio": "TestSound.wav",
+    "introductionVideo": "TestVideo.mp4",
+
+    "placeholder": false
+}

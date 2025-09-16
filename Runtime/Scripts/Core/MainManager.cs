@@ -105,7 +105,7 @@ namespace PsyForge {
         //////////
         // StartTime
         //////////
-        
+
         /// <summary>
         /// The time the game was started
         /// </summary>
@@ -145,7 +145,7 @@ namespace PsyForge {
             try {
                 var syncBoxObj = new GameObject(name);
                 var syncBoxTypePath = $"PsyForge.ExternalDevices.{name}, PsyForge";
-                syncBox = (SyncBox) syncBoxObj.AddComponentByName(syncBoxTypePath);
+                syncBox = (SyncBox)syncBoxObj.AddComponentByName(syncBoxTypePath);
                 DontDestroyOnLoad(syncBoxObj);
             } catch (Exception e) {
                 throw new Exception($"Syncbox class {name} could not be created", e);
@@ -249,7 +249,7 @@ namespace PsyForge {
         }
 
         // These can be called by anything
-        
+
         // public void PauseTS(bool pause) {
         //     // This is ONLY done for pause because it is a special case
         //     unpausableEvents.Enqueue(PauseHelperEnumerator(pause));
@@ -282,7 +282,7 @@ namespace PsyForge {
                 }
 
             } else {
-                if (pauseTimescales.TryPop(out oldTimeScale) ) {
+                if (pauseTimescales.TryPop(out oldTimeScale)) {
                     Time.timeScale = oldTimeScale;
                     if (pauseTimescales.Count == 0) { // The pause actually ended
                         foreach (var (timer, _) in timers) {
@@ -319,58 +319,8 @@ namespace PsyForge {
             }
 
             EventReporter.Instance.LogTS("experiment quitted");
-            await Delay(500);
+            await Timing.Delay(500);
             this.Quit();
-        }
-
-        // Helpful functions
-        public void LockCursor(CursorLockMode lockMode) {
-            Do(LockCursorHelper, lockMode);
-        }
-        public void LockCursorTS(CursorLockMode lockMode) {
-            DoTS(LockCursorHelper, lockMode);
-        }
-        public void LockCursorHelper(CursorLockMode lockMode) {
-            Cursor.lockState = lockMode;
-            Cursor.visible = lockMode != CursorLockMode.Locked;
-        }
-
-        public CursorLockMode CursorLockState() {
-            return DoGet(CursorLockStateHelper);
-        }
-        public async Task<CursorLockMode> CursorLockStateTS() {
-            return await DoGetTS(CursorLockStateHelper);
-        }
-        public CursorLockMode CursorLockStateHelper() {
-            return Cursor.lockState;
-        }
-
-        // Timing Functions
-        public async Task Delay(int millisecondsDelay, bool pauseAware = true, CancellationToken ct = default) {
-            if (millisecondsDelay != 0) {
-                await DoWaitFor(DelayHelper, millisecondsDelay, (Bool)pauseAware, ct);
-            }
-        }
-        public async Task DelayTS(int millisecondsDelay, bool pauseAware = true, CancellationToken ct = default) {
-            if (millisecondsDelay != 0) {
-                // This is hack to get arround the Blittability check for CancellationToken, because I know it is thread safe
-                Func<int, Bool, Task> func = async (int _millisecondsDelay, Bool _pauseAware) => {
-                    await DelayHelper(millisecondsDelay, pauseAware, ct);
-                };
-                await DoWaitForTS(func, millisecondsDelay, pauseAware);
-            }
-        }
-        public async Task DelayHelper(int millisecondsDelay, Bool pauseAware, CancellationToken ct) {
-            if (millisecondsDelay < 0) {
-                throw new ArgumentOutOfRangeException($"millisecondsDelay <= 0 ({millisecondsDelay})");
-            } else if (millisecondsDelay == 0) {
-                return;
-            }
-
-            PsyForge.Utilities.Timer timer = new(millisecondsDelay, pauseAware);
-            while (!timer.IsFinished()) {
-                await Awaitable.NextFrameAsync(ct);
-            }
         }
     }
 }

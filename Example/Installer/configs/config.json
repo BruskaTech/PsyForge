@@ -1,0 +1,34 @@
+{
+    "isTest": false,
+    "launcherScene": "Startup",
+    "language": "English",
+    "keyboardLanguage": "English",
+
+    "logNetworkMessages": true,
+    "logFrameDisplayTimes": true,
+    "debugEventLoopExtendedStackTrace": true,
+
+    "participantIdRegex": "",
+    "participantIdPrefixRegex": "",
+    "participantIdPostfixRegex": "",
+
+    "syncBoxOn": false,
+    "syncBoxClasses": ["PhotoDiodeSyncBox"],
+    "syncBoxTestDurationMs": 5000,
+    "syncBoxContinuousPulsing": false,
+    "networkedSyncboxPort":  8903,
+    "photoDiodeSyncBoxImageWidthInch": 0.5,
+    "photoDiodeSyncBoxImageHeightInch": 0.5,
+    "photoDiodeSyncBoxImagePosition": [1, 0],
+    "photoDiodeSyncBoxImageOffColor": "black",
+    "photoDiodeSyncBoxImageOnColor": "white",
+    "photoDiodeSyncBoxDurationMs": 200,
+    "photoDiodeSyncBoxMinTimeBetweenPulsesMs": 200,
+    "photoDiodeSyncBoxMaxTimeBetweenPulsesMs": 200,
+
+    "ramulatorOn": false,
+    "elememOn": false,
+    "hostServerIP": "127.0.0.1",
+    "hostServerPort": 8889,
+    "elememHeartbeatInterval": 1000
+}

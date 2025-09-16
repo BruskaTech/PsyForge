@@ -16,6 +16,11 @@ namespace PsyForge {
         /// A test value for demonstrating config usage.
         /// </summary>
         public static int testValue = 10;
+
+        /// <summary>
+        /// The path to the test audio.
+        /// </summary>
+        public static Conf<string> testAudioPath;
     }
 
 }

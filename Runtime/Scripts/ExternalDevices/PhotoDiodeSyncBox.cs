@@ -12,6 +12,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System.Threading;
+using PsyForge.Utilities;
 
 namespace PsyForge.ExternalDevices {
 
@@ -103,10 +104,10 @@ namespace PsyForge.ExternalDevices {
 
         protected override async Task PulseInternals(CancellationToken ct = default) {
             image.color = onColor;
-            await manager.Delay(Config.photoDiodeSyncBoxDurationMs);
+            await Timing.Delay(Config.photoDiodeSyncBoxDurationMs);
             image.color = offColor;
             int delayMs = Utilities.Random.Rnd.Next(Config.photoDiodeSyncBoxMinTimeBetweenPulsesMs, Config.photoDiodeSyncBoxMaxTimeBetweenPulsesMs);
-            await manager.Delay(delayMs, ct: ct);
+            await Timing.Delay(delayMs, ct: ct);
         }
 
         internal override Task TearDown() {

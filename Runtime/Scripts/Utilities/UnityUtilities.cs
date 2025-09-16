@@ -7,8 +7,11 @@
 //PsyForge is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 //You should have received a copy of the GNU General Public License along with PsyForge. If not, see <https://www.gnu.org/licenses/>. 
 
+using GluonGui.WorkspaceWindow.Views.WorkspaceExplorer;
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace PsyForge.Utilities {
     public static class UnityUtilities {
@@ -30,7 +33,7 @@ namespace PsyForge.Utilities {
                 return Application.targetFrameRate;
             }
         }
-    
+
         /// <summary>
         /// Load a DXT-compressed DDS image file.
         /// Base on: https://discussions.unity.com/t/can-you-load-dds-textures-during-runtime/84192/2
@@ -62,6 +65,42 @@ namespace PsyForge.Utilities {
             texture.Apply();
 
             return texture;
+        }
+
+        public static void LockCursor(CursorLockMode lockMode) {
+            Cursor.lockState = lockMode;
+            Cursor.visible = lockMode != CursorLockMode.Locked;
+        }
+        public static CursorLockMode CursorLockState() {
+            return Cursor.lockState;
+        }
+
+        public static async Task<AudioClip> LoadAudioAsync(string path, bool isUrl = false) {
+            string extension = System.IO.Path.GetExtension(path).ToLowerInvariant();
+            AudioType audioType = extension switch {
+                ".wav" => AudioType.WAV,
+                ".mp3" => AudioType.MPEG,
+                ".ogg" => AudioType.OGGVORBIS,
+                ".aiff" or ".aif" => AudioType.AIFF,
+                _ => AudioType.UNKNOWN,
+            };
+            if (audioType == AudioType.UNKNOWN) {
+                throw new Exception($"Unsupported audio format for {path}, must be .wav, .mp3, .ogg, or .aiff");
+            }
+
+            string fullPath = isUrl ? path : "file://" + path;
+            using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(fullPath, audioType)) {
+                var operation = www.SendWebRequest();
+                while (!operation.isDone) {
+                    await Awaitable.NextFrameAsync();
+                }
+
+                if (www.result != UnityWebRequest.Result.Success) {
+                    throw new Exception($"Error loading audio for {path}: {www.error}");
+                }
+
+                return DownloadHandlerAudioClip.GetContent(www);
+            }
         }
     }
 }

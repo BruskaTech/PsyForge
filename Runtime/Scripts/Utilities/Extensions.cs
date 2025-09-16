@@ -402,7 +402,7 @@ namespace PsyForge.Extensions {
                 throw new ArgumentException($"The timeoutMs cannot be negative, but it was {timeoutMs}");
             }
             Task timeoutTask = pauseAware 
-                ? MainManager.Instance.DelayTS(timeoutMs)
+                ? Timing.DelayTS(timeoutMs)
                 : Task.Delay(timeoutMs);
             var completedTask = await Task.WhenAny(task, timeoutTask);
             await completedTask; // Propagates exceptions thrown in the task
@@ -428,7 +428,7 @@ namespace PsyForge.Extensions {
                 throw new ArgumentException($"The timeoutMs cannot be negative, but it was {timeoutMs}");
             }
             Task timeoutTask = pauseAware 
-                ? MainManager.Instance.DelayTS(timeoutMs)
+                ? Timing.DelayTS(timeoutMs)
                 : Task.Delay(timeoutMs);
             var completedTask = await Task.WhenAny(task, timeoutTask);
             await completedTask; // Propagates exceptions thrown in the task
@@ -453,7 +453,7 @@ namespace PsyForge.Extensions {
                 throw new ArgumentException($"The timeoutMs cannot be negative, but it was {timeoutMs}");
             }
             Task timeoutTask = pauseAware 
-                ? MainManager.Instance.DelayTS(timeoutMs)
+                ? Timing.DelayTS(timeoutMs)
                 : Task.Delay(timeoutMs);
             var completedTask = await Task.WhenAny(task, timeoutTask);
             await completedTask; // Propagates exceptions thrown in the task

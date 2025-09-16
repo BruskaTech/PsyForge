@@ -48,7 +48,7 @@ So now this new thing comes along, async/await. You mark an function ```async```
         // await MaineManager.Instance.Delay(1000); // Wait for 1 second
 
         // Or if in an PsyForge Experiment method:
-        // await manager.Delay(1000); // Wait for 1 second
+        // await Timing.Delay(1000); // Wait for 1 second
     }
 ```
 
@@ -204,8 +204,8 @@ You can see that they are pretty similar. So what's the difference?
 
     async Task<int> FrameLogger() {
         UnityEngine.Debug.Log("Frame 1");
-        await MainManager.Instance.Delay(1000);
-        // 'await manager.Delay(1000);' inside of an experiment method
+        await Timing.Delay(1000);
+        // 'await Timing.Delay(1000);' inside of an experiment method
         UnityEngine.Debug.Log("Frame 2");
         return 2; // number of frames logged   
     }

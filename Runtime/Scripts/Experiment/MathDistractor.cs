@@ -138,7 +138,7 @@ namespace PsyForge.Experiment {
                     // Show the answer for a bit
                     textDisplayer.Display(message,
                         text: LangStrings.GenForCurrLang(problem + "<color=" + (correct ? "green" : "red") + ">" + answer + "</color>"));
-                    await manager.Delay(1000);
+                    await Timing.Delay(1000);
 
                     // End distractor or setup next math problem
                     if ((Clock.UtcNow - startTime).TotalMilliseconds > trueDistractorDurationMs) {
