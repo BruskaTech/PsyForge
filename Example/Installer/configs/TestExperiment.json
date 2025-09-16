@@ -1,7 +1,7 @@
 {
     "experimentClass": "TestExperiment",
     "experimentName": "Test",
-    "experimentScene": "OpenField",
+    "experimentScene": "TestScene",
 
     "skipIntros": false,
 
