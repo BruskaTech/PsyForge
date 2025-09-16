@@ -10,8 +10,8 @@
     "pauseAnytime": true,
     "logFrameDisplayTimes": true,
 
-    "testAudio": "TestSound.wav",
-    "introductionVideo": "TestVideo.mp4",
+    "testAudio": "testAudio.wav",
+    "introductionVideo": "introductionVideo.mp4",
 
     "placeholder": false
 }
