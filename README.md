@@ -8,9 +8,9 @@ The experimental designs required to explore and understand neural mechanisms ar
 
 For more information than what is in this document, please see the [Documentation Site](https://bruskatech.github.io/PsyForge).
 
-## Types of Experiments and Components Available
+## Types of Experimental Components Available
 
-There are many types of experiments, but here are a few common ones and the useful components for them. There is also a list of generally useful components.
+There are many types of experimental compoenents, but here are a few common ones. There is also a list of generally useful components.
 
 ### General Components
 
