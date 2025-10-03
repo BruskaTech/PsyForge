@@ -108,7 +108,7 @@ Well then, here is a quick introduction to the pain that is figuring out that in
 - So if you want the exact time you will have to account for all of that stuff. So let's make an see some equations and write an example.
 - TODO
 
-## Maybe Consider a CRT
+## Maybe consider a CRT
 
 - CRTs (you know those old timey HUGE TVs) are actually still better than the best gaming monitors today when it comes to input lag and BTW/GTG response times.
 - As a matter of fact, their input lag and their BTW/GTG response times are normally measured in micro-seconds (so nothing).
@@ -116,6 +116,10 @@ Well then, here is a quick introduction to the pain that is figuring out that in
 - If you need an HDMI to VGA adapter for your PC, then the industry standard is the "Tendak Active 1080P Female HDMI to VGA Male Converter". It makes sure you keep that nice 0ms input lag.
 - Since these things are huge, I recommend buying locally. Most people from your local Retro-Gaming groups will probably have extra CRTs they would be willing to sell.
 - Yes, it is possible to get 1080p 60Hz CRTs, but it may be tricky to find.
+
+## Extra facts that may make you sad/annoyed
+
+- MacOS versions 10.13 and later have a forced triple buffering by the OS (you can't turn it off), which means there is always a 1 frame delay between when your task "says" it did a thing and when it actually does get displayed to the screen. This doesn't impact durations or relative timings within the task, but it does impact timings relative to externally collected data (ex: EEG). Thank you PsychoPy for actually discussing this issue publicly [in a basic form here](https://discourse.psychopy.org/t/correcting-for-mac-triple-buffering/15391) and [more in-depth here](https://github.com/psychopy/psychopy/issues/2250).
 
 ## What is GSync and FreeSync? Should I use them?
 
