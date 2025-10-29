@@ -64,8 +64,31 @@ namespace PsyForge.DataManagement {
                         { "key display name", control.displayName },
                         { "value", keyControl.ReadValueFromEvent(eventPtr) },
                         { "control", control.ToString() },
+                        { "display name", control.displayName },
                         { "time offset from logging ms", timeOffsetFromLoggingMs},
                     });
+                }
+
+                // Handle mouse position input
+                // This may need to be updated to handle Vector2Control in the future
+                if (device is Mouse && control is AxisControl axisControl && axisControl.parent.name == "position") {
+                    if (axisControl.name == "x") {
+                        mousePosition[0] = axisControl.ReadValueFromEvent(eventPtr);
+                    } else if (axisControl.name == "y") {
+                        mousePosition[1] = axisControl.ReadValueFromEvent(eventPtr);
+                    }
+                    if (reportMousePosition && !reportMousePositionOnFrame) {
+                        eventReporter.LogTS("input event", eventTime, new Dictionary<string, object> {
+                            { "device", control.device.name },
+                            { "input type", control.layout },
+                            { "position name", control.name },
+                            { "value", mousePosition },
+                            { "position display name", control.displayName },
+                            { "control", control.ToString() },
+                            { "display name", control.displayName },
+                            { "time offset from logging ms", timeOffsetFromLoggingMs},
+                        });
+                    }
                 }
 
                 // Handle mouse button input
@@ -77,50 +100,34 @@ namespace PsyForge.DataManagement {
                         { "value", buttonControl.ReadValueFromEvent(eventPtr) },
                         { "button display name", control.displayName },
                         { "position", mousePosition },
+                        { "screen size", new float[2] {Screen.width, Screen.height} },
                         { "control", control.ToString() },
-                        { "time offset from logging ms", timeOffsetFromLoggingMs},
-                    });
-                }
-
-                // Handle mouse position input
-                // This may need to be updated to handle Vector2Control in the future
-                if (reportMousePosition && !reportMousePositionOnFrame && device is Mouse && control is AxisControl axisControl && axisControl.parent.name == "position") { //
-                    if (axisControl.name == "x") {
-                        mousePosition[0] = axisControl.ReadValueFromEvent(eventPtr);
-                    } else if (axisControl.name == "y") {
-                        mousePosition[1] = axisControl.ReadValueFromEvent(eventPtr);
-                    }
-                    eventReporter.LogTS("input event", eventTime, new Dictionary<string, object> {
-                        { "device", control.device.name },
-                        { "input type", control.layout },
-                        { "position name", control.name },
-                        { "value", mousePosition },
-                        { "position display name", control.displayName },
-                        { "control", control.ToString() },
+                        { "display name", control.displayName },
                         { "time offset from logging ms", timeOffsetFromLoggingMs},
                     });
                 }
             }
         }
 
-        void Update() {
-            if (reportMousePosition && reportMousePositionOnFrame && ++framesSinceLastMousePositionReport >= framesPerMousePositionReport) {
-                framesSinceLastMousePositionReport = 0;
-                var mouse = Mouse.current;
-                var control = mouse.position;
-                var position = control.ReadValue();
-                eventReporter.LogTS("input event", new Dictionary<string, object> {
-                    { "device", mouse.name },
-                    { "input type", control.layout },
-                    { "position name", control.name },
-                    { "value", new float[2] {position.x, position.y} },
-                    { "value2", mousePosition },
-                    { "position display name", control.displayName },
-                    { "control", control.ToString() },
-                    { "time offset from logging ms", 0.0},
-                });
-            }
-        }
+        // void Update() {
+        //     if (reportMousePosition && reportMousePositionOnFrame && ++framesSinceLastMousePositionReport >= framesPerMousePositionReport) {
+        //         framesSinceLastMousePositionReport = 0;
+        //         var mouse = Mouse.current;
+        //         var control = mouse.position;
+        //         var position = control.ReadValue();
+        //         eventReporter.LogTS("input event", new Dictionary<string, object> {
+        //             { "device", mouse.name },
+        //             { "input type", control.layout },
+        //             { "position name", control.name },
+        //             { "value", new float[2] {position.x, position.y} },
+        //             { "value2", mousePosition },
+        //             { "screen size", new float[2] {Screen.width, Screen.height} },
+        //             { "position display name", control.displayName },
+        //             { "control", control.ToString() },
+        //             { "time offset from logging ms", 0.0},
+        //         });
+        //     }
+        // }
     }
 
 }

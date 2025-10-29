@@ -246,7 +246,7 @@ namespace PsyForge.GUI {
         }
         protected void ClearTitleHelper() {
             titleElement.text = "";
-            eventReporter.LogTS("title display cleared title", new());
+            eventReporter.LogTS("text display cleared title", new());
         }
 
         public void ClearOnly() {
@@ -260,7 +260,7 @@ namespace PsyForge.GUI {
             textElement.text = "";
             footerElement.text = "";
             textElement.enableAutoSizing = true;
-            eventReporter.LogTS("title display cleared", new());
+            eventReporter.LogTS("text display cleared", new());
         }
 
         public void Clear() {
