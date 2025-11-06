@@ -58,7 +58,7 @@ public class TestExperiment : ExperimentBase<TestExperiment, TestSession, TestTr
     }
 
     // Raise an error, display it to screen, stop the experiment, and log it
-    protected override void HowToThrowError() {
+    protected virtual void HowToThrowError() {
         throw new Exception("This is an error!");
     }
 
