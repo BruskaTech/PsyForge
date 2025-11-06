@@ -6,7 +6,7 @@
     "skipIntros": false,
 
     "quitAnytime": true,
-    "quitAnytimeButSkipAheadInstead": true,
+    "quitAnytimeButSkipAheadInstead": false,
     "pauseAnytime": true,
     "logFrameDisplayTimes": true,
 

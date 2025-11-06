@@ -27,6 +27,8 @@ public class TestExperiment : ExperimentBase<TestExperiment, TestSession, TestTr
     }
 
     protected override async Awaitable InitialStates() {
+        Setup();
+
         await SubjectConfirmation();
         await MicrophoneTest();
         await StartSession();
@@ -39,6 +41,11 @@ public class TestExperiment : ExperimentBase<TestExperiment, TestSession, TestTr
         await StartTrial();
         await SoundPhase();
         await KeySelectionPhase(ct);
+    }
+
+    protected virtual void Setup() {
+        noPracticeSession = true;
+        normalSession = new();
     }
 
     // Show a starting message and wait for a key press to begin.
