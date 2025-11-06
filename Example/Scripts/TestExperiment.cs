@@ -7,14 +7,16 @@
 //PsyForge is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 //You should have received a copy of the GNU General Public License along with PsyForge. If not, see <https://www.gnu.org/licenses/>. 
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using UnityEngine;
 
+using PsyForge;
 using PsyForge.Experiment;
 using PsyForge.Localization;
-using System.Collections.Generic;
-using Codice.CM.Common;
+using PsyForge.Utilities;
 
 public class TestExperiment : ExperimentBase<TestExperiment, TestSession, TestTrial, TestConstants> {
     protected override void AwakeOverride() { }
@@ -36,14 +38,13 @@ public class TestExperiment : ExperimentBase<TestExperiment, TestSession, TestTr
     protected override async Awaitable TrialStates(CancellationToken ct) {
         await StartTrial();
         await SoundPhase();
-        await KeySelectionPhase();
-        await DisplayChoicePhase();
+        await KeySelectionPhase(ct);
     }
 
     // Show a starting message and wait for a key press to begin.
     protected virtual async Awaitable StartSession() {
         // This automatically puts a "Press Any Key to Continue" message at the bottom.
-        await ExpHelpers.PressAnyKey("session start", LangStrings.SessionStart(), ct);
+        await ExpHelpers.PressAnyKey("session start", LangStrings.SessionStart());
     }
 
     // End the session if we have completed enough trials.
@@ -62,7 +63,7 @@ public class TestExperiment : ExperimentBase<TestExperiment, TestSession, TestTr
         throw new Exception("This is an error!");
     }
 
-    protected virtual async Awaitable KeySelectionPhase() {
+    protected virtual async Awaitable KeySelectionPhase(CancellationToken ct) {
         textDisplayer.Display("Press 1 or 2", text: LangStrings.Press1or2());
         var keyOptions = new List<KeyCode>() { KeyCode.Alpha1, KeyCode.Alpha2 };
         var selectedKey = await inputManager.WaitForKey(keyOptions, ct: ct);
@@ -71,17 +72,15 @@ public class TestExperiment : ExperimentBase<TestExperiment, TestSession, TestTr
             { "selectedKey", selectedKey },
         });
         textDisplayer.Clear();
-    }
 
-    // Display Choice Phase
-    protected virtual async Awaitable DisplayChoicePhase() {
         textDisplayer.Display("You pressed: " + selectedKey, text: LangStrings.YouPressed(selectedKey));
-        await Timing.Delay(CONSTANTS.keycodeDisplayDurationMs, ct);
+        await Timing.Delay(CONSTANTS.keycodeDisplayDurationMs, ct: ct);
+        textDisplayer.Clear();
     }
     
     protected virtual async Awaitable SoundPhase() {
         // Load the clip
-        audioPath = FileManager.ExpResourcePath(Config.testAudioPath);
+        var audioPath = FileManager.ExpResourcePath(Config.testAudioPath);
         manager.playback.clip = await UnityUtilities.LoadAudioAsync(audioPath);
         int durationMs = (int) manager.playback.clip.length*1000;
 
