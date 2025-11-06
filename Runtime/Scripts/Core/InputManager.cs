@@ -16,6 +16,7 @@ using UnityEngine.InputSystem;
 
 using PsyForge.Threading;
 using System.Linq;
+using PsyForge.Utilities;
 
 namespace PsyForge {
 
@@ -30,7 +31,8 @@ namespace PsyForge {
         }
         protected Bool GetKeyDownHelper(KeyCode key, Bool unpausable) {
             if (!unpausable && Time.timeScale == 0) { return false; }
-            return Input.GetKeyDown(key);
+            var newKey = KeyCodeConversions.KeyCodeToKey(GetLocalizedKey(key));
+            return Keyboard.current[newKey].wasPressedThisFrame;
         }
         public KeyCode GetKeyDown(KeyCode[] keys, bool unpausable = false) {
             return DoGet<KeyCode[], Bool, KeyCode>(GetKeyDownHelper, keys, unpausable);
@@ -39,7 +41,8 @@ namespace PsyForge {
             if (!unpausable && Time.timeScale == 0) { return KeyCode.None; }
 
             foreach (KeyCode key in keys) {
-                if (Input.GetKeyDown(GetLocalizedKey(key))) {
+                var newKey = KeyCodeConversions.KeyCodeToKey(GetLocalizedKey(key));
+                if (Keyboard.current[newKey].wasPressedThisFrame) {
                     return GetLocalizedKey(key);
                 }
             }
@@ -51,7 +54,8 @@ namespace PsyForge {
         }
         protected Bool GetKeyHelper(KeyCode key, Bool unpausable) {
             if (!unpausable && Time.timeScale == 0) { return false; }
-            return Input.GetKey(key);
+            var newKey = KeyCodeConversions.KeyCodeToKey(GetLocalizedKey(key));
+            return Keyboard.current[newKey].isPressed;
         }
         public KeyCode GetKey(List<KeyCode> keys, bool unpausable = false) {
             return DoGet<KeyCode[], Bool, KeyCode>(GetKeyHelper, keys.ToArray(), unpausable);
@@ -63,7 +67,8 @@ namespace PsyForge {
             if (!unpausable && Time.timeScale == 0) { return KeyCode.None; }
 
             foreach (KeyCode key in keys) {
-                if (Input.GetKey(GetLocalizedKey(key))) {
+                var newKey = KeyCodeConversions.KeyCodeToKey(GetLocalizedKey(key));
+                if (Keyboard.current[newKey].isPressed) {
                     return GetLocalizedKey(key);
                 }
             }
@@ -81,7 +86,8 @@ namespace PsyForge {
                 await Awaitable.NextFrameAsync();
                 if (unpausable || Time.timeScale != 0) {
                     foreach (KeyCode vKey in Enum.GetValues(typeof(KeyCode))) {
-                        if (Input.GetKeyDown(GetLocalizedKey(vKey))) {
+                        var newKey = KeyCodeConversions.KeyCodeToKey(GetLocalizedKey(vKey));
+                        if (Keyboard.current[newKey].wasPressedThisFrame) {
                             return GetLocalizedKey(vKey);
                         };
                     }

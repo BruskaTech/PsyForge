@@ -40,14 +40,14 @@ namespace PsyForge.GUI {
         protected TaskCompletionSource<bool> videoFinished;
 
         protected void Update() {
-            if (Input.GetKeyDown(pauseToggleKey)) {
+            if (InputManager.Instance.GetKeyDown(pauseToggleKey)) {
                 if (videoPlayer.isPlaying) {
                     videoPlayer.Pause();
                 } else {
                     videoPlayer.Play();
                 }
             }
-            if (skippable && Input.GetKeyDown(deactivateKey)) {
+            if (skippable && InputManager.Instance.GetKeyDown(deactivateKey)) {
                 videoPlayer.Stop();
                 OnLoopPointReached(videoPlayer);
             }
