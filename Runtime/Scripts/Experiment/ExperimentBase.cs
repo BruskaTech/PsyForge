@@ -341,6 +341,7 @@ namespace PsyForge.Experiment {
                 manager.playback.PlayOneShot(clip);
                 await Timing.Delay(Config.micTestDurationMs, ct: ct);
             }, "repeat mic test", LangStrings.RepeatMicTest(), new());
+            textDisplayer.Clear();
         }
         protected virtual async Awaitable SubjectConfirmation(CancellationToken ct = default) {
             ExpHelpers.SetExperimentStatus(HostPcStatusMsg.WAITING());
@@ -352,6 +353,7 @@ namespace PsyForge.Experiment {
             if (keyCode == KeyCode.N) {
                 await manager.QuitTS();
             }
+            textDisplayer.Clear();
         }
         protected virtual async Awaitable ConfirmStart(CancellationToken ct = default) {
             await ExpHelpers.PressAnyKey("confirm start", LangStrings.ConfirmStart(), ct);
