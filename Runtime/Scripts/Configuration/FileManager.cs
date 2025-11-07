@@ -29,6 +29,8 @@ namespace PsyForge {
             return Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 #elif UNITY_WEBGL
             return Application.streamingAssetsPath;
+#elif UNITY_XR_OPENXR_OCULUS || UNITY_XR_OPENXR_OCULUS_LEGACY_SUPPORT
+            return "sdcard/Downloads/" // TODO: (needed) Update Quest3 location for configs
 #else
             return Path.GetFullPath(".");
 #endif
