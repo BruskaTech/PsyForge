@@ -16,6 +16,10 @@ using Unity.Collections;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 
+using System;
+using System.Diagnostics;
+using System.Threading;
+
 using PsyForge.Extensions;
 using PsyForge.Threading;
 using PsyForge.Utilities;
@@ -85,9 +89,18 @@ namespace PsyForge.DataManagement {
             eventReporterLoop.LogTS(type, time, data);
         }
 
+        public void WriteRemainingLogsTs() {
+            eventReporterLoop.WriteRemainingLogsTs();
+        }
+
+        public void OnDestroy() {
+            WriteRemainingLogsTs();
+        }
+
         protected class EventReporterLoop : EventLoop {
             const FORMAT outputFormat = FORMAT.JSON_LINES;
             const string extensionlessFileName = "session";
+            const int numBufferedEvents = 100;
 
             protected readonly string defaultFilePath = "";
 
@@ -144,6 +157,8 @@ namespace PsyForge.DataManagement {
             }
 
 
+            protected List<string> writeBuffer = new List<string>(100);
+
             protected void DoWrite(NativeDataPoint dataPoint) {
                 if (filePath == defaultFilePath) {
                     var sessionPath = FileManager.SessionPath();
@@ -168,11 +183,28 @@ namespace PsyForge.DataManagement {
                         lineOutput = dataPoint.ToJSON();
                         break;
                 }
+
+                writeBuffer.Add(lineOutput);
+
+                UnityEngine.Debug.Log($"Logged event: {writeBuffer.Count} {lineOutput}");
+                if (writeBuffer.Count >= numBufferedEvents) {
 #if !UNITY_WEBGL // System.IO
-                File.AppendAllText(filePath, lineOutput + Environment.NewLine);
-#else // UNITUY_WEBGL
-                // TODO: JPB: (needed) (feature) Get WebGL to write events back to the server
+                    File.AppendAllLines(filePath, writeBuffer);
 #endif // UNITY_WEBGL
+                    writeBuffer.Clear();
+                }
+            }
+
+            public void WriteRemainingLogsTs() {
+                DoTS(WriteRemainingLogsHelper);
+            }
+            protected void WriteRemainingLogsHelper() {
+                if (writeBuffer.Count > 0) {
+#if !UNITY_WEBGL // System.IO
+                    File.AppendAllLines(filePath, writeBuffer);
+#endif // UNITY_WEBGL
+                    writeBuffer.Clear();
+                }
             }
         }
     }

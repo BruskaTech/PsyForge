@@ -305,6 +305,7 @@ namespace PsyForge {
 
         public async Awaitable QuitTS() {
             hostPC?.QuitTS();
+            EventReporter.Instance.WriteRemainingLogsTs();
             await DoWaitForTS(QuitHelper);
         }
         protected async Awaitable QuitHelper() {

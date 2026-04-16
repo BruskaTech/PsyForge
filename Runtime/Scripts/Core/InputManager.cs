@@ -86,7 +86,9 @@ namespace PsyForge {
                 await Awaitable.NextFrameAsync();
                 if (unpausable || Time.timeScale != 0) {
                     foreach (KeyCode vKey in Enum.GetValues(typeof(KeyCode))) {
+                        if (vKey == KeyCode.None) { continue; }
                         var newKey = KeyCodeConversions.KeyCodeToKey(GetLocalizedKey(vKey));
+                        if (newKey == Key.None) { continue; }
                         if (Keyboard.current[newKey].wasPressedThisFrame) {
                             return GetLocalizedKey(vKey);
                         };
