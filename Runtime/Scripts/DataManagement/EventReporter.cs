@@ -100,12 +100,14 @@ namespace PsyForge.DataManagement {
         protected class EventReporterLoop : EventLoop {
             const FORMAT outputFormat = FORMAT.JSON_LINES;
             const string extensionlessFileName = "session";
-            const int numBufferedEvents = 100;
+            const int delayBetweenEventWritesMs = 2000;
 
             protected readonly string defaultFilePath = "";
 
             protected string filePath = "";
             protected int eventId = 0;
+            protected List<string> writeBuffer = new List<string>(100);
+            protected Stopwatch stopwatch = new Stopwatch();
 
             public EventReporterLoop() {
                 string directory = FileManager.DataPath();
@@ -115,6 +117,7 @@ namespace PsyForge.DataManagement {
                         break;
                 }
                 defaultFilePath = filePath;
+                stopwatch.Start();
             }
 
             public async Task CheckDataDirectory() {
@@ -156,9 +159,6 @@ namespace PsyForge.DataManagement {
                 dataPoint.Dispose();
             }
 
-
-            protected List<string> writeBuffer = new List<string>(100);
-
             protected void DoWrite(NativeDataPoint dataPoint) {
                 if (filePath == defaultFilePath) {
                     var sessionPath = FileManager.SessionPath();
@@ -186,12 +186,14 @@ namespace PsyForge.DataManagement {
 
                 writeBuffer.Add(lineOutput);
 
-                UnityEngine.Debug.Log($"Logged event: {writeBuffer.Count} {lineOutput}");
-                if (writeBuffer.Count >= numBufferedEvents) {
+                // UnityEngine.Debug.Log($"Logged event: {writeBuffer.Count} {stopwatch.ElapsedMilliseconds}ms {lineOutput}");
+                if (stopwatch.ElapsedMilliseconds >= delayBetweenEventWritesMs) {
 #if !UNITY_WEBGL // System.IO
                     File.AppendAllLines(filePath, writeBuffer);
 #endif // UNITY_WEBGL
                     writeBuffer.Clear();
+                    stopwatch.Reset();
+                    stopwatch.Start();
                 }
             }
 
@@ -199,7 +201,7 @@ namespace PsyForge.DataManagement {
                 DoTS(WriteRemainingLogsHelper);
             }
             protected void WriteRemainingLogsHelper() {
-                if (writeBuffer.Count > 0) {
+                if ( writeBuffer.Count > 0) {
 #if !UNITY_WEBGL // System.IO
                     File.AppendAllLines(filePath, writeBuffer);
 #endif // UNITY_WEBGL
